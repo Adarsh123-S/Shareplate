@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Join SharePlate{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">🍱</div>
+      <h1>Create your account</h1>
+      <p>Join the community fighting food waste</p>
+    </div>
+    <form method="POST" class="auth-form">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Adarsh Gowda" required />
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Min. 6 characters" required minlength="6" />
+      </div>
+      <div class="form-group">
+        <label>Your Location</label>
+        <input type="text" name="location" placeholder="e.g. Koramangala, Bengaluru" required />
+      </div>
+      <div class="form-group">
+        <label>I want to</label>
+        <select name="role">
+          <option value="both">Both Donate & Receive</option>
+          <option value="donor">Only Donate Food</option>
+          <option value="receiver">Only Receive Food</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-submit">Create Account →</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+  </div>
+</div>
+{% endblock %}

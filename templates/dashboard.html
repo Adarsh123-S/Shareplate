@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner dash-header-row">
+    <div>
+      <h1>Hi, {{ session.user_name }} 👋</h1>
+      <p>Here's everything you've shared and claimed.</p>
+    </div>
+    <a href="{{ url_for('add_food') }}" class="btn-primary">+ Donate Food</a>
+  </div>
+</div>
+
+<div class="dashboard-page">
+  <div class="section-inner">
+
+    <div class="dash-section">
+      <h2 class="dash-section-title">🍱 My Donations</h2>
+      {% if my_donations %}
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Quantity</th>
+              <th>Location</th>
+              <th>Expiry</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for food in my_donations %}
+            <tr>
+              <td><strong>{{ food.food_name }}</strong></td>
+              <td>{{ food.quantity }}</td>
+              <td>{{ food.location }}</td>
+              <td>{{ food.expiry }}</td>
+              <td><span class="status-badge status-{{ food.status }}">{{ food.status }}</span></td>
+              <td class="action-cell">
+                {% if food.status == 'requested' %}
+                <a href="{{ url_for('update_status', food_id=food.id, status='collected') }}" class="btn-sm btn-green">Mark Collected</a>
+                {% endif %}
+                {% if food.status == 'collected' %}
+                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-green">Mark Completed</a>
+                {% endif %}
+                {% if food.status == 'available' %}
+                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-outline-sm">Complete</a>
+                {% endif %}
+                <form method="post" action="{{ url_for('delete_food', food_id=food.id) }}" style="display:inline" onsubmit="return confirm('Remove this listing?')">
+                  <button class="btn-sm btn-red">Remove</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state-sm">
+        <p>You haven't donated any food yet.</p>
+        <a href="{{ url_for('add_food') }}" class="btn-primary">Donate Now</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="dash-section">
+      <h2 class="dash-section-title">🙌 My Claims</h2>
+      {% if my_claims %}
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Pickup Location</th>
+              <th>Expiry</th>
+              <th>Donor</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for claim in my_claims %}
+            <tr>
+              <td><strong>{{ claim.food_name }}</strong></td>
+              <td>{{ claim.location }}</td>
+              <td>{{ claim.expiry }}</td>
+              <td>{{ claim.donor_name }}</td>
+              <td><span class="status-badge status-{{ claim.status }}">{{ claim.status }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state-sm">
+        <p>You haven't claimed any food yet.</p>
+        <a href="{{ url_for('available') }}" class="btn-outline">Browse Food</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

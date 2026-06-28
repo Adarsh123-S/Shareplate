@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Browse Food — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <h1>Available Food 🔍</h1>
+    <p>Browse free food listed by generous people in your community.</p>
+  </div>
+</div>
+
+<div class="browse-page">
+  <div class="section-inner">
+    <form method="GET" class="filter-bar">
+      <input type="text" name="search" value="{{ search }}" placeholder="Search food or location..." />
+      <select name="category">
+        <option value="">All Categories</option>
+        <option {% if category=='Cooked Meal' %}selected{% endif %}>Cooked Meal</option>
+        <option {% if category=='Snacks' %}selected{% endif %}>Snacks</option>
+        <option {% if category=='Fruits & Vegetables' %}selected{% endif %}>Fruits & Vegetables</option>
+        <option {% if category=='Bakery' %}selected{% endif %}>Bakery</option>
+        <option {% if category=='Beverages' %}selected{% endif %}>Beverages</option>
+        <option {% if category=='Raw Ingredients' %}selected{% endif %}>Raw Ingredients</option>
+        <option {% if category=='Other' %}selected{% endif %}>Other</option>
+      </select>
+      <button type="submit" class="btn-primary">Search</button>
+      {% if search or category %}
+      <a href="{{ url_for('available') }}" class="btn-outline">Clear</a>
+      {% endif %}
+    </form>
+
+    {% if foods %}
+    <p class="result-count">{{ foods|length }} listing{{ 's' if foods|length != 1 }} found</p>
+    <div class="food-grid">
+      {% for food in foods %}
+      <div class="food-card">
+        <div class="food-card-emoji">
+          {% if food.category == 'Cooked Meal' %}🍛
+          {% elif food.category == 'Snacks' %}🍿
+          {% elif food.category == 'Fruits & Vegetables' %}🥦
+          {% elif food.category == 'Bakery' %}🍞
+          {% elif food.category == 'Beverages' %}🧃
+          {% else %}🍱{% endif %}
+        </div>
+        <div class="food-card-body">
+          <div class="food-category-tag">{{ food.category or 'Food' }}</div>
+          <h3>{{ food.food_name }}</h3>
+          <div class="food-meta">
+            <span>📦 {{ food.quantity }}</span>
+            <span>📍 {{ food.location }}</span>
+            <span>⏰ Until {{ food.expiry }}</span>
+            {% if food.notes %}<span>📝 {{ food.notes[:50] }}{% if food.notes|length > 50 %}…{% endif %}</span>{% endif %}
+          </div>
+          <div class="food-card-footer">
+            <span class="donor-name">by {{ food.donor_name }}</span>
+            {% if session.user_id %}
+              {% if session.user_id != food.donor_id %}
+              <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}" style="display:inline">
+                <button class="btn-claim">Claim Food</button>
+              </form>
+              {% else %}
+              <span class="own-tag">Your listing</span>
+              {% endif %}
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn-claim">Login to Claim</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🍽️</div>
+      <h3>No food available right now</h3>
+      <p>Be the first to donate! Every bit counts.</p>
+      {% if session.user_id %}
+      <a href="{{ url_for('add_food') }}" class="btn-primary">+ Donate Food</a>
+      {% else %}
+      <a href="{{ url_for('register') }}" class="btn-primary">Join & Donate</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

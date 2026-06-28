@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Donate Food — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <h1>Share Your Food 🍱</h1>
+    <p>Fill in the details below and your listing goes live instantly.</p>
+  </div>
+</div>
+
+<div class="form-page">
+  <div class="form-card">
+    <form method="POST" class="donate-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Food Name *</label>
+          <input type="text" name="food_name" placeholder="e.g. Vegetable Biryani" required />
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option>Cooked Meal</option>
+            <option>Snacks</option>
+            <option>Fruits & Vegetables</option>
+            <option>Bakery</option>
+            <option>Beverages</option>
+            <option>Raw Ingredients</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Quantity *</label>
+          <input type="text" name="quantity" placeholder="e.g. 5 plates, 2 kg" required />
+        </div>
+        <div class="form-group">
+          <label>Available Until *</label>
+          <input type="datetime-local" name="expiry" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Pickup Location *</label>
+        <input type="text" name="location" placeholder="e.g. 3rd Floor, XYZ Apartments, Koramangala" required />
+      </div>
+      <div class="form-group">
+        <label>Contact Number *</label>
+        <input type="text" name="contact" placeholder="e.g. 9876543210" required />
+      </div>
+      <div class="form-group">
+        <label>Additional Notes</label>
+        <textarea name="notes" rows="3" placeholder="Any allergies, preparation info, special instructions..."></textarea>
+      </div>
+      <div class="form-actions">
+        <a href="{{ url_for('dashboard') }}" class="btn-outline">Cancel</a>
+        <button type="submit" class="btn-submit">List Food →</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
