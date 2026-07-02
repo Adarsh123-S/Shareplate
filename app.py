@@ -374,7 +374,7 @@ def forgot_password():
         new_password = request.form['new_password']
         conn = get_db()
         user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
-        if user and user['security_answer'].strip().lower() == security_answer:
+        if user and (user['security_answer'] or '').strip().lower() == security_answer:
             hashed = generate_password_hash(new_password)
             conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
             conn.commit()
