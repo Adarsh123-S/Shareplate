@@ -36,6 +36,7 @@ def init_db():
         role TEXT DEFAULT 'both',
         bio TEXT DEFAULT '',
         phone TEXT DEFAULT '',
+        security_answer TEXT DEFAULT '',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS food (
@@ -68,6 +69,9 @@ def init_db():
     try:
         c.execute("ALTER TABLE users ADD COLUMN phone TEXT DEFAULT ''")
     except: pass
+    try:
+        c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
+    except: pass
     conn.commit()
     conn.close()
 
@@ -96,12 +100,13 @@ def register():
         password = request.form['password']
         location = request.form['location']
         role = request.form['role']
+        security_answer = request.form.get('security_answer', '')
         hashed = generate_password_hash(password)
         try:
             conn = get_db()
             conn.execute(
-                'INSERT INTO users (name, email, password, location, role) VALUES (?,?,?,?,?)',
-                (name, email, hashed, location, role)
+                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
+                (name, email, hashed, location, role, security_answer)
             )
             conn.commit()
             conn.close()
@@ -360,6 +365,25 @@ def admin_delete_food(fid):
     conn.close()
     flash('Food listing deleted.', 'info')
     return redirect(url_for('admin'))
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        security_answer = request.form['security_answer'].strip().lower()
+        new_password = request.form['new_password']
+        conn = get_db()
+        user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+        if user and user['security_answer'].strip().lower() == security_answer:
+            hashed = generate_password_hash(new_password)
+            conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
+            conn.commit()
+            conn.close()
+            flash('Password reset successful! Please login.', 'success')
+            return redirect(url_for('login'))
+        conn.close()
+        flash('Email or security answer is incorrect.', 'danger')
+    return render_template('forgot_password.html')
 
 if __name__ == '__main__':
     init_db()
