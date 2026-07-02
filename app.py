@@ -95,19 +95,25 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        location = request.form['location']
-        role = request.form['role']
+        name = request.form.get('name', '')
+        email = request.form.get('email', '')
+        password = request.form.get('password', '')
+        location = request.form.get('location', '')
+        role = request.form.get('role', 'both')
         security_answer = request.form.get('security_answer', '')
         hashed = generate_password_hash(password)
         try:
             conn = get_db()
-            conn.execute(
-                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
-                (name, email, hashed, location, role, security_answer)
-            )
+            try:
+                conn.execute(
+                    'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
+                    (name, email, hashed, location, role, security_answer)
+                )
+            except:
+                conn.execute(
+                    'INSERT INTO users (name, email, password, location, role) VALUES (?,?,?,?,?)',
+                    (name, email, hashed, location, role)
+                )
             conn.commit()
             conn.close()
             flash('Account created! Please login.', 'success')
