@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <h1>🛡️ Admin Panel</h1>
+    <p>Manage users, food listings, and platform stats.</p>
+  </div>
+</div>
+
+<div class="dashboard-page">
+  <div class="section-inner">
+
+    <div class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="astat-icon">👥</div>
+        <div class="astat-num">{{ stats.total_users }}</div>
+        <div class="astat-label">Total Users</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="astat-icon">🍱</div>
+        <div class="astat-num">{{ stats.total_food }}</div>
+        <div class="astat-label">Total Listings</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="astat-icon">✅</div>
+        <div class="astat-num">{{ stats.available }}</div>
+        <div class="astat-label">Available Now</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="astat-icon">🤝</div>
+        <div class="astat-num">{{ stats.completed }}</div>
+        <div class="astat-label">Completed</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="astat-icon">📋</div>
+        <div class="astat-num">{{ stats.total_claims }}</div>
+        <div class="astat-label">Total Claims</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <h2 class="dash-section-title">👥 All Users</h2>
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Email</th>
+              <th>Location</th><th>Role</th><th>Joined</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>{{ u.id }}</td>
+              <td><strong>{{ u.name }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.location }}</td>
+              <td><span class="status-badge status-available">{{ u.role }}</span></td>
+              <td>{{ u.created_at[:10] }}</td>
+              <td>
+                {% if u.email != 'admin@shareplate.com' %}
+                <form method="post" action="{{ url_for('admin_delete_user', uid=u.id) }}"
+                  onsubmit="return confirm('Delete this user?')">
+                  <button class="btn-sm btn-red">Delete</button>
+                </form>
+                {% else %}
+                <span style="color:var(--green);font-size:0.8rem;font-weight:700;">Admin</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <h2 class="dash-section-title">🍱 All Food Listings</h2>
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Food</th><th>Donor</th>
+              <th>Location</th><th>Status</th><th>Posted</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in foods %}
+            <tr>
+              <td>{{ f.id }}</td>
+              <td><strong>{{ f.food_name }}</strong></td>
+              <td>{{ f.donor_name }}</td>
+              <td>{{ f.location }}</td>
+              <td><span class="status-badge status-{{ f.status }}">{{ f.status }}</span></td>
+              <td>{{ f.created_at[:10] }}</td>
+              <td>
+                <form method="post" action="{{ url_for('admin_delete_food', fid=f.id) }}"
+                  onsubmit="return confirm('Delete this listing?')">
+                  <button class="btn-sm btn-red">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
