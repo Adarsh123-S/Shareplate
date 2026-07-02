@@ -375,7 +375,8 @@ def admin_delete_food(fid):
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email']conn.commit()
+    conn.close()
         security_answer = request.form['security_answer'].strip().lower()
         new_password = request.form['new_password']
         conn = get_db()
