@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import sqlite3
 import os
 from datetime import datetime
@@ -8,6 +9,15 @@ app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 
 DB_PATH = 'shareplate.db'
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -24,6 +34,8 @@ def init_db():
         password TEXT NOT NULL,
         location TEXT,
         role TEXT DEFAULT 'both',
+        bio TEXT DEFAULT '',
+        phone TEXT DEFAULT '',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS food (
@@ -50,16 +62,20 @@ def init_db():
         FOREIGN KEY (food_id) REFERENCES food(id),
         FOREIGN KEY (receiver_id) REFERENCES users(id)
     )''')
+    try:
+        c.execute("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''")
+    except: pass
+    try:
+        c.execute("ALTER TABLE users ADD COLUMN phone TEXT DEFAULT ''")
+    except: pass
     conn.commit()
     conn.close()
-
-# ── Routes ─────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
     conn = get_db()
     foods = conn.execute(
-        '''SELECT f.*, u.name as donor_name, u.location as donor_location
+        '''SELECT f.*, u.name as donor_name
            FROM food f JOIN users u ON f.donor_id = u.id
            WHERE f.status = "available"
            ORDER BY f.created_at DESC LIMIT 6'''
@@ -142,14 +158,21 @@ def add_food():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
+        image_url = None
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                filename = secure_filename(f"{datetime.now().timestamp()}_{file.filename}")
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_url = f"uploads/{filename}"
         conn = get_db()
         conn.execute(
-            '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id)
-               VALUES (?,?,?,?,?,?,?,?)''',
+            '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id, image_url)
+               VALUES (?,?,?,?,?,?,?,?,?)''',
             (request.form['food_name'], request.form['category'],
              request.form['quantity'], request.form['location'],
              request.form['expiry'], request.form['contact'],
-             request.form.get('notes', ''), session['user_id'])
+             request.form.get('notes', ''), session['user_id'], image_url)
         )
         conn.commit()
         conn.close()
@@ -162,6 +185,7 @@ def available():
     conn = get_db()
     category = request.args.get('category', '')
     search = request.args.get('search', '')
+    location = request.args.get('location', '')
     query = '''SELECT f.*, u.name as donor_name
                FROM food f JOIN users u ON f.donor_id = u.id
                WHERE f.status = "available"'''
@@ -170,12 +194,15 @@ def available():
         query += ' AND f.category=?'
         params.append(category)
     if search:
-        query += ' AND (f.food_name LIKE ? OR f.location LIKE ?)'
+        query += ' AND (f.food_name LIKE ? OR f.notes LIKE ?)'
         params.extend([f'%{search}%', f'%{search}%'])
+    if location:
+        query += ' AND f.location LIKE ?'
+        params.append(f'%{location}%')
     query += ' ORDER BY f.created_at DESC'
     foods = conn.execute(query, params).fetchall()
     conn.close()
-    return render_template('available.html', foods=foods, category=category, search=search)
+    return render_template('available.html', foods=foods, category=category, search=search, location=location)
 
 @app.route('/claim/<int:food_id>', methods=['POST'])
 def claim_food(food_id):
@@ -232,12 +259,107 @@ def delete_food(food_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
+    food = conn.execute('SELECT * FROM food WHERE id=? AND donor_id=?',
+                        (food_id, session['user_id'])).fetchone()
+    if food and food['image_url']:
+        try:
+            os.remove(os.path.join('static', food['image_url']))
+        except: pass
     conn.execute('DELETE FROM food WHERE id=? AND donor_id=?', (food_id, session['user_id']))
     conn.execute('DELETE FROM requests WHERE food_id=?', (food_id,))
     conn.commit()
     conn.close()
     flash('Listing removed.', 'info')
     return redirect(url_for('dashboard'))
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    uid = session['user_id']
+    conn = get_db()
+    if request.method == 'POST':
+        name = request.form['name']
+        location = request.form['location']
+        bio = request.form.get('bio', '')
+        phone = request.form.get('phone', '')
+        conn.execute(
+            'UPDATE users SET name=?, location=?, bio=?, phone=? WHERE id=?',
+            (name, location, bio, phone, uid)
+        )
+        conn.commit()
+        session['user_name'] = name
+        flash('Profile updated! ✅', 'success')
+    user = conn.execute('SELECT * FROM users WHERE id=?', (uid,)).fetchone()
+    total_donations = conn.execute('SELECT COUNT(*) FROM food WHERE donor_id=?', (uid,)).fetchone()[0]
+    total_claims = conn.execute('SELECT COUNT(*) FROM requests WHERE receiver_id=?', (uid,)).fetchone()[0]
+    completed = conn.execute("SELECT COUNT(*) FROM food WHERE donor_id=? AND status='completed'", (uid,)).fetchone()[0]
+    conn.close()
+    return render_template('profile.html', user=user,
+                           total_donations=total_donations,
+                           total_claims=total_claims,
+                           completed=completed)
+
+ADMIN_EMAIL = 'admin@shareplate.com'
+
+@app.route('/admin')
+def admin():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    if user['email'] != ADMIN_EMAIL:
+        flash('Access denied.', 'danger')
+        conn.close()
+        return redirect(url_for('index'))
+    users = conn.execute('SELECT * FROM users ORDER BY created_at DESC').fetchall()
+    foods = conn.execute('''SELECT f.*, u.name as donor_name
+                            FROM food f JOIN users u ON f.donor_id=u.id
+                            ORDER BY f.created_at DESC''').fetchall()
+    stats = {
+        'total_users': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
+        'total_food': conn.execute("SELECT COUNT(*) FROM food").fetchone()[0],
+        'available': conn.execute("SELECT COUNT(*) FROM food WHERE status='available'").fetchone()[0],
+        'completed': conn.execute("SELECT COUNT(*) FROM food WHERE status='completed'").fetchone()[0],
+        'total_claims': conn.execute("SELECT COUNT(*) FROM requests").fetchone()[0],
+    }
+    conn.close()
+    return render_template('admin.html', users=users, foods=foods, stats=stats)
+
+@app.route('/admin/delete-user/<int:uid>', methods=['POST'])
+def admin_delete_user(uid):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    if user['email'] != ADMIN_EMAIL:
+        flash('Access denied.', 'danger')
+        conn.close()
+        return redirect(url_for('index'))
+    conn.execute('DELETE FROM users WHERE id=?', (uid,))
+    conn.execute('DELETE FROM food WHERE donor_id=?', (uid,))
+    conn.execute('DELETE FROM requests WHERE receiver_id=?', (uid,))
+    conn.commit()
+    conn.close()
+    flash('User deleted.', 'info')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/delete-food/<int:fid>', methods=['POST'])
+def admin_delete_food(fid):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = get_db()
+    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    if user['email'] != ADMIN_EMAIL:
+        flash('Access denied.', 'danger')
+        conn.close()
+        return redirect(url_for('index'))
+    conn.execute('DELETE FROM food WHERE id=?', (fid,))
+    conn.execute('DELETE FROM requests WHERE food_id=?', (fid,))
+    conn.commit()
+    conn.close()
+    flash('Food listing deleted.', 'info')
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     init_db()
