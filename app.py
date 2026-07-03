@@ -3,18 +3,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3
 import os
+import cloudinary
+import cloudinary.uploader
 from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 
 DB_PATH = 'shareplate.db'
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Cloudinary config
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -167,9 +172,15 @@ def add_food():
         if 'image' in request.files:
             file = request.files['image']
             if file and file.filename and allowed_file(file.filename):
-                filename = secure_filename(f"{datetime.now().timestamp()}_{file.filename}")
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                image_url = f"uploads/{filename}"
+                try:
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder='shareplate',
+                        transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
+                    )
+                    image_url = upload_result['secure_url']
+                except Exception as e:
+                    flash('Image upload failed, listing without image.', 'warning')
         conn = get_db()
         conn.execute(
             '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id, image_url)
@@ -266,10 +277,6 @@ def delete_food(food_id):
     conn = get_db()
     food = conn.execute('SELECT * FROM food WHERE id=? AND donor_id=?',
                         (food_id, session['user_id'])).fetchone()
-    if food and food['image_url']:
-        try:
-            os.remove(os.path.join('static', food['image_url']))
-        except: pass
     conn.execute('DELETE FROM food WHERE id=? AND donor_id=?', (food_id, session['user_id']))
     conn.execute('DELETE FROM requests WHERE food_id=?', (food_id,))
     conn.commit()
@@ -392,6 +399,7 @@ def forgot_password():
         except Exception:
             flash('Something went wrong. Please try again.', 'danger')
     return render_template('forgot_password.html')
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
