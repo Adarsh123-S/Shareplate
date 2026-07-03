@@ -393,6 +393,13 @@ def forgot_password():
             flash('Something went wrong. Please try again.', 'danger')
     return render_template('forgot_password.html')
 
+@app.route('/reset-db')
+def reset_db():
+    if os.path.exists('shareplate.db'):
+        os.remove('shareplate.db')
+    init_db()
+    return 'Database reset successfully! <a href="/">Go Home</a>'
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
