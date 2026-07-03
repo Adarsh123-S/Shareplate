@@ -95,25 +95,19 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form.get('name', '')
-        email = request.form.get('email', '')
-        password = request.form.get('password', '')
-        location = request.form.get('location', '')
-        role = request.form.get('role', 'both')
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        location = request.form['location']
+        role = request.form['role']
         security_answer = request.form.get('security_answer', '')
         hashed = generate_password_hash(password)
         try:
             conn = get_db()
-            try:
-                conn.execute(
-                    'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
-                    (name, email, hashed, location, role, security_answer)
-                )
-            except:
-                conn.execute(
-                    'INSERT INTO users (name, email, password, location, role) VALUES (?,?,?,?,?)',
-                    (name, email, hashed, location, role)
-                )
+            conn.execute(
+                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
+                (name, email, hashed, location, role, security_answer)
+            )
             conn.commit()
             conn.close()
             flash('Account created! Please login.', 'success')
@@ -375,21 +369,28 @@ def admin_delete_food(fid):
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form['email']conn.commit()
-    conn.close()
-        security_answer = request.form['security_answer'].strip().lower()
-        new_password = request.form['new_password']
-        conn = get_db()
-        user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
-        if user and (user['security_answer'] or '').strip().lower() == security_answer:
-            hashed = generate_password_hash(new_password)
-            conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
-            conn.commit()
-            conn.close()
-            flash('Password reset successful! Please login.', 'success')
-            return redirect(url_for('login'))
-        conn.close()
-        flash('Email or security answer is incorrect.', 'danger')
+        try:
+            email = request.form.get('email', '')
+            security_answer = request.form.get('security_answer', '').strip().lower()
+            new_password = request.form.get('new_password', '')
+            conn = get_db()
+            user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+            if user:
+                stored_answer = (user['security_answer'] or '').strip().lower()
+                if stored_answer == security_answer:
+                    hashed = generate_password_hash(new_password)
+                    conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
+                    conn.commit()
+                    conn.close()
+                    flash('Password reset successful! Please login.', 'success')
+                    return redirect(url_for('login'))
+                conn.close()
+                flash('Security answer is incorrect.', 'danger')
+            else:
+                conn.close()
+                flash('Email not found.', 'danger')
+        except Exception:
+            flash('Something went wrong. Please try again.', 'danger')
     return render_template('forgot_password.html')
 
 if __name__ == '__main__':
