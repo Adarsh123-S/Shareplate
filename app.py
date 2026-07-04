@@ -19,9 +19,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 # Cloudinary config
-# Auto-create DB on startup
-with app.app_context():
-    init_db()
 cloudinary.config(
     cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
     api_key=os.environ.get('CLOUDINARY_API_KEY'),
@@ -31,46 +28,6 @@ cloudinary.config(
 # Email config
 MAIL_EMAIL = os.environ.get('MAIL_EMAIL')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-
-def send_reset_email(to_email, reset_link):
-    try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = '🍱 SharePlate — Reset Your Password'
-        msg['From'] = MAIL_EMAIL
-        msg['To'] = to_email
-
-        html = f"""
-        <html>
-        <body style="font-family: Inter, Arial, sans-serif; background: #f9f9f9; padding: 40px 0;">
-          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-            <div style="background: #2D6A4F; padding: 32px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 1.5rem;">🍱 SharePlate</h1>
-              <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">Share Food. Reduce Waste. Feed Hope.</p>
-            </div>
-            <div style="padding: 32px;">
-              <h2 style="color: #141414; margin-bottom: 12px;">Reset Your Password</h2>
-              <p style="color: #767676; line-height: 1.6;">We received a request to reset your SharePlate password. Click the button below to set a new password:</p>
-              <div style="text-align: center; margin: 28px 0;">
-                <a href="{reset_link}" style="background: #2D6A4F; color: white; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; display: inline-block;">Reset Password →</a>
-              </div>
-              <p style="color: #767676; font-size: 0.85rem;">This link expires in <strong>1 hour</strong>. If you didn't request this, ignore this email.</p>
-              <hr style="border: none; border-top: 1px solid #f0f0f0; margin: 24px 0;">
-              <p style="color: #aaa; font-size: 0.78rem; text-align: center;">© 2024 SharePlate · Made with ❤️ to end food waste</p>
-            </div>
-          </div>
-        </body>
-        </html>
-        """
-        msg.attach(MIMEText(html, 'html'))
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(MAIL_EMAIL, MAIL_PASSWORD)
-        server.sendmail(MAIL_EMAIL, to_email, msg.as_string())
-        server.quit()
-        return True
-    except Exception as e:
-        print(f"Email error: {e}")
-        return False
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -134,14 +91,49 @@ def init_db():
     try:
         c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
     except: pass
-    c.execute('''CREATE TABLE IF NOT EXISTS password_resets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL,
-        token TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )''')
     conn.commit()
     conn.close()
+
+# Auto-create DB on startup
+with app.app_context():
+    init_db()
+
+def send_reset_email(to_email, reset_link):
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = '🍱 SharePlate — Reset Your Password'
+        msg['From'] = MAIL_EMAIL
+        msg['To'] = to_email
+        html = f"""
+        <html>
+        <body style="font-family: Inter, Arial, sans-serif; background: #f9f9f9; padding: 40px 0;">
+          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <div style="background: #2D6A4F; padding: 32px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 1.5rem;">🍱 SharePlate</h1>
+              <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">Share Food. Reduce Waste. Feed Hope.</p>
+            </div>
+            <div style="padding: 32px;">
+              <h2 style="color: #141414; margin-bottom: 12px;">Reset Your Password</h2>
+              <p style="color: #767676; line-height: 1.6;">Click the button below to set a new password:</p>
+              <div style="text-align: center; margin: 28px 0;">
+                <a href="{reset_link}" style="background: #2D6A4F; color: white; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; display: inline-block;">Reset Password →</a>
+              </div>
+              <p style="color: #767676; font-size: 0.85rem;">This link expires in <strong>1 hour</strong>. If you didn't request this, ignore this email.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(html, 'html'))
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(MAIL_EMAIL, MAIL_PASSWORD)
+        server.sendmail(MAIL_EMAIL, to_email, msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Email error: {e}")
+        return False
 
 @app.route('/')
 def index():
@@ -474,6 +466,7 @@ def reset_password(token):
         return redirect(url_for('login'))
     conn.close()
     return render_template('reset_password.html', token=token)
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
