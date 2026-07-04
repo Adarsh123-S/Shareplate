@@ -131,6 +131,12 @@ def init_db():
     try:
         c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
     except: pass
+    c.execute('''CREATE TABLE IF NOT EXISTS password_resets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL,
+        token TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )''')
     conn.commit()
     conn.close()
 
