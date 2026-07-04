@@ -465,7 +465,12 @@ def reset_password(token):
         return redirect(url_for('login'))
     conn.close()
     return render_template('reset_password.html', token=token)
-
+@app.route('/reset-db')
+def reset_db():
+    if os.path.exists('shareplate.db'):
+        os.remove('shareplate.db')
+    init_db()
+    return 'Database reset! <a href="/">Go Home</a>'
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
