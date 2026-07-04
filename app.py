@@ -10,6 +10,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import secrets
+import ssl
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
@@ -18,14 +19,12 @@ DB_PATH = 'shareplate.db'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
-# Cloudinary config
 cloudinary.config(
     cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
     api_key=os.environ.get('CLOUDINARY_API_KEY'),
     api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
-# Email config
 MAIL_EMAIL = os.environ.get('MAIL_EMAIL')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
@@ -94,7 +93,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Auto-create DB on startup
 with app.app_context():
     init_db()
 
@@ -106,30 +104,22 @@ def send_reset_email(to_email, reset_link):
         msg['To'] = to_email
         html = f"""
         <html>
-        <body style="font-family: Inter, Arial, sans-serif; background: #f9f9f9; padding: 40px 0;">
-          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-            <div style="background: #2D6A4F; padding: 32px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 1.5rem;">🍱 SharePlate</h1>
-              <p style="color: rgba(255,255,255,0.8); margin: 8px 0 0;">Share Food. Reduce Waste. Feed Hope.</p>
-            </div>
-            <div style="padding: 32px;">
-              <h2 style="color: #141414; margin-bottom: 12px;">Reset Your Password</h2>
-              <p style="color: #767676; line-height: 1.6;">Click the button below to set a new password:</p>
-              <div style="text-align: center; margin: 28px 0;">
-                <a href="{reset_link}" style="background: #2D6A4F; color: white; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; display: inline-block;">Reset Password →</a>
-              </div>
-              <p style="color: #767676; font-size: 0.85rem;">This link expires in <strong>1 hour</strong>. If you didn't request this, ignore this email.</p>
-            </div>
+        <body style="font-family: Arial, sans-serif; padding: 40px;">
+          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 32px; border: 1px solid #e0e0e0;">
+            <h1 style="color: #2D6A4F;">🍱 SharePlate</h1>
+            <h2>Reset Your Password</h2>
+            <p>Click the button below to set a new password:</p>
+            <a href="{reset_link}" style="background: #2D6A4F; color: white; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-block; margin: 20px 0;">Reset Password</a>
+            <p style="color: #767676; font-size: 0.85rem;">This link expires in 1 hour.</p>
           </div>
         </body>
         </html>
         """
         msg.attach(MIMEText(html, 'html'))
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(MAIL_EMAIL, MAIL_PASSWORD)
-        server.sendmail(MAIL_EMAIL, to_email, msg.as_string())
-        server.quit()
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
+            server.login(MAIL_EMAIL, MAIL_PASSWORD)
+            server.sendmail(MAIL_EMAIL, to_email, msg.as_string())
         return True
     except Exception as e:
         print(f"Email error: {e}")
