@@ -11,7 +11,6 @@
 <div class="analytics-page">
   <div class="section-inner">
 
-    <!-- Impact Stats -->
     <div class="analytics-grid">
       <div class="analytics-card">
         <div class="analytics-icon">🍱</div>
@@ -26,7 +25,7 @@
       <div class="analytics-card">
         <div class="analytics-icon">👥</div>
         <div class="analytics-num">{{ stats.total_users }}</div>
-        <div class="analytics-label">Community Members</div>
+        <div class="analytics-label">Members</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">🌱</div>
@@ -45,15 +44,27 @@
       </div>
     </div>
 
-    <!-- Category Breakdown -->
+    <!-- Charts -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>🍽️ Food by Category</h3>
+        <canvas id="categoryChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>📈 Food Status Distribution</h3>
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Category Bars -->
     <div class="analytics-section">
-      <h2 class="dash-section-title">🍽️ Food by Category</h2>
+      <h2 class="dash-section-title">🍽️ Category Breakdown</h2>
       <div class="category-bars">
         {% for cat in categories %}
         <div class="cat-bar-item">
           <div class="cat-bar-label">{{ cat.category or 'Other' }}</div>
           <div class="cat-bar-track">
-            <div class="cat-bar-fill" style="width: {{ (cat.count / stats.total_food * 100)|round }}%"></div>
+            <div class="cat-bar-fill" style="width: {% if stats.total_food > 0 %}{{ (cat.count / stats.total_food * 100)|round }}{% else %}0{% endif %}%"></div>
           </div>
           <div class="cat-bar-count">{{ cat.count }}</div>
         </div>
@@ -61,7 +72,6 @@
       </div>
     </div>
 
-    <!-- Recent Activity -->
     <div class="analytics-section">
       <h2 class="dash-section-title">🕐 Recent Activity</h2>
       <div class="table-wrap">
@@ -85,4 +95,38 @@
 
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const cats = {{ categories | tojson }};
+const labels = cats.map(c => c.category || 'Other');
+const counts = cats.map(c => c.count);
+const colors = ['#2D6A4F','#52B788','#F4A261','#E76F51','#FFD700','#74C69D','#95D5B2'];
+
+new Chart(document.getElementById('categoryChart'), {
+  type: 'doughnut',
+  data: {
+    labels: labels,
+    datasets: [{ data: counts, backgroundColor: colors, borderWidth: 0 }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+new Chart(document.getElementById('statusChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Available', 'Requested', 'Collected', 'Completed'],
+    datasets: [{
+      data: [{{ stats.available }}, {{ stats.total_claims }}, 0, {{ stats.completed }}],
+      backgroundColor: ['#52B788','#F4A261','#74C69D','#2D6A4F'],
+      borderRadius: 8, borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
 {% endblock %}

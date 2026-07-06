@@ -6,10 +6,18 @@
   <title>{% block title %}SharePlate{% endblock %}</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}"/>
   <meta name="theme-color" content="#2D6A4F"/>
 </head>
 <body>
+
+<!-- Loading Screen -->
+<div id="loader">
+  <div class="loader-inner">
+    <div class="loader-icon">🍱</div>
+    <div class="loader-text">SharePlate</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
+</div>
 
 <nav class="navbar">
   <a href="{{ url_for('index') }}" class="brand">
@@ -66,7 +74,6 @@ function toggleDark() {
   localStorage.setItem('theme', isDark ? 'light' : 'dark');
   document.querySelector('.dark-toggle').textContent = isDark ? '🌙' : '☀️';
 }
-// Load saved theme
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 if (savedTheme === 'dark') document.querySelector('.dark-toggle').textContent = '☀️';

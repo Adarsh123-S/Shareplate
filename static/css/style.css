@@ -462,3 +462,50 @@ img { max-width: 100%; display: block; }
 /* ── Share Button ── */
 .share-btn { font-size: 1rem; cursor: pointer; padding: 0.3rem; border-radius: 50%; transition: all .18s; text-decoration: none; }
 .share-btn:hover { background: var(--green-pale); }
+
+/* ── Loading Screen ── */
+#loader {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--cream); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.4s;
+}
+.loader-inner { text-align: center; }
+.loader-icon { font-size: 4rem; animation: bounce 0.8s infinite alternate; }
+.loader-text { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--green); margin: 0.5rem 0; }
+.loader-bar { width: 200px; height: 4px; background: var(--border); border-radius: 50px; overflow: hidden; margin: 0.5rem auto; }
+.loader-fill { height: 100%; background: var(--green); border-radius: 50px; animation: loading 0.8s ease-in-out infinite; }
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
+@keyframes loading { 0% { width: 0%; } 100% { width: 100%; } }
+
+/* ── Confetti ── */
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ── Lightbox ── */
+.lightbox-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; text-align: center; }
+.lightbox-close {
+  position: absolute; top: -40px; right: 0;
+  background: none; border: none; color: white; font-size: 1.5rem;
+  cursor: pointer; padding: 0.5rem;
+}
+.lightbox-img { max-width: 90vw; max-height: 80vh; border-radius: var(--radius); object-fit: contain; }
+.lightbox-caption { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 0.5rem; }
+
+/* ── Charts ── */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+.chart-card { background: var(--warm-white); border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-xs); }
+.chart-card h3 { font-family: 'Syne', sans-serif; font-weight: 800; margin-bottom: 1rem; font-size: 1rem; }
+
+@media (max-width: 768px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
