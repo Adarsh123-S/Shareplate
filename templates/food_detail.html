@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}{{ food.food_name }} — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <a href="{{ url_for('available') }}" class="back-link">← Back to listings</a>
+    <h1>{{ food.food_name }}</h1>
+    <p>Posted by {{ food.donor_name }}</p>
+  </div>
+</div>
+
+<div class="detail-page">
+  <div class="section-inner">
+    <div class="detail-grid">
+
+      <!-- Left: Food Info -->
+      <div class="detail-main">
+        {% if food.image_url %}
+        <img src="{{ food.image_url }}" class="detail-img" alt="{{ food.food_name }}"/>
+        {% else %}
+        <div class="detail-emoji-box">
+          {% if food.category == 'Cooked Meal' %}🍛
+          {% elif food.category == 'Snacks' %}🍿
+          {% elif food.category == 'Fruits & Vegetables' %}🥦
+          {% elif food.category == 'Bakery' %}🍞
+          {% else %}🍱{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="detail-info-card">
+          <div class="detail-status-row">
+            <span class="food-category-tag">{{ food.category }}</span>
+            <span class="status-badge status-{{ food.status }}">{{ food.status }}</span>
+          </div>
+          <h2>{{ food.food_name }}</h2>
+
+          <!-- Star Rating Display -->
+          <div class="star-display">
+            {% for i in range(1, 6) %}
+              {% if i <= avg_rating|round %}⭐{% else %}☆{% endif %}
+            {% endfor %}
+            <span class="rating-count">({{ reviews|length }} reviews)</span>
+          </div>
+
+          <div class="detail-meta">
+            <div class="meta-item"><span class="meta-icon">📦</span><span>{{ food.quantity }}</span></div>
+            <div class="meta-item"><span class="meta-icon">📍</span><span>{{ food.location }}</span></div>
+            <div class="meta-item"><span class="meta-icon">⏰</span><span id="expiry-countdown" data-expiry="{{ food.expiry }}">{{ food.expiry }}</span></div>
+            <div class="meta-item"><span class="meta-icon">📞</span><span>{{ food.contact }}</span></div>
+            {% if food.notes %}
+            <div class="meta-item"><span class="meta-icon">📝</span><span>{{ food.notes }}</span></div>
+            {% endif %}
+          </div>
+
+          {% if session.user_id and session.user_id != food.donor_id and food.status == 'available' %}
+          <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}">
+            <button class="btn-primary" style="width:100%; margin-top:1rem;">🙌 Claim This Food</button>
+          </form>
+          {% endif %}
+        </div>
+
+        <!-- Google Maps -->
+        <div class="map-card">
+          <h3>📍 Pickup Location</h3>
+          <div id="map" style="height: 250px; border-radius: 12px; background: var(--green-faint); display:flex; align-items:center; justify-content:center;">
+            <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline">
+              🗺️ Open in Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Chat + Reviews -->
+      <div class="detail-sidebar">
+
+        <!-- Chat -->
+        {% if session.user_id %}
+        <div class="chat-card">
+          <h3>💬 Chat with {{ food.donor_name }}</h3>
+          <div class="chat-messages">
+            {% if messages %}
+              {% for msg in messages %}
+              <div class="chat-msg {% if msg.sender_id == session.user_id %}chat-msg-mine{% else %}chat-msg-theirs{% endif %}">
+                <div class="chat-msg-name">{{ msg.sender_name }}</div>
+                <div class="chat-msg-text">{{ msg.message }}</div>
+                <div class="chat-msg-time">{{ msg.created_at[:16] }}</div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <p class="no-messages">No messages yet. Start the conversation!</p>
+            {% endif %}
+          </div>
+          {% if session.user_id != food.donor_id %}
+          <form method="post" action="{{ url_for('send_message', food_id=food.id) }}" class="chat-form">
+            <input type="text" name="message" placeholder="Type a message..." required />
+            <button type="submit" class="btn-primary">Send</button>
+          </form>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Reviews -->
+        <div class="reviews-card">
+          <h3>⭐ Reviews</h3>
+          {% if session.user_id and food.status == 'completed' %}
+          <form method="post" action="{{ url_for('rate_food', food_id=food.id) }}" class="review-form">
+            <div class="form-group">
+              <label>Your Rating</label>
+              <select name="rating" class="star-select">
+                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                <option value="4">⭐⭐⭐⭐ Good</option>
+                <option value="3">⭐⭐⭐ Average</option>
+                <option value="2">⭐⭐ Poor</option>
+                <option value="1">⭐ Terrible</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Your Review</label>
+              <textarea name="review" rows="3" placeholder="Share your experience..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Submit Review</button>
+          </form>
+          {% endif %}
+
+          {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-item">
+              <div class="review-header">
+                <strong>{{ review.reviewer_name }}</strong>
+                <span>{% for i in range(review.rating) %}⭐{% endfor %}</span>
+              </div>
+              {% if review.review %}
+              <p class="review-text">{{ review.review }}</p>
+              {% endif %}
+              <p class="review-date">{{ review.created_at[:10] }}</p>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="no-reviews">No reviews yet.</p>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Expiry countdown timer
+function updateCountdown() {
+  const el = document.getElementById('expiry-countdown');
+  if (!el) return;
+  const expiry = new Date(el.dataset.expiry);
+  const now = new Date();
+  const diff = expiry - now;
+  if (diff <= 0) {
+    el.textContent = '⚠️ Expired';
+    el.style.color = 'red';
+    return;
+  }
+  const hours = Math.floor(diff / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  if (hours > 24) {
+    el.textContent = `${Math.floor(hours/24)}d ${hours%24}h remaining`;
+  } else if (hours > 0) {
+    el.textContent = `⏰ ${hours}h ${mins}m remaining`;
+    if (hours < 2) el.style.color = 'orange';
+  } else {
+    el.textContent = `⚠️ ${mins}m remaining`;
+    el.style.color = 'red';
+  }
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+</script>
+{% endblock %}

@@ -43,7 +43,7 @@
         </div>
         <div class="food-card-body">
           <div class="food-category-tag">{{ food.category or 'Food' }}</div>
-          <h3>{{ food.food_name }}</h3>
+          <h3><a href="{{ url_for('food_detail', food_id=food.id) }}" style="color:inherit;">{{ food.food_name }}</a></h3>
           <div class="food-meta">
             <span>📦 {{ food.quantity }}</span>
             <span>📍 {{ food.location }}</span>

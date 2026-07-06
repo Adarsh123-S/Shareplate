@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3
@@ -56,6 +56,8 @@ def init_db():
         status TEXT DEFAULT 'available',
         donor_id INTEGER,
         image_url TEXT,
+        lat REAL,
+        lng REAL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (donor_id) REFERENCES users(id)
     )''')
@@ -68,6 +70,35 @@ def init_db():
         FOREIGN KEY (food_id) REFERENCES food(id),
         FOREIGN KEY (receiver_id) REFERENCES users(id)
     )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS ratings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        food_id INTEGER,
+        user_id INTEGER,
+        rating INTEGER,
+        review TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (food_id) REFERENCES food(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        message TEXT,
+        is_read INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        food_id INTEGER,
+        sender_id INTEGER,
+        receiver_id INTEGER,
+        message TEXT,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (food_id) REFERENCES food(id),
+        FOREIGN KEY (sender_id) REFERENCES users(id),
+        FOREIGN KEY (receiver_id) REFERENCES users(id)
+    )''')
     try:
         c.execute("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''")
     except: pass
@@ -77,16 +108,36 @@ def init_db():
     try:
         c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
     except: pass
+    try:
+        c.execute("ALTER TABLE food ADD COLUMN lat REAL")
+    except: pass
+    try:
+        c.execute("ALTER TABLE food ADD COLUMN lng REAL")
+    except: pass
     conn.commit()
     conn.close()
+
+init_db()
+
+def add_notification(user_id, message):
+    try:
+        conn = get_db()
+        conn.execute('INSERT INTO notifications (user_id, message) VALUES (?,?)', (user_id, message))
+        conn.commit()
+        conn.close()
+    except: pass
 
 @app.route('/')
 def index():
     conn = get_db()
     foods = conn.execute(
-        '''SELECT f.*, u.name as donor_name
+        '''SELECT f.*, u.name as donor_name,
+           COALESCE(AVG(r.rating), 0) as avg_rating,
+           COUNT(r.id) as rating_count
            FROM food f JOIN users u ON f.donor_id = u.id
+           LEFT JOIN ratings r ON f.id = r.food_id
            WHERE f.status = "available"
+           GROUP BY f.id
            ORDER BY f.created_at DESC LIMIT 6'''
     ).fetchall()
     stats = {
@@ -160,8 +211,26 @@ def dashboard():
            JOIN users u ON f.donor_id = u.id
            WHERE r.receiver_id=? ORDER BY r.created_at DESC''', (uid,)
     ).fetchall()
+    notifications = conn.execute(
+        'SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 10', (uid,)
+    ).fetchall()
+    unread_count = conn.execute(
+        'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (uid,)
+    ).fetchone()[0]
     conn.close()
-    return render_template('dashboard.html', my_donations=my_donations, my_claims=my_claims)
+    return render_template('dashboard.html', my_donations=my_donations,
+                           my_claims=my_claims, notifications=notifications,
+                           unread_count=unread_count)
+
+@app.route('/mark-notifications-read')
+def mark_notifications_read():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    conn = get_db()
+    conn.execute('UPDATE notifications SET is_read=1 WHERE user_id=?', (session['user_id'],))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('dashboard'))
 
 @app.route('/add-food', methods=['GET', 'POST'])
 def add_food():
@@ -174,12 +243,11 @@ def add_food():
             if file and file.filename and allowed_file(file.filename):
                 try:
                     upload_result = cloudinary.uploader.upload(
-                        file,
-                        folder='shareplate',
+                        file, folder='shareplate',
                         transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
                     )
                     image_url = upload_result['secure_url']
-                except Exception as e:
+                except:
                     flash('Image upload failed, listing without image.', 'warning')
         conn = get_db()
         conn.execute(
@@ -202,8 +270,11 @@ def available():
     category = request.args.get('category', '')
     search = request.args.get('search', '')
     location = request.args.get('location', '')
-    query = '''SELECT f.*, u.name as donor_name
+    query = '''SELECT f.*, u.name as donor_name,
+               COALESCE(AVG(r.rating), 0) as avg_rating,
+               COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
+               LEFT JOIN ratings r ON f.id = r.food_id
                WHERE f.status = "available"'''
     params = []
     if category:
@@ -215,10 +286,88 @@ def available():
     if location:
         query += ' AND f.location LIKE ?'
         params.append(f'%{location}%')
-    query += ' ORDER BY f.created_at DESC'
+    query += ' GROUP BY f.id ORDER BY f.created_at DESC'
     foods = conn.execute(query, params).fetchall()
     conn.close()
-    return render_template('available.html', foods=foods, category=category, search=search, location=location)
+    return render_template('available.html', foods=foods, category=category,
+                           search=search, location=location)
+
+@app.route('/food/<int:food_id>')
+def food_detail(food_id):
+    conn = get_db()
+    food = conn.execute(
+        '''SELECT f.*, u.name as donor_name, u.email as donor_email, u.phone as donor_phone
+           FROM food f JOIN users u ON f.donor_id = u.id
+           WHERE f.id=?''', (food_id,)
+    ).fetchone()
+    if not food:
+        flash('Food not found.', 'danger')
+        conn.close()
+        return redirect(url_for('available'))
+    reviews = conn.execute(
+        '''SELECT r.*, u.name as reviewer_name
+           FROM ratings r JOIN users u ON r.user_id = u.id
+           WHERE r.food_id=? ORDER BY r.created_at DESC''', (food_id,)
+    ).fetchall()
+    avg_rating = conn.execute(
+        'SELECT COALESCE(AVG(rating), 0) FROM ratings WHERE food_id=?', (food_id,)
+    ).fetchone()[0]
+    messages = conn.execute(
+        '''SELECT m.*, u.name as sender_name
+           FROM messages m JOIN users u ON m.sender_id = u.id
+           WHERE m.food_id=? ORDER BY m.created_at ASC''', (food_id,)
+    ).fetchall()
+    conn.close()
+    return render_template('food_detail.html', food=food, reviews=reviews,
+                           avg_rating=avg_rating, messages=messages)
+
+@app.route('/rate/<int:food_id>', methods=['POST'])
+def rate_food(food_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    uid = session['user_id']
+    rating = request.form.get('rating', 5)
+    review = request.form.get('review', '')
+    conn = get_db()
+    existing = conn.execute(
+        'SELECT * FROM ratings WHERE food_id=? AND user_id=?', (food_id, uid)
+    ).fetchone()
+    if existing:
+        conn.execute('UPDATE ratings SET rating=?, review=? WHERE food_id=? AND user_id=?',
+                     (rating, review, food_id, uid))
+    else:
+        conn.execute('INSERT INTO ratings (food_id, user_id, rating, review) VALUES (?,?,?,?)',
+                     (food_id, uid, rating, review))
+    conn.commit()
+    conn.close()
+    flash('Rating submitted! ⭐', 'success')
+    return redirect(url_for('food_detail', food_id=food_id))
+
+@app.route('/send-message/<int:food_id>', methods=['POST'])
+def send_message(food_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    uid = session['user_id']
+    message = request.form.get('message', '').strip()
+    if not message:
+        flash('Message cannot be empty.', 'warning')
+        return redirect(url_for('food_detail', food_id=food_id))
+    conn = get_db()
+    food = conn.execute('SELECT * FROM food WHERE id=?', (food_id,)).fetchone()
+    if not food:
+        conn.close()
+        return redirect(url_for('available'))
+    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
+    if receiver_id:
+        conn.execute(
+            'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (?,?,?,?)',
+            (food_id, uid, receiver_id, message)
+        )
+        add_notification(receiver_id, f'New message about "{food["food_name"]}"')
+        conn.commit()
+        flash('Message sent! 💬', 'success')
+    conn.close()
+    return redirect(url_for('food_detail', food_id=food_id))
 
 @app.route('/claim/<int:food_id>', methods=['POST'])
 def claim_food(food_id):
@@ -244,6 +393,7 @@ def claim_food(food_id):
         return redirect(url_for('available'))
     conn.execute('INSERT INTO requests (food_id, receiver_id) VALUES (?,?)', (food_id, uid))
     conn.execute('UPDATE food SET status="requested" WHERE id=?', (food_id,))
+    add_notification(food['donor_id'], f'Someone claimed your "{food["food_name"]}" listing!')
     conn.commit()
     conn.close()
     flash('Food claimed! Contact the donor to arrange pickup. 🙌', 'success')
