@@ -56,8 +56,6 @@ def init_db():
         status TEXT DEFAULT 'available',
         donor_id INTEGER,
         image_url TEXT,
-        lat REAL,
-        lng REAL,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (donor_id) REFERENCES users(id)
     )''')
@@ -107,12 +105,6 @@ def init_db():
     except: pass
     try:
         c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
-    except: pass
-    try:
-        c.execute("ALTER TABLE food ADD COLUMN lat REAL")
-    except: pass
-    try:
-        c.execute("ALTER TABLE food ADD COLUMN lng REAL")
     except: pass
     conn.commit()
     conn.close()
@@ -270,6 +262,8 @@ def available():
     category = request.args.get('category', '')
     search = request.args.get('search', '')
     location = request.args.get('location', '')
+    min_rating = request.args.get('min_rating', '')
+    sort = request.args.get('sort', 'newest')
     query = '''SELECT f.*, u.name as donor_name,
                COALESCE(AVG(r.rating), 0) as avg_rating,
                COUNT(r.id) as rating_count
@@ -281,16 +275,39 @@ def available():
         query += ' AND f.category=?'
         params.append(category)
     if search:
-        query += ' AND (f.food_name LIKE ? OR f.notes LIKE ?)'
-        params.extend([f'%{search}%', f'%{search}%'])
+        query += ' AND (f.food_name LIKE ? OR f.notes LIKE ? OR f.location LIKE ?)'
+        params.extend([f'%{search}%', f'%{search}%', f'%{search}%'])
     if location:
         query += ' AND f.location LIKE ?'
         params.append(f'%{location}%')
-    query += ' GROUP BY f.id ORDER BY f.created_at DESC'
+    query += ' GROUP BY f.id'
+    if min_rating:
+        query += f' HAVING avg_rating >= {min_rating}'
+    if sort == 'rating':
+        query += ' ORDER BY avg_rating DESC'
+    elif sort == 'expiry':
+        query += ' ORDER BY f.expiry ASC'
+    else:
+        query += ' ORDER BY f.created_at DESC'
     foods = conn.execute(query, params).fetchall()
+    # Recommendations
+    recommendations = []
+    if session.get('user_id'):
+        recommendations = conn.execute(
+            '''SELECT f.*, u.name as donor_name,
+               COALESCE(AVG(r.rating), 0) as avg_rating
+               FROM food f JOIN users u ON f.donor_id = u.id
+               LEFT JOIN ratings r ON f.id = r.food_id
+               WHERE f.status = "available" AND f.donor_id != ?
+               GROUP BY f.id
+               ORDER BY avg_rating DESC, f.created_at DESC LIMIT 3''',
+            (session['user_id'],)
+        ).fetchall()
     conn.close()
     return render_template('available.html', foods=foods, category=category,
-                           search=search, location=location)
+                           search=search, location=location,
+                           min_rating=min_rating, sort=sort,
+                           recommendations=recommendations)
 
 @app.route('/food/<int:food_id>')
 def food_detail(food_id):
@@ -354,18 +371,16 @@ def send_message(food_id):
         return redirect(url_for('food_detail', food_id=food_id))
     conn = get_db()
     food = conn.execute('SELECT * FROM food WHERE id=?', (food_id,)).fetchone()
-    if not food:
-        conn.close()
-        return redirect(url_for('available'))
-    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
-    if receiver_id:
-        conn.execute(
-            'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (?,?,?,?)',
-            (food_id, uid, receiver_id, message)
-        )
-        add_notification(receiver_id, f'New message about "{food["food_name"]}"')
-        conn.commit()
-        flash('Message sent! 💬', 'success')
+    if food:
+        receiver_id = food['donor_id'] if uid != food['donor_id'] else None
+        if receiver_id:
+            conn.execute(
+                'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (?,?,?,?)',
+                (food_id, uid, receiver_id, message)
+            )
+            add_notification(receiver_id, f'New message about "{food["food_name"]}"')
+            conn.commit()
+            flash('Message sent! 💬', 'success')
     conn.close()
     return redirect(url_for('food_detail', food_id=food_id))
 
@@ -459,6 +474,46 @@ def profile():
                            total_donations=total_donations,
                            total_claims=total_claims,
                            completed=completed)
+
+@app.route('/leaderboard')
+def leaderboard():
+    conn = get_db()
+    donors = conn.execute(
+        '''SELECT u.name, u.location,
+           COUNT(f.id) as total,
+           SUM(CASE WHEN f.status='completed' THEN 1 ELSE 0 END) as completed
+           FROM users u
+           LEFT JOIN food f ON u.id = f.donor_id
+           GROUP BY u.id
+           ORDER BY total DESC LIMIT 20'''
+    ).fetchall()
+    conn.close()
+    return render_template('leaderboard.html', donors=donors)
+
+@app.route('/analytics')
+def analytics():
+    conn = get_db()
+    stats = {
+        'total_food': conn.execute("SELECT COUNT(*) FROM food").fetchone()[0],
+        'total_users': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
+        'completed': conn.execute("SELECT COUNT(*) FROM food WHERE status='completed'").fetchone()[0],
+        'available': conn.execute("SELECT COUNT(*) FROM food WHERE status='available'").fetchone()[0],
+        'total_claims': conn.execute("SELECT COUNT(*) FROM requests").fetchone()[0],
+        'total_ratings': conn.execute("SELECT COUNT(*) FROM ratings").fetchone()[0],
+    }
+    categories = conn.execute(
+        '''SELECT category, COUNT(*) as count FROM food
+           WHERE category IS NOT NULL
+           GROUP BY category ORDER BY count DESC'''
+    ).fetchall()
+    recent_foods = conn.execute(
+        '''SELECT f.*, u.name as donor_name FROM food f
+           JOIN users u ON f.donor_id = u.id
+           ORDER BY f.created_at DESC LIMIT 10'''
+    ).fetchall()
+    conn.close()
+    return render_template('analytics.html', stats=stats,
+                           categories=categories, recent_foods=recent_foods)
 
 ADMIN_EMAIL = 'admin@shareplate.com'
 

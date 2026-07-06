@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Analytics — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <h1>📊 Platform Analytics</h1>
+    <p>Real-time insights about SharePlate's impact.</p>
+  </div>
+</div>
+
+<div class="analytics-page">
+  <div class="section-inner">
+
+    <!-- Impact Stats -->
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <div class="analytics-icon">🍱</div>
+        <div class="analytics-num">{{ stats.total_food }}</div>
+        <div class="analytics-label">Total Food Listed</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-icon">✅</div>
+        <div class="analytics-num">{{ stats.completed }}</div>
+        <div class="analytics-label">Meals Shared</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-icon">👥</div>
+        <div class="analytics-num">{{ stats.total_users }}</div>
+        <div class="analytics-label">Community Members</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-icon">🌱</div>
+        <div class="analytics-num">{{ stats.available }}</div>
+        <div class="analytics-label">Available Now</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-icon">📋</div>
+        <div class="analytics-num">{{ stats.total_claims }}</div>
+        <div class="analytics-label">Total Claims</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-icon">⭐</div>
+        <div class="analytics-num">{{ stats.total_ratings }}</div>
+        <div class="analytics-label">Reviews Given</div>
+      </div>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="analytics-section">
+      <h2 class="dash-section-title">🍽️ Food by Category</h2>
+      <div class="category-bars">
+        {% for cat in categories %}
+        <div class="cat-bar-item">
+          <div class="cat-bar-label">{{ cat.category or 'Other' }}</div>
+          <div class="cat-bar-track">
+            <div class="cat-bar-fill" style="width: {{ (cat.count / stats.total_food * 100)|round }}%"></div>
+          </div>
+          <div class="cat-bar-count">{{ cat.count }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="analytics-section">
+      <h2 class="dash-section-title">🕐 Recent Activity</h2>
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr><th>Food</th><th>Donor</th><th>Status</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            {% for food in recent_foods %}
+            <tr>
+              <td><strong>{{ food.food_name }}</strong></td>
+              <td>{{ food.donor_name }}</td>
+              <td><span class="status-badge status-{{ food.status }}">{{ food.status }}</span></td>
+              <td>{{ food.created_at[:10] }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

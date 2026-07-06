@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard — SharePlate{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="section-inner">
+    <h1>🏆 Top Donors Leaderboard</h1>
+    <p>Celebrating our food heroes who make a difference!</p>
+  </div>
+</div>
+
+<div class="leaderboard-page">
+  <div class="section-inner">
+
+    <!-- Top 3 Podium -->
+    {% if donors %}
+    <div class="podium">
+      {% if donors|length >= 2 %}
+      <div class="podium-item podium-2">
+        <div class="podium-avatar">{{ donors[1].name[0].upper() }}</div>
+        <div class="podium-name">{{ donors[1].name }}</div>
+        <div class="podium-count">{{ donors[1].total }} donations</div>
+        <div class="podium-rank">2nd</div>
+        <div class="podium-bar bar-2"></div>
+      </div>
+      {% endif %}
+      {% if donors|length >= 1 %}
+      <div class="podium-item podium-1">
+        <div class="podium-crown">👑</div>
+        <div class="podium-avatar">{{ donors[0].name[0].upper() }}</div>
+        <div class="podium-name">{{ donors[0].name }}</div>
+        <div class="podium-count">{{ donors[0].total }} donations</div>
+        <div class="podium-rank">1st</div>
+        <div class="podium-bar bar-1"></div>
+      </div>
+      {% endif %}
+      {% if donors|length >= 3 %}
+      <div class="podium-item podium-3">
+        <div class="podium-avatar">{{ donors[2].name[0].upper() }}</div>
+        <div class="podium-name">{{ donors[2].name }}</div>
+        <div class="podium-count">{{ donors[2].total }} donations</div>
+        <div class="podium-rank">3rd</div>
+        <div class="podium-bar bar-3"></div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Full List -->
+    <div class="leaderboard-table">
+      <h2 class="dash-section-title">All Donors</h2>
+      <div class="table-wrap">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Donor</th>
+              <th>Location</th>
+              <th>Total Donations</th>
+              <th>Completed</th>
+              <th>Badge</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for donor in donors %}
+            <tr>
+              <td>
+                {% if loop.index == 1 %}👑
+                {% elif loop.index == 2 %}🥈
+                {% elif loop.index == 3 %}🥉
+                {% else %}#{{ loop.index }}{% endif %}
+              </td>
+              <td>
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                  <div class="mini-avatar">{{ donor.name[0].upper() }}</div>
+                  <strong>{{ donor.name }}</strong>
+                </div>
+              </td>
+              <td>{{ donor.location or '—' }}</td>
+              <td><strong>{{ donor.total }}</strong></td>
+              <td>{{ donor.completed }}</td>
+              <td>
+                {% if donor.total >= 20 %}🌟 Legend
+                {% elif donor.total >= 10 %}🔥 Hero
+                {% elif donor.total >= 5 %}⭐ Active
+                {% else %}🌱 Starter{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🏆</div>
+      <h3>No donors yet!</h3>
+      <p>Be the first to donate food and top the leaderboard!</p>
+      <a href="{{ url_for('add_food') }}" class="btn-primary">Donate Now</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

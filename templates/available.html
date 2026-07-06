@@ -10,8 +10,11 @@
 
 <div class="browse-page">
   <div class="section-inner">
+
+    <!-- Advanced Filters -->
     <form method="GET" class="filter-bar">
-      <input type="text" name="search" value="{{ search }}" placeholder="Search food or location..." />
+      <input type="text" name="search" value="{{ search }}" placeholder="🔍 Search food, location..." />
+      <input type="text" name="location" value="{{ location }}" placeholder="📍 Filter by location..." />
       <select name="category">
         <option value="">All Categories</option>
         <option {% if category=='Cooked Meal' %}selected{% endif %}>Cooked Meal</option>
@@ -22,17 +25,56 @@
         <option {% if category=='Raw Ingredients' %}selected{% endif %}>Raw Ingredients</option>
         <option {% if category=='Other' %}selected{% endif %}>Other</option>
       </select>
+      <select name="min_rating">
+        <option value="">Any Rating</option>
+        <option value="4" {% if min_rating=='4' %}selected{% endif %}>⭐⭐⭐⭐ 4+</option>
+        <option value="3" {% if min_rating=='3' %}selected{% endif %}>⭐⭐⭐ 3+</option>
+      </select>
+      <select name="sort">
+        <option value="newest" {% if sort=='newest' %}selected{% endif %}>Newest First</option>
+        <option value="rating" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
+        <option value="expiry" {% if sort=='expiry' %}selected{% endif %}>Expiring Soon</option>
+      </select>
       <button type="submit" class="btn-primary">Search</button>
-      {% if search or category %}
+      {% if search or category or location or min_rating %}
       <a href="{{ url_for('available') }}" class="btn-outline">Clear</a>
       {% endif %}
     </form>
+
+    <!-- Recommendations -->
+    {% if recommendations %}
+    <div class="recommendations">
+      <div class="section-label">✨ Recommended For You</div>
+      <div class="food-grid food-grid-sm">
+        {% for food in recommendations %}
+        <div class="food-card">
+          {% if food.image_url %}
+          <img src="{{ food.image_url }}" class="food-card-img" alt="{{ food.food_name }}"/>
+          {% else %}
+          <div class="food-card-emoji">🍱</div>
+          {% endif %}
+          <div class="food-card-body">
+            <div class="food-category-tag">{{ food.category or 'Food' }}</div>
+            <h3><a href="{{ url_for('food_detail', food_id=food.id) }}" style="color:inherit;">{{ food.food_name }}</a></h3>
+            <div class="food-meta">
+              <span>📍 {{ food.location }}</span>
+              <span>⭐ {{ '%.1f'|format(food.avg_rating) }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     {% if foods %}
     <p class="result-count">{{ foods|length }} listing{{ 's' if foods|length != 1 }} found</p>
     <div class="food-grid">
       {% for food in foods %}
       <div class="food-card">
+        {% if food.image_url %}
+        <img src="{{ food.image_url }}" class="food-card-img" alt="{{ food.food_name }}"/>
+        {% else %}
         <div class="food-card-emoji">
           {% if food.category == 'Cooked Meal' %}🍛
           {% elif food.category == 'Snacks' %}🍿
@@ -41,28 +83,37 @@
           {% elif food.category == 'Beverages' %}🧃
           {% else %}🍱{% endif %}
         </div>
+        {% endif %}
         <div class="food-card-body">
           <div class="food-category-tag">{{ food.category or 'Food' }}</div>
           <h3><a href="{{ url_for('food_detail', food_id=food.id) }}" style="color:inherit;">{{ food.food_name }}</a></h3>
+          {% if food.avg_rating > 0 %}
+          <div style="font-size:0.82rem; color: var(--amber); margin-bottom:0.4rem;">
+            ⭐ {{ '%.1f'|format(food.avg_rating) }} ({{ food.rating_count }})
+          </div>
+          {% endif %}
           <div class="food-meta">
             <span>📦 {{ food.quantity }}</span>
             <span>📍 {{ food.location }}</span>
-            <span>⏰ Until {{ food.expiry }}</span>
-            {% if food.notes %}<span>📝 {{ food.notes[:50] }}{% if food.notes|length > 50 %}…{% endif %}</span>{% endif %}
+            <span>⏰ {{ food.expiry }}</span>
           </div>
           <div class="food-card-footer">
             <span class="donor-name">by {{ food.donor_name }}</span>
-            {% if session.user_id %}
-              {% if session.user_id != food.donor_id %}
-              <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}" style="display:inline">
-                <button class="btn-claim">Claim Food</button>
-              </form>
+            <div style="display:flex; gap:0.4rem; align-items:center;">
+              <!-- Social Share -->
+              <a href="https://wa.me/?text=Free food available: {{ food.food_name }} at {{ food.location }} - {{ request.url_root }}food/{{ food.id }}" target="_blank" class="share-btn" title="Share on WhatsApp">📤</a>
+              {% if session.user_id %}
+                {% if session.user_id != food.donor_id %}
+                <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}" style="display:inline">
+                  <button class="btn-claim">Claim</button>
+                </form>
+                {% else %}
+                <span class="own-tag">Your listing</span>
+                {% endif %}
               {% else %}
-              <span class="own-tag">Your listing</span>
+              <a href="{{ url_for('login') }}" class="btn-claim">Claim</a>
               {% endif %}
-            {% else %}
-            <a href="{{ url_for('login') }}" class="btn-claim">Login to Claim</a>
-            {% endif %}
+            </div>
           </div>
         </div>
       </div>
@@ -72,7 +123,7 @@
     <div class="empty-state">
       <div class="empty-icon">🍽️</div>
       <h3>No food available right now</h3>
-      <p>Be the first to donate! Every bit counts.</p>
+      <p>Be the first to donate!</p>
       {% if session.user_id %}
       <a href="{{ url_for('add_food') }}" class="btn-primary">+ Donate Food</a>
       {% else %}
