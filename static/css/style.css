@@ -509,3 +509,36 @@ img { max-width: 100%; display: block; }
 @media (max-width: 768px) {
   .charts-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Animated Auth Pages ── */
+.auth-animated { position: relative; overflow: hidden; }
+.auth-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.auth-card { position: relative; z-index: 1; }
+.floating-food {
+  position: absolute; font-size: 2.5rem; opacity: 0.15;
+  animation: floatAround 6s ease-in-out infinite;
+}
+.f1 { top: 10%; left: 5%; animation-delay: 0s; }
+.f2 { top: 20%; right: 8%; animation-delay: 1s; }
+.f3 { top: 50%; left: 3%; animation-delay: 2s; }
+.f4 { top: 70%; right: 5%; animation-delay: 0.5s; }
+.f5 { top: 80%; left: 15%; animation-delay: 1.5s; }
+.f6 { top: 35%; right: 15%; animation-delay: 2.5s; }
+@keyframes floatAround {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(10deg); }
+  66% { transform: translateY(10px) rotate(-5deg); }
+}
+
+/* ── Animate In ── */
+.animate-in { animation: slideInUp 0.5s ease forwards; }
+@keyframes slideInUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.slide-up { animation: slideInUp 0.4s ease both; }
+.spin-icon { display: inline-block; animation: spinOnce 0.6s ease 0.3s both; }
+@keyframes spinOnce {
+  from { transform: rotate(-20deg) scale(0.8); }
+  to { transform: rotate(0deg) scale(1); }
+}

@@ -1,28 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Login — SharePlate{% endblock %}
 {% block content %}
-<div class="auth-page">
-  <div class="auth-card">
+<div class="auth-page auth-animated">
+  <div class="auth-bg">
+    <div class="floating-food f1">🍱</div>
+    <div class="floating-food f2">🥗</div>
+    <div class="floating-food f3">🍛</div>
+    <div class="floating-food f4">🥙</div>
+    <div class="floating-food f5">🍜</div>
+    <div class="floating-food f6">🥘</div>
+  </div>
+  <div class="auth-card animate-in">
     <div class="auth-header">
-      <div class="auth-icon">👋</div>
+      <div class="auth-icon spin-icon">👋</div>
       <h1>Welcome back</h1>
       <p>Login to share or claim food</p>
     </div>
     <form method="POST" class="auth-form">
-      <div class="form-group">
+      <div class="form-group slide-up" style="animation-delay:0.1s">
         <label>Email Address</label>
         <input type="email" name="email" placeholder="you@example.com" required />
       </div>
-      <div class="form-group">
+      <div class="form-group slide-up" style="animation-delay:0.2s">
         <label>Password</label>
         <input type="password" name="password" placeholder="Your password" required />
       </div>
-      <button type="submit" class="btn-submit">Login →</button>
+      <div class="slide-up" style="animation-delay:0.3s">
+        <button type="submit" class="btn-submit">Login →</button>
+      </div>
     </form>
-    <p class="auth-switch">
+    <p class="auth-switch slide-up" style="animation-delay:0.4s">
       <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
     </p>
-    <p class="auth-switch">New to SharePlate? <a href="{{ url_for('register') }}">Create an account</a></p>
+    <p class="auth-switch slide-up" style="animation-delay:0.5s">
+      New to SharePlate? <a href="{{ url_for('register') }}">Create an account</a>
+    </p>
   </div>
 </div>
 {% endblock %}
