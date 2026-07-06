@@ -6,11 +6,6 @@ import os
 import cloudinary
 import cloudinary.uploader
 from datetime import datetime
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import secrets
-import ssl
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
@@ -24,9 +19,6 @@ cloudinary.config(
     api_key=os.environ.get('CLOUDINARY_API_KEY'),
     api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
-
-MAIL_EMAIL = os.environ.get('MAIL_EMAIL')
-MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -75,12 +67,6 @@ def init_db():
         FOREIGN KEY (food_id) REFERENCES food(id),
         FOREIGN KEY (receiver_id) REFERENCES users(id)
     )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS password_resets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL,
-        token TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )''')
     try:
         c.execute("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''")
     except: pass
@@ -95,35 +81,6 @@ def init_db():
 
 with app.app_context():
     init_db()
-
-def send_reset_email(to_email, reset_link):
-    try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = '🍱 SharePlate — Reset Your Password'
-        msg['From'] = MAIL_EMAIL
-        msg['To'] = to_email
-        html = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 40px;">
-          <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 16px; padding: 32px; border: 1px solid #e0e0e0;">
-            <h1 style="color: #2D6A4F;">🍱 SharePlate</h1>
-            <h2>Reset Your Password</h2>
-            <p>Click the button below to set a new password:</p>
-            <a href="{reset_link}" style="background: #2D6A4F; color: white; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-block; margin: 20px 0;">Reset Password</a>
-            <p style="color: #767676; font-size: 0.85rem;">This link expires in 1 hour.</p>
-          </div>
-        </body>
-        </html>
-        """
-        msg.attach(MIMEText(html, 'html'))
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
-            server.login(MAIL_EMAIL, MAIL_PASSWORD)
-            server.sendmail(MAIL_EMAIL, to_email, msg.as_string())
-        return True
-    except Exception as e:
-        print(f"Email error: {e}")
-        return False
 
 @app.route('/')
 def index():
@@ -419,43 +376,29 @@ def admin_delete_food(fid):
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form.get('email', '')
-        conn = get_db()
-        user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
-        if user:
-            token = secrets.token_urlsafe(32)
-            conn.execute('DELETE FROM password_resets WHERE email=?', (email,))
-            conn.execute('INSERT INTO password_resets (email, token) VALUES (?,?)', (email, token))
-            conn.commit()
-            reset_link = url_for('reset_password', token=token, _external=True)
-            if send_reset_email(email, reset_link):
-                flash('Password reset link sent to your Gmail! Check your inbox.', 'success')
+        try:
+            email = request.form.get('email', '')
+            security_answer = request.form.get('security_answer', '').strip().lower()
+            new_password = request.form.get('new_password', '')
+            conn = get_db()
+            user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+            if user:
+                stored_answer = (user['security_answer'] or '').strip().lower()
+                if stored_answer == security_answer:
+                    hashed = generate_password_hash(new_password)
+                    conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
+                    conn.commit()
+                    conn.close()
+                    flash('Password reset successful! Please login.', 'success')
+                    return redirect(url_for('login'))
+                conn.close()
+                flash('Security answer is incorrect.', 'danger')
             else:
-                flash('Could not send email. Please try again.', 'danger')
-        else:
-            flash('Email not found.', 'danger')
-        conn.close()
+                conn.close()
+                flash('Email not found.', 'danger')
+        except Exception:
+            flash('Something went wrong.', 'danger')
     return render_template('forgot_password.html')
-
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    conn = get_db()
-    reset = conn.execute('SELECT * FROM password_resets WHERE token=?', (token,)).fetchone()
-    if not reset:
-        flash('Invalid or expired reset link.', 'danger')
-        conn.close()
-        return redirect(url_for('login'))
-    if request.method == 'POST':
-        new_password = request.form.get('new_password', '')
-        hashed = generate_password_hash(new_password)
-        conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, reset['email']))
-        conn.execute('DELETE FROM password_resets WHERE token=?', (token,))
-        conn.commit()
-        conn.close()
-        flash('Password reset successful! Please login.', 'success')
-        return redirect(url_for('login'))
-    conn.close()
-    return render_template('reset_password.html', token=token)
 
 if __name__ == '__main__':
     init_db()
