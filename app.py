@@ -290,7 +290,6 @@ def available():
     else:
         query += ' ORDER BY f.created_at DESC'
     foods = conn.execute(query, params).fetchall()
-    # Recommendations
     recommendations = []
     if session.get('user_id'):
         recommendations = conn.execute(
@@ -501,11 +500,11 @@ def analytics():
         'total_claims': conn.execute("SELECT COUNT(*) FROM requests").fetchone()[0],
         'total_ratings': conn.execute("SELECT COUNT(*) FROM ratings").fetchone()[0],
     }
-    categories = conn.execute(
+    categories = [dict(row) for row in conn.execute(
         '''SELECT category, COUNT(*) as count FROM food
            WHERE category IS NOT NULL
            GROUP BY category ORDER BY count DESC'''
-    ).fetchall()
+    ).fetchall()]
     recent_foods = conn.execute(
         '''SELECT f.*, u.name as donor_name FROM food f
            JOIN users u ON f.donor_id = u.id
