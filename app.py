@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-import sqlite3
 import os
 import cloudinary
 import cloudinary.uploader
 from datetime import datetime
+import psycopg2
+import psycopg2.extras
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 
-DB_PATH = 'shareplate.db'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
@@ -20,20 +20,17 @@ cloudinary.config(
     api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH, timeout=20, check_same_thread=False)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
+    conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 def init_db():
     conn = get_db()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
@@ -42,10 +39,10 @@ def init_db():
         bio TEXT DEFAULT '',
         phone TEXT DEFAULT '',
         security_answer TEXT DEFAULT '',
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS food (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         food_name TEXT NOT NULL,
         category TEXT,
         quantity TEXT NOT NULL,
@@ -54,89 +51,86 @@ def init_db():
         contact TEXT,
         notes TEXT,
         status TEXT DEFAULT 'available',
-        donor_id INTEGER,
+        donor_id INTEGER REFERENCES users(id),
         image_url TEXT,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (donor_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS requests (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        food_id INTEGER,
-        receiver_id INTEGER,
+        id SERIAL PRIMARY KEY,
+        food_id INTEGER REFERENCES food(id),
+        receiver_id INTEGER REFERENCES users(id),
         status TEXT DEFAULT 'pending',
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (food_id) REFERENCES food(id),
-        FOREIGN KEY (receiver_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS ratings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        food_id INTEGER,
-        user_id INTEGER,
+        id SERIAL PRIMARY KEY,
+        food_id INTEGER REFERENCES food(id),
+        user_id INTEGER REFERENCES users(id),
         rating INTEGER,
         review TEXT,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (food_id) REFERENCES food(id),
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS notifications (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
         message TEXT,
         is_read INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        food_id INTEGER,
-        sender_id INTEGER,
-        receiver_id INTEGER,
+        id SERIAL PRIMARY KEY,
+        food_id INTEGER REFERENCES food(id),
+        sender_id INTEGER REFERENCES users(id),
+        receiver_id INTEGER REFERENCES users(id),
         message TEXT,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (food_id) REFERENCES food(id),
-        FOREIGN KEY (sender_id) REFERENCES users(id),
-        FOREIGN KEY (receiver_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
-    try:
-        c.execute("ALTER TABLE users ADD COLUMN bio TEXT DEFAULT ''")
-    except: pass
-    try:
-        c.execute("ALTER TABLE users ADD COLUMN phone TEXT DEFAULT ''")
-    except: pass
-    try:
-        c.execute("ALTER TABLE users ADD COLUMN security_answer TEXT DEFAULT ''")
-    except: pass
     conn.commit()
     conn.close()
 
 init_db()
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def add_notification(user_id, message):
     try:
         conn = get_db()
-        conn.execute('INSERT INTO notifications (user_id, message) VALUES (?,?)', (user_id, message))
+        c = conn.cursor()
+        c.execute('INSERT INTO notifications (user_id, message) VALUES (%s,%s)', (user_id, message))
         conn.commit()
         conn.close()
     except: pass
 
+def fetchall(cursor):
+    cols = [desc[0] for desc in cursor.description]
+    return [dict(zip(cols, row)) for row in cursor.fetchall()]
+
+def fetchone(cursor):
+    cols = [desc[0] for desc in cursor.description]
+    row = cursor.fetchone()
+    return dict(zip(cols, row)) if row else None
+
 @app.route('/')
 def index():
     conn = get_db()
-    foods = conn.execute(
-        '''SELECT f.*, u.name as donor_name,
-           COALESCE(AVG(r.rating), 0) as avg_rating,
-           COUNT(r.id) as rating_count
-           FROM food f JOIN users u ON f.donor_id = u.id
-           LEFT JOIN ratings r ON f.id = r.food_id
-           WHERE f.status = "available"
-           GROUP BY f.id
-           ORDER BY f.created_at DESC LIMIT 6'''
-    ).fetchall()
-    stats = {
-        'total_food': conn.execute("SELECT COUNT(*) FROM food").fetchone()[0],
-        'total_users': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
-        'completed': conn.execute("SELECT COUNT(*) FROM food WHERE status='completed'").fetchone()[0],
-    }
+    c = conn.cursor()
+    c.execute('''SELECT f.*, u.name as donor_name,
+               COALESCE(AVG(r.rating), 0) as avg_rating,
+               COUNT(r.id) as rating_count
+               FROM food f JOIN users u ON f.donor_id = u.id
+               LEFT JOIN ratings r ON f.id = r.food_id
+               WHERE f.status = 'available'
+               GROUP BY f.id, u.name
+               ORDER BY f.created_at DESC LIMIT 6''')
+    foods = fetchall(c)
+    c.execute("SELECT COUNT(*) FROM food")
+    total_food = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM users")
+    total_users = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE status='completed'")
+    completed = c.fetchone()[0]
+    stats = {'total_food': total_food, 'total_users': total_users, 'completed': completed}
     conn.close()
     return render_template('index.html', foods=foods, stats=stats)
 
@@ -152,15 +146,16 @@ def register():
         hashed = generate_password_hash(password)
         try:
             conn = get_db()
-            conn.execute(
-                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (?,?,?,?,?,?)',
+            c = conn.cursor()
+            c.execute(
+                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (%s,%s,%s,%s,%s,%s)',
                 (name, email, hashed, location, role, security_answer)
             )
             conn.commit()
             conn.close()
             flash('Account created! Please login.', 'success')
             return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
+        except Exception as e:
             flash('Email already registered.', 'danger')
     return render_template('register.html')
 
@@ -170,7 +165,9 @@ def login():
         email = request.form['email']
         password = request.form['password']
         conn = get_db()
-        user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+        c = conn.cursor()
+        c.execute('SELECT * FROM users WHERE email=%s', (email,))
+        user = fetchone(c)
         conn.close()
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
@@ -193,22 +190,19 @@ def dashboard():
         return redirect(url_for('login'))
     uid = session['user_id']
     conn = get_db()
-    my_donations = conn.execute(
-        'SELECT * FROM food WHERE donor_id=? ORDER BY created_at DESC', (uid,)
-    ).fetchall()
-    my_claims = conn.execute(
-        '''SELECT r.*, f.food_name, f.location, f.expiry, u.name as donor_name
-           FROM requests r
-           JOIN food f ON r.food_id = f.id
-           JOIN users u ON f.donor_id = u.id
-           WHERE r.receiver_id=? ORDER BY r.created_at DESC''', (uid,)
-    ).fetchall()
-    notifications = conn.execute(
-        'SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 10', (uid,)
-    ).fetchall()
-    unread_count = conn.execute(
-        'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (uid,)
-    ).fetchone()[0]
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE donor_id=%s ORDER BY created_at DESC', (uid,))
+    my_donations = fetchall(c)
+    c.execute('''SELECT r.*, f.food_name, f.location, f.expiry, u.name as donor_name
+               FROM requests r
+               JOIN food f ON r.food_id = f.id
+               JOIN users u ON f.donor_id = u.id
+               WHERE r.receiver_id=%s ORDER BY r.created_at DESC''', (uid,))
+    my_claims = fetchall(c)
+    c.execute('SELECT * FROM notifications WHERE user_id=%s ORDER BY created_at DESC LIMIT 10', (uid,))
+    notifications = fetchall(c)
+    c.execute('SELECT COUNT(*) FROM notifications WHERE user_id=%s AND is_read=0', (uid,))
+    unread_count = c.fetchone()[0]
     conn.close()
     return render_template('dashboard.html', my_donations=my_donations,
                            my_claims=my_claims, notifications=notifications,
@@ -219,7 +213,8 @@ def mark_notifications_read():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
-    conn.execute('UPDATE notifications SET is_read=1 WHERE user_id=?', (session['user_id'],))
+    c = conn.cursor()
+    c.execute('UPDATE notifications SET is_read=1 WHERE user_id=%s', (session['user_id'],))
     conn.commit()
     conn.close()
     return redirect(url_for('dashboard'))
@@ -242,9 +237,10 @@ def add_food():
                 except:
                     flash('Image upload failed, listing without image.', 'warning')
         conn = get_db()
-        conn.execute(
+        c = conn.cursor()
+        c.execute(
             '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id, image_url)
-               VALUES (?,?,?,?,?,?,?,?,?)''',
+               VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
             (request.form['food_name'], request.form['category'],
              request.form['quantity'], request.form['location'],
              request.form['expiry'], request.form['contact'],
@@ -259,6 +255,7 @@ def add_food():
 @app.route('/available')
 def available():
     conn = get_db()
+    c = conn.cursor()
     category = request.args.get('category', '')
     search = request.args.get('search', '')
     location = request.args.get('location', '')
@@ -269,39 +266,39 @@ def available():
                COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
                LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = "available"'''
+               WHERE f.status = 'available' '''
     params = []
     if category:
-        query += ' AND f.category=?'
+        query += ' AND f.category=%s'
         params.append(category)
     if search:
-        query += ' AND (f.food_name LIKE ? OR f.notes LIKE ? OR f.location LIKE ?)'
+        query += ' AND (f.food_name ILIKE %s OR f.notes ILIKE %s OR f.location ILIKE %s)'
         params.extend([f'%{search}%', f'%{search}%', f'%{search}%'])
     if location:
-        query += ' AND f.location LIKE ?'
+        query += ' AND f.location ILIKE %s'
         params.append(f'%{location}%')
-    query += ' GROUP BY f.id'
+    query += ' GROUP BY f.id, u.name'
     if min_rating:
-        query += f' HAVING avg_rating >= {min_rating}'
+        query += f' HAVING COALESCE(AVG(r.rating), 0) >= {min_rating}'
     if sort == 'rating':
         query += ' ORDER BY avg_rating DESC'
     elif sort == 'expiry':
         query += ' ORDER BY f.expiry ASC'
     else:
         query += ' ORDER BY f.created_at DESC'
-    foods = conn.execute(query, params).fetchall()
+    c.execute(query, params)
+    foods = fetchall(c)
     recommendations = []
     if session.get('user_id'):
-        recommendations = conn.execute(
-            '''SELECT f.*, u.name as donor_name,
-               COALESCE(AVG(r.rating), 0) as avg_rating
-               FROM food f JOIN users u ON f.donor_id = u.id
-               LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = "available" AND f.donor_id != ?
-               GROUP BY f.id
-               ORDER BY avg_rating DESC, f.created_at DESC LIMIT 3''',
-            (session['user_id'],)
-        ).fetchall()
+        c.execute('''SELECT f.*, u.name as donor_name,
+                   COALESCE(AVG(r.rating), 0) as avg_rating
+                   FROM food f JOIN users u ON f.donor_id = u.id
+                   LEFT JOIN ratings r ON f.id = r.food_id
+                   WHERE f.status = 'available' AND f.donor_id != %s
+                   GROUP BY f.id, u.name
+                   ORDER BY avg_rating DESC, f.created_at DESC LIMIT 3''',
+                  (session['user_id'],))
+        recommendations = fetchall(c)
     conn.close()
     return render_template('available.html', foods=foods, category=category,
                            search=search, location=location,
@@ -311,28 +308,25 @@ def available():
 @app.route('/food/<int:food_id>')
 def food_detail(food_id):
     conn = get_db()
-    food = conn.execute(
-        '''SELECT f.*, u.name as donor_name, u.email as donor_email, u.phone as donor_phone
-           FROM food f JOIN users u ON f.donor_id = u.id
-           WHERE f.id=?''', (food_id,)
-    ).fetchone()
+    c = conn.cursor()
+    c.execute('''SELECT f.*, u.name as donor_name, u.email as donor_email, u.phone as donor_phone
+               FROM food f JOIN users u ON f.donor_id = u.id
+               WHERE f.id=%s''', (food_id,))
+    food = fetchone(c)
     if not food:
         flash('Food not found.', 'danger')
         conn.close()
         return redirect(url_for('available'))
-    reviews = conn.execute(
-        '''SELECT r.*, u.name as reviewer_name
-           FROM ratings r JOIN users u ON r.user_id = u.id
-           WHERE r.food_id=? ORDER BY r.created_at DESC''', (food_id,)
-    ).fetchall()
-    avg_rating = conn.execute(
-        'SELECT COALESCE(AVG(rating), 0) FROM ratings WHERE food_id=?', (food_id,)
-    ).fetchone()[0]
-    messages = conn.execute(
-        '''SELECT m.*, u.name as sender_name
-           FROM messages m JOIN users u ON m.sender_id = u.id
-           WHERE m.food_id=? ORDER BY m.created_at ASC''', (food_id,)
-    ).fetchall()
+    c.execute('''SELECT r.*, u.name as reviewer_name
+               FROM ratings r JOIN users u ON r.user_id = u.id
+               WHERE r.food_id=%s ORDER BY r.created_at DESC''', (food_id,))
+    reviews = fetchall(c)
+    c.execute('SELECT COALESCE(AVG(rating), 0) FROM ratings WHERE food_id=%s', (food_id,))
+    avg_rating = c.fetchone()[0]
+    c.execute('''SELECT m.*, u.name as sender_name
+               FROM messages m JOIN users u ON m.sender_id = u.id
+               WHERE m.food_id=%s ORDER BY m.created_at ASC''', (food_id,))
+    messages = fetchall(c)
     conn.close()
     return render_template('food_detail.html', food=food, reviews=reviews,
                            avg_rating=avg_rating, messages=messages)
@@ -345,15 +339,15 @@ def rate_food(food_id):
     rating = request.form.get('rating', 5)
     review = request.form.get('review', '')
     conn = get_db()
-    existing = conn.execute(
-        'SELECT * FROM ratings WHERE food_id=? AND user_id=?', (food_id, uid)
-    ).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM ratings WHERE food_id=%s AND user_id=%s', (food_id, uid))
+    existing = c.fetchone()
     if existing:
-        conn.execute('UPDATE ratings SET rating=?, review=? WHERE food_id=? AND user_id=?',
-                     (rating, review, food_id, uid))
+        c.execute('UPDATE ratings SET rating=%s, review=%s WHERE food_id=%s AND user_id=%s',
+                  (rating, review, food_id, uid))
     else:
-        conn.execute('INSERT INTO ratings (food_id, user_id, rating, review) VALUES (?,?,?,?)',
-                     (food_id, uid, rating, review))
+        c.execute('INSERT INTO ratings (food_id, user_id, rating, review) VALUES (%s,%s,%s,%s)',
+                  (food_id, uid, rating, review))
     conn.commit()
     conn.close()
     flash('Rating submitted! ⭐', 'success')
@@ -369,14 +363,14 @@ def send_message(food_id):
         flash('Message cannot be empty.', 'warning')
         return redirect(url_for('food_detail', food_id=food_id))
     conn = get_db()
-    food = conn.execute('SELECT * FROM food WHERE id=?', (food_id,)).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
+    food = fetchone(c)
     if food:
         receiver_id = food['donor_id'] if uid != food['donor_id'] else None
         if receiver_id:
-            conn.execute(
-                'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (?,?,?,?)',
-                (food_id, uid, receiver_id, message)
-            )
+            c.execute('INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s)',
+                      (food_id, uid, receiver_id, message))
             add_notification(receiver_id, f'New message about "{food["food_name"]}"')
             conn.commit()
             flash('Message sent! 💬', 'success')
@@ -389,7 +383,9 @@ def claim_food(food_id):
         return redirect(url_for('login'))
     uid = session['user_id']
     conn = get_db()
-    food = conn.execute('SELECT * FROM food WHERE id=?', (food_id,)).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
+    food = fetchone(c)
     if not food or food['status'] != 'available':
         flash('This food is no longer available.', 'warning')
         conn.close()
@@ -398,15 +394,13 @@ def claim_food(food_id):
         flash("You can't claim your own donation.", 'warning')
         conn.close()
         return redirect(url_for('available'))
-    existing = conn.execute(
-        'SELECT * FROM requests WHERE food_id=? AND receiver_id=?', (food_id, uid)
-    ).fetchone()
-    if existing:
+    c.execute('SELECT * FROM requests WHERE food_id=%s AND receiver_id=%s', (food_id, uid))
+    if c.fetchone():
         flash('You already claimed this food.', 'info')
         conn.close()
         return redirect(url_for('available'))
-    conn.execute('INSERT INTO requests (food_id, receiver_id) VALUES (?,?)', (food_id, uid))
-    conn.execute('UPDATE food SET status="requested" WHERE id=?', (food_id,))
+    c.execute('INSERT INTO requests (food_id, receiver_id) VALUES (%s,%s)', (food_id, uid))
+    c.execute("UPDATE food SET status='requested' WHERE id=%s", (food_id,))
     add_notification(food['donor_id'], f'Someone claimed your "{food["food_name"]}" listing!')
     conn.commit()
     conn.close()
@@ -422,13 +416,13 @@ def update_status(food_id, status):
         flash('Invalid status.', 'danger')
         return redirect(url_for('dashboard'))
     conn = get_db()
-    food = conn.execute('SELECT * FROM food WHERE id=? AND donor_id=?',
-                        (food_id, session['user_id'])).fetchone()
-    if not food:
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE id=%s AND donor_id=%s', (food_id, session['user_id']))
+    if not c.fetchone():
         flash('Not authorized.', 'danger')
         conn.close()
         return redirect(url_for('dashboard'))
-    conn.execute('UPDATE food SET status=? WHERE id=?', (status, food_id))
+    c.execute('UPDATE food SET status=%s WHERE id=%s', (status, food_id))
     conn.commit()
     conn.close()
     flash(f'Status updated to {status}.', 'success')
@@ -439,8 +433,9 @@ def delete_food(food_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
-    conn.execute('DELETE FROM food WHERE id=? AND donor_id=?', (food_id, session['user_id']))
-    conn.execute('DELETE FROM requests WHERE food_id=?', (food_id,))
+    c = conn.cursor()
+    c.execute('DELETE FROM requests WHERE food_id=%s', (food_id,))
+    c.execute('DELETE FROM food WHERE id=%s AND donor_id=%s', (food_id, session['user_id']))
     conn.commit()
     conn.close()
     flash('Listing removed.', 'info')
@@ -452,22 +447,25 @@ def profile():
         return redirect(url_for('login'))
     uid = session['user_id']
     conn = get_db()
+    c = conn.cursor()
     if request.method == 'POST':
         name = request.form['name']
         location = request.form['location']
         bio = request.form.get('bio', '')
         phone = request.form.get('phone', '')
-        conn.execute(
-            'UPDATE users SET name=?, location=?, bio=?, phone=? WHERE id=?',
-            (name, location, bio, phone, uid)
-        )
+        c.execute('UPDATE users SET name=%s, location=%s, bio=%s, phone=%s WHERE id=%s',
+                  (name, location, bio, phone, uid))
         conn.commit()
         session['user_name'] = name
         flash('Profile updated! ✅', 'success')
-    user = conn.execute('SELECT * FROM users WHERE id=?', (uid,)).fetchone()
-    total_donations = conn.execute('SELECT COUNT(*) FROM food WHERE donor_id=?', (uid,)).fetchone()[0]
-    total_claims = conn.execute('SELECT COUNT(*) FROM requests WHERE receiver_id=?', (uid,)).fetchone()[0]
-    completed = conn.execute("SELECT COUNT(*) FROM food WHERE donor_id=? AND status='completed'", (uid,)).fetchone()[0]
+    c.execute('SELECT * FROM users WHERE id=%s', (uid,))
+    user = fetchone(c)
+    c.execute('SELECT COUNT(*) FROM food WHERE donor_id=%s', (uid,))
+    total_donations = c.fetchone()[0]
+    c.execute('SELECT COUNT(*) FROM requests WHERE receiver_id=%s', (uid,))
+    total_claims = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE donor_id=%s AND status='completed'", (uid,))
+    completed = c.fetchone()[0]
     conn.close()
     return render_template('profile.html', user=user,
                            total_donations=total_donations,
@@ -477,39 +475,39 @@ def profile():
 @app.route('/leaderboard')
 def leaderboard():
     conn = get_db()
-    donors = conn.execute(
-        '''SELECT u.name, u.location,
-           COUNT(f.id) as total,
-           SUM(CASE WHEN f.status='completed' THEN 1 ELSE 0 END) as completed
-           FROM users u
-           LEFT JOIN food f ON u.id = f.donor_id
-           GROUP BY u.id
-           ORDER BY total DESC LIMIT 20'''
-    ).fetchall()
+    c = conn.cursor()
+    c.execute('''SELECT u.name, u.location,
+               COUNT(f.id) as total,
+               SUM(CASE WHEN f.status='completed' THEN 1 ELSE 0 END) as completed
+               FROM users u
+               LEFT JOIN food f ON u.id = f.donor_id
+               GROUP BY u.id, u.name, u.location
+               ORDER BY total DESC LIMIT 20''')
+    donors = fetchall(c)
     conn.close()
     return render_template('leaderboard.html', donors=donors)
 
 @app.route('/analytics')
 def analytics():
     conn = get_db()
-    stats = {
-        'total_food': conn.execute("SELECT COUNT(*) FROM food").fetchone()[0],
-        'total_users': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
-        'completed': conn.execute("SELECT COUNT(*) FROM food WHERE status='completed'").fetchone()[0],
-        'available': conn.execute("SELECT COUNT(*) FROM food WHERE status='available'").fetchone()[0],
-        'total_claims': conn.execute("SELECT COUNT(*) FROM requests").fetchone()[0],
-        'total_ratings': conn.execute("SELECT COUNT(*) FROM ratings").fetchone()[0],
-    }
-    categories = [dict(row) for row in conn.execute(
-        '''SELECT category, COUNT(*) as count FROM food
-           WHERE category IS NOT NULL
-           GROUP BY category ORDER BY count DESC'''
-    ).fetchall()]
-    recent_foods = conn.execute(
-        '''SELECT f.*, u.name as donor_name FROM food f
-           JOIN users u ON f.donor_id = u.id
-           ORDER BY f.created_at DESC LIMIT 10'''
-    ).fetchall()
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM food"); total_food = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM users"); total_users = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE status='completed'"); completed = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE status='available'"); available = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM requests"); total_claims = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM ratings"); total_ratings = c.fetchone()[0]
+    stats = {'total_food': total_food, 'total_users': total_users,
+             'completed': completed, 'available': available,
+             'total_claims': total_claims, 'total_ratings': total_ratings}
+    c.execute('''SELECT category, COUNT(*) as count FROM food
+               WHERE category IS NOT NULL
+               GROUP BY category ORDER BY count DESC''')
+    categories = [{'category': row[0], 'count': row[1]} for row in c.fetchall()]
+    c.execute('''SELECT f.*, u.name as donor_name FROM food f
+               JOIN users u ON f.donor_id = u.id
+               ORDER BY f.created_at DESC LIMIT 10''')
+    recent_foods = fetchall(c)
     conn.close()
     return render_template('analytics.html', stats=stats,
                            categories=categories, recent_foods=recent_foods)
@@ -521,22 +519,25 @@ def admin():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
-    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE id=%s', (session['user_id'],))
+    user = fetchone(c)
     if user['email'] != ADMIN_EMAIL:
         flash('Access denied.', 'danger')
         conn.close()
         return redirect(url_for('index'))
-    users = conn.execute('SELECT * FROM users ORDER BY created_at DESC').fetchall()
-    foods = conn.execute('''SELECT f.*, u.name as donor_name
-                            FROM food f JOIN users u ON f.donor_id=u.id
-                            ORDER BY f.created_at DESC''').fetchall()
-    stats = {
-        'total_users': conn.execute("SELECT COUNT(*) FROM users").fetchone()[0],
-        'total_food': conn.execute("SELECT COUNT(*) FROM food").fetchone()[0],
-        'available': conn.execute("SELECT COUNT(*) FROM food WHERE status='available'").fetchone()[0],
-        'completed': conn.execute("SELECT COUNT(*) FROM food WHERE status='completed'").fetchone()[0],
-        'total_claims': conn.execute("SELECT COUNT(*) FROM requests").fetchone()[0],
-    }
+    c.execute('SELECT * FROM users ORDER BY created_at DESC')
+    users = fetchall(c)
+    c.execute('''SELECT f.*, u.name as donor_name FROM food f
+               JOIN users u ON f.donor_id=u.id ORDER BY f.created_at DESC''')
+    foods = fetchall(c)
+    c.execute("SELECT COUNT(*) FROM users"); total_users = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food"); total_food = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE status='available'"); avail = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM food WHERE status='completed'"); comp = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM requests"); total_claims = c.fetchone()[0]
+    stats = {'total_users': total_users, 'total_food': total_food,
+             'available': avail, 'completed': comp, 'total_claims': total_claims}
     conn.close()
     return render_template('admin.html', users=users, foods=foods, stats=stats)
 
@@ -545,14 +546,16 @@ def admin_delete_user(uid):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
-    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE id=%s', (session['user_id'],))
+    user = fetchone(c)
     if user['email'] != ADMIN_EMAIL:
         flash('Access denied.', 'danger')
         conn.close()
         return redirect(url_for('index'))
-    conn.execute('DELETE FROM users WHERE id=?', (uid,))
-    conn.execute('DELETE FROM food WHERE donor_id=?', (uid,))
-    conn.execute('DELETE FROM requests WHERE receiver_id=?', (uid,))
+    c.execute('DELETE FROM requests WHERE receiver_id=%s', (uid,))
+    c.execute('DELETE FROM food WHERE donor_id=%s', (uid,))
+    c.execute('DELETE FROM users WHERE id=%s', (uid,))
     conn.commit()
     conn.close()
     flash('User deleted.', 'info')
@@ -563,13 +566,15 @@ def admin_delete_food(fid):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     conn = get_db()
-    user = conn.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE id=%s', (session['user_id'],))
+    user = fetchone(c)
     if user['email'] != ADMIN_EMAIL:
         flash('Access denied.', 'danger')
         conn.close()
         return redirect(url_for('index'))
-    conn.execute('DELETE FROM food WHERE id=?', (fid,))
-    conn.execute('DELETE FROM requests WHERE food_id=?', (fid,))
+    c.execute('DELETE FROM requests WHERE food_id=%s', (fid,))
+    c.execute('DELETE FROM food WHERE id=%s', (fid,))
     conn.commit()
     conn.close()
     flash('Food listing deleted.', 'info')
@@ -583,12 +588,14 @@ def forgot_password():
             security_answer = request.form.get('security_answer', '').strip().lower()
             new_password = request.form.get('new_password', '')
             conn = get_db()
-            user = conn.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+            c = conn.cursor()
+            c.execute('SELECT * FROM users WHERE email=%s', (email,))
+            user = fetchone(c)
             if user:
                 stored_answer = (user['security_answer'] or '').strip().lower()
                 if stored_answer == security_answer:
                     hashed = generate_password_hash(new_password)
-                    conn.execute('UPDATE users SET password=? WHERE email=?', (hashed, email))
+                    c.execute('UPDATE users SET password=%s WHERE email=%s', (hashed, email))
                     conn.commit()
                     conn.close()
                     flash('Password reset successful! Please login.', 'success')
@@ -598,7 +605,7 @@ def forgot_password():
             else:
                 conn.close()
                 flash('Email not found.', 'danger')
-        except Exception:
+        except Exception as e:
             flash('Something went wrong.', 'danger')
     return render_template('forgot_password.html')
 
