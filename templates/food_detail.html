@@ -62,11 +62,20 @@
         <!-- Google Maps -->
         <div class="map-card">
           <h3>📍 Pickup Location</h3>
-          <div id="map" style="height: 250px; border-radius: 12px; background: var(--green-faint); display:flex; align-items:center; justify-content:center;">
-            <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline">
-              🗺️ Open in Google Maps
-            </a>
+          <div class="map-embed-wrap">
+            <iframe
+              width="100%"
+              height="250"
+              style="border:0; border-radius: 12px;"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q={{ food.location|urlencode }}&output=embed">
+            </iframe>
           </div>
+          <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.5rem; display:inline-block;">
+            🗺️ Open in Google Maps
+          </a>
         </div>
       </div>
 
