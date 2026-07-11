@@ -85,7 +85,7 @@
               <td><strong>{{ food.food_name }}</strong></td>
               <td>{{ food.donor_name }}</td>
               <td><span class="status-badge status-{{ food.status }}">{{ food.status }}</span></td>
-              <td>{{ food.created_at[:10] }}</td>
+              <td>{{ food.created_at.strftime('%Y-%m-%d') if food.created_at else '' }}</td>
             </tr>
             {% endfor %}
           </tbody>
