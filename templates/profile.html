@@ -35,7 +35,7 @@
         {% if user.bio %}
         <p class="profile-bio">{{ user.bio }}</p>
         {% endif %}
-        <p class="member-since">Member since {{ user.created_at[:10] }}</p>
+        <p class="member-since">Member since {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '' }}</p>
       </div>
 
       <div class="profile-edit-card">
