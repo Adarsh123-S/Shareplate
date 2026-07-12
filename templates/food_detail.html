@@ -62,18 +62,8 @@
         <!-- Google Maps -->
         <div class="map-card">
           <h3>📍 Pickup Location</h3>
-          <div class="map-embed-wrap">
-            <iframe
-              width="100%"
-              height="250"
-              style="border:0; border-radius: 12px;"
-              loading="lazy"
-              allowfullscreen
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://maps.google.com/maps?q={{ food.location|urlencode }}&output=embed">
-            </iframe>
-          </div>
-          <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.5rem; display:inline-block;">
+          <div id="map" style="height: 300px; border-radius: 12px; overflow:hidden;"></div>
+          <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.75rem; display:inline-block;">
             🗺️ Open in Google Maps
           </a>
         </div>
@@ -92,7 +82,7 @@
               <div class="chat-msg {% if msg.sender_id == session.user_id %}chat-msg-mine{% else %}chat-msg-theirs{% endif %}">
                 <div class="chat-msg-name">{{ msg.sender_name }}</div>
                 <div class="chat-msg-text">{{ msg.message }}</div>
-                <div class="chat-msg-time">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                <div class="chat-msg-time">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') if msg.created_at else '' }}</div>
               </div>
               {% endfor %}
             {% else %}
@@ -141,7 +131,7 @@
               {% if review.review %}
               <p class="review-text">{{ review.review }}</p>
               {% endif %}
-              <p class="review-date">{{ review.created_at.strftime('%Y-%m-%d') }}</p>
+              <p class="review-date">{{ review.created_at.strftime('%Y-%m-%d') if review.created_at else '' }}</p>
             </div>
             {% endfor %}
           {% else %}
@@ -181,5 +171,30 @@ function updateCountdown() {
 }
 updateCountdown();
 setInterval(updateCountdown, 60000);
+
+// Google Maps
+function initMap() {
+  const location = "{{ food.location }}";
+  const geocoder = new google.maps.Geocoder();
+  geocoder.geocode({ address: location + ', India' }, function(results, status) {
+    if (status === 'OK') {
+      const map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: results[0].geometry.location,
+      });
+      new google.maps.Marker({
+        map: map,
+        position: results[0].geometry.location,
+        title: location,
+        icon: {
+          url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+        }
+      });
+    } else {
+      document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--green-faint);border-radius:12px;"><p>📍 ' + location + '</p></div>';
+    }
+  });
+}
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap" async defer></script>
 {% endblock %}

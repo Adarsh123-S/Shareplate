@@ -329,7 +329,8 @@ def food_detail(food_id):
     messages = fetchall(c)
     conn.close()
     return render_template('food_detail.html', food=food, reviews=reviews,
-                           avg_rating=avg_rating, messages=messages)
+                           avg_rating=avg_rating, messages=messages,
+                           google_maps_key=os.environ.get('GOOGLE_MAPS_API_KEY', ''))
 
 @app.route('/rate/<int:food_id>', methods=['POST'])
 def rate_food(food_id):
