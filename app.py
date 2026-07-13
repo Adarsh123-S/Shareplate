@@ -7,9 +7,11 @@ import cloudinary.uploader
 from datetime import datetime
 import psycopg2
 import psycopg2.extras
+from flask_dance.contrib.google import make_google_blueprint, google
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -21,6 +23,14 @@ cloudinary.config(
 )
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+
+# Google OAuth
+google_bp = make_google_blueprint(
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+    scope=['profile', 'email']
+)
+app.register_blueprint(google_bp, url_prefix='/google')
 
 def get_db():
     conn = psycopg2.connect(DATABASE_URL)
@@ -177,6 +187,45 @@ def login():
             return redirect(url_for('dashboard'))
         flash('Invalid email or password.', 'danger')
     return render_template('login.html')
+
+@app.route('/google/login')
+def google_login():
+    return redirect(url_for('google.login'))
+
+@app.route('/google/callback')
+def google_callback():
+    if not google.authorized:
+        flash('Google login failed.', 'danger')
+        return redirect(url_for('login'))
+    try:
+        resp = google.get('/oauth2/v2/userinfo')
+        if not resp.ok:
+            flash('Failed to get user info from Google.', 'danger')
+            return redirect(url_for('login'))
+        info = resp.json()
+        email = info['email']
+        name = info.get('name', email)
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT * FROM users WHERE email=%s', (email,))
+        user = fetchone(c)
+        if not user:
+            c.execute(
+                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (%s,%s,%s,%s,%s,%s)',
+                (name, email, generate_password_hash('google_oauth_user'), '', 'both', '')
+            )
+            conn.commit()
+            c.execute('SELECT * FROM users WHERE email=%s', (email,))
+            user = fetchone(c)
+        conn.close()
+        session['user_id'] = user['id']
+        session['user_name'] = user['name']
+        session['user_role'] = user['role']
+        flash(f'Welcome, {user["name"]}! 🎉', 'success')
+        return redirect(url_for('dashboard'))
+    except Exception as e:
+        flash('Google login failed. Please try again.', 'danger')
+        return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
