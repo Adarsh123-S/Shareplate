@@ -32,6 +32,21 @@ google_bp = make_google_blueprint(
 )
 app.register_blueprint(google_bp, url_prefix='/google')
 
+# ── TEMPORARY DEBUG ROUTE — remove after checking env vars ──
+@app.route('/debug-env')
+def debug_env():
+    cid = os.environ.get('GOOGLE_CLIENT_ID', '')
+    secret = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+    return {
+        'client_id_length': len(cid),
+        'client_id_starts_with': cid[:10],
+        'client_id_ends_with': cid[-10:],
+        'secret_length': len(secret),
+        'secret_starts_with': secret[:6],
+        'secret_ends_with': secret[-4:],
+    }
+# ── END DEBUG ROUTE ──
+
 def get_db():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
