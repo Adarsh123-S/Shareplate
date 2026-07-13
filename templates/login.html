@@ -16,6 +16,15 @@
       <h1>Welcome back</h1>
       <p>Login to share or claim food</p>
     </div>
+
+    <!-- Google Login Button -->
+    <a href="{{ url_for('google.login') }}" class="google-btn">
+      <img src="https://www.google.com/favicon.ico" width="18" height="18"/>
+      Continue with Google
+    </a>
+
+    <div class="divider"><span>or</span></div>
+
     <form method="POST" class="auth-form">
       <div class="form-group slide-up" style="animation-delay:0.1s">
         <label>Email Address</label>
