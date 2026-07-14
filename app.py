@@ -8,11 +8,27 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_mail import Mail, Message as MailMessage
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_EMAIL')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_EMAIL')
+mail = Mail(app)
+
+def send_email(to, subject, body):
+    try:
+        msg = MailMessage(subject, recipients=[to], body=body)
+        mail.send(msg)
+    except Exception as e:
+        print(f"Email failed: {e}")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -32,21 +48,6 @@ google_bp = make_google_blueprint(
     scope=['profile', 'email']
 )
 app.register_blueprint(google_bp, url_prefix='/google')
-
-# ── TEMPORARY DEBUG ROUTE — remove after checking env vars ──
-@app.route('/debug-env')
-def debug_env():
-    cid = os.environ.get('GOOGLE_CLIENT_ID', '')
-    secret = os.environ.get('GOOGLE_CLIENT_SECRET', '')
-    return {
-        'client_id_length': len(cid),
-        'client_id_starts_with': cid[:10],
-        'client_id_ends_with': cid[-10:],
-        'secret_length': len(secret),
-        'secret_starts_with': secret[:6],
-        'secret_ends_with': secret[-4:],
-    }
-# ── END DEBUG ROUTE ──
 
 def get_db():
     conn = psycopg2.connect(DATABASE_URL)
