@@ -180,6 +180,11 @@ def register():
             )
             conn.commit()
             conn.close()
+            send_email(
+                email,
+                'Welcome to SharePlate! 🎉',
+                f'Hi {name},\n\nWelcome to SharePlate! You can now donate or claim food near you.\n\nHappy sharing!'
+            )
             flash('Account created! Please login.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
