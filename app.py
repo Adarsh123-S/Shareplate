@@ -12,6 +12,7 @@ from flask_dance.contrib.google import make_google_blueprint, google
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
