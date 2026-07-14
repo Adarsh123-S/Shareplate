@@ -1,49 +1,77 @@
 {% extends "base.html" %}
 {% block title %}Login — SharePlate{% endblock %}
 {% block content %}
-<div class="auth-page auth-animated">
-  <div class="auth-bg">
-    <div class="floating-food f1">🍱</div>
-    <div class="floating-food f2">🥗</div>
-    <div class="floating-food f3">🍛</div>
-    <div class="floating-food f4">🥙</div>
-    <div class="floating-food f5">🍜</div>
-    <div class="floating-food f6">🥘</div>
-  </div>
-  <div class="auth-card animate-in">
-    <div class="auth-header">
-      <div class="auth-icon spin-icon">👋</div>
-      <h1>Welcome back</h1>
-      <p>Login to share or claim food</p>
+<div class="auth-split">
+
+  <!-- Left: Brand / Visual Panel -->
+  <div class="auth-visual-panel">
+    <div class="auth-visual-blob blob-1"></div>
+    <div class="auth-visual-blob blob-2"></div>
+    <div class="auth-visual-food af1">🍱</div>
+    <div class="auth-visual-food af2">🥗</div>
+    <div class="auth-visual-food af3">🍛</div>
+    <div class="auth-visual-food af4">🥙</div>
+    <div class="auth-visual-food af5">🍜</div>
+    <div class="auth-visual-food af6">🥘</div>
+
+    <div class="auth-visual-content">
+      <div class="auth-visual-brand">
+        <span class="brand-icon">🍽️</span> SharePlate
+      </div>
+      <h1 class="auth-visual-title">Good food<br/>shouldn't go to waste.</h1>
+      <p class="auth-visual-sub">Connect with neighbors sharing surplus food nearby — one plate at a time.</p>
+
+      <div class="auth-visual-stats">
+        <div class="avs-item">
+          <span class="avs-num">1000+</span>
+          <span class="avs-label">Meals shared</span>
+        </div>
+        <div class="avs-div"></div>
+        <div class="avs-item">
+          <span class="avs-num">500+</span>
+          <span class="avs-label">Active members</span>
+        </div>
+      </div>
     </div>
-
-    <!-- Google Login Button -->
-    <a href="{{ url_for('google.login') }}" class="google-btn">
-      <img src="https://www.google.com/favicon.ico" width="18" height="18"/>
-      Continue with Google
-    </a>
-
-    <div class="divider"><span>or</span></div>
-
-    <form method="POST" class="auth-form">
-      <div class="form-group slide-up" style="animation-delay:0.1s">
-        <label>Email Address</label>
-        <input type="email" name="email" placeholder="you@example.com" required />
-      </div>
-      <div class="form-group slide-up" style="animation-delay:0.2s">
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Your password" required />
-      </div>
-      <div class="slide-up" style="animation-delay:0.3s">
-        <button type="submit" class="btn-submit">Login →</button>
-      </div>
-    </form>
-    <p class="auth-switch slide-up" style="animation-delay:0.4s">
-      <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
-    </p>
-    <p class="auth-switch slide-up" style="animation-delay:0.5s">
-      New to SharePlate? <a href="{{ url_for('register') }}">Create an account</a>
-    </p>
   </div>
+
+  <!-- Right: Form Panel -->
+  <div class="auth-form-panel">
+    <div class="auth-glass-card animate-in">
+      <div class="auth-header">
+        <div class="auth-icon spin-icon">👋</div>
+        <h1>Welcome back</h1>
+        <p>Login to share or claim food</p>
+      </div>
+
+      <a href="{{ url_for('google.login') }}" class="google-btn">
+        <img src="https://www.google.com/favicon.ico" width="18" height="18"/>
+        Continue with Google
+      </a>
+
+      <div class="divider"><span>or</span></div>
+
+      <form method="POST" class="auth-form">
+        <div class="form-group slide-up" style="animation-delay:0.1s">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group slide-up" style="animation-delay:0.2s">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Your password" required />
+        </div>
+        <div class="slide-up" style="animation-delay:0.3s">
+          <button type="submit" class="btn-submit">Login →</button>
+        </div>
+      </form>
+      <p class="auth-switch slide-up" style="animation-delay:0.4s">
+        <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+      </p>
+      <p class="auth-switch slide-up" style="animation-delay:0.5s">
+        New to SharePlate? <a href="{{ url_for('register') }}">Create an account</a>
+      </p>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
