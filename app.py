@@ -15,21 +15,6 @@ app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_EMAIL')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_EMAIL')
-mail = Mail(app)
-
-def send_email(to, subject, body):
-    try:
-        msg = MailMessage(subject, recipients=[to], body=body)
-        mail.send(msg)
-    except Exception as e:
-        print(f"Email failed: {e}")
-
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
@@ -40,6 +25,24 @@ cloudinary.config(
 )
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+
+# Flask-Mail (Gmail SMTP)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = ('SharePlate', os.environ.get('MAIL_USERNAME'))
+mail = Mail(app)
+
+def send_email(to_email, subject, body):
+    if not to_email or not app.config['MAIL_USERNAME']:
+        return
+    try:
+        msg = MailMessage(subject=subject, recipients=[to_email], body=body)
+        mail.send(msg)
+    except Exception as e:
+        print(f'Email send failed: {e}')
 
 # Google OAuth
 google_bp = make_google_blueprint(
@@ -180,11 +183,6 @@ def register():
             )
             conn.commit()
             conn.close()
-            send_email(
-                email,
-                'Welcome to SharePlate! 🎉',
-                f'Hi {name},\n\nWelcome to SharePlate! You can now donate or claim food near you.\n\nHappy sharing!'
-            )
             flash('Account created! Please login.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
@@ -444,7 +442,20 @@ def send_message(food_id):
             c.execute('INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s)',
                       (food_id, uid, receiver_id, message))
             add_notification(receiver_id, f'New message about "{food["food_name"]}"')
+            c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
+            receiver = fetchone(c)
+            c.execute('SELECT name FROM users WHERE id=%s', (uid,))
+            sender = fetchone(c)
             conn.commit()
+            if receiver:
+                send_email(
+                    receiver['email'],
+                    f'New message about "{food["food_name"]}" on SharePlate',
+                    f'Hi {receiver["name"]},\n\n{sender["name"] if sender else "Someone"} sent you a message '
+                    f'about "{food["food_name"]}":\n\n"{message}"\n\n'
+                    f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
+                    f'— SharePlate'
+                )
             flash('Message sent! 💬', 'success')
     conn.close()
     return redirect(url_for('food_detail', food_id=food_id))
@@ -474,8 +485,22 @@ def claim_food(food_id):
     c.execute('INSERT INTO requests (food_id, receiver_id) VALUES (%s,%s)', (food_id, uid))
     c.execute("UPDATE food SET status='requested' WHERE id=%s", (food_id,))
     add_notification(food['donor_id'], f'Someone claimed your "{food["food_name"]}" listing!')
+    c.execute('SELECT email, name FROM users WHERE id=%s', (food['donor_id'],))
+    donor = fetchone(c)
+    c.execute('SELECT name FROM users WHERE id=%s', (uid,))
+    claimer = fetchone(c)
     conn.commit()
     conn.close()
+    if donor:
+        send_email(
+            donor['email'],
+            f'Someone claimed your "{food["food_name"]}" listing on SharePlate',
+            f'Hi {donor["name"]},\n\n{claimer["name"] if claimer else "Someone"} has claimed your food listing '
+            f'"{food["food_name"]}" on SharePlate.\n\n'
+            f'Log in to SharePlate to chat with them and arrange pickup:\n'
+            f'https://shareplate-0s8z.onrender.com/dashboard\n\n'
+            f'— SharePlate'
+        )
     flash('Food claimed! Contact the donor to arrange pickup. 🙌', 'success')
     return redirect(url_for('dashboard'))
 
