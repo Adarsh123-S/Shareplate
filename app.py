@@ -8,7 +8,7 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_mail import Mail, Message as MailMessage
+import requests as http_requests
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
@@ -26,21 +26,28 @@ cloudinary.config(
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Flask-Mail (Gmail SMTP)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = ('SharePlate', os.environ.get('MAIL_USERNAME'))
-mail = Mail(app)
+# Resend (HTTP-based email API — works on Render free tier, unlike SMTP)
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+MAIL_FROM = os.environ.get('MAIL_FROM', 'SharePlate <onboarding@resend.dev>')
 
 def send_email(to_email, subject, body):
-    if not to_email or not app.config['MAIL_USERNAME']:
+    if not to_email or not RESEND_API_KEY:
+        print('Email skipped: missing recipient or RESEND_API_KEY')
         return
     try:
-        msg = MailMessage(subject=subject, recipients=[to_email], body=body)
-        mail.send(msg)
+        resp = http_requests.post(
+            'https://api.resend.com/emails',
+            headers={'Authorization': f'Bearer {RESEND_API_KEY}'},
+            json={
+                'from': MAIL_FROM,
+                'to': [to_email],
+                'subject': subject,
+                'text': body
+            },
+            timeout=10
+        )
+        if resp.status_code >= 400:
+            print(f'Email send failed: {resp.status_code} {resp.text}')
     except Exception as e:
         print(f'Email send failed: {e}')
 
@@ -83,8 +90,10 @@ def init_db():
         status TEXT DEFAULT 'available',
         donor_id INTEGER REFERENCES users(id),
         image_url TEXT,
+        reminder_sent BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
+    c.execute('''ALTER TABLE food ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN DEFAULT FALSE''')
     c.execute('''CREATE TABLE IF NOT EXISTS requests (
         id SERIAL PRIMARY KEY,
         food_id INTEGER REFERENCES food(id),
@@ -150,7 +159,7 @@ def index():
                COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
                LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = 'available'
+               WHERE f.status = 'available' AND f.expiry::timestamp > NOW()
                GROUP BY f.id, u.name
                ORDER BY f.created_at DESC LIMIT 6''')
     foods = fetchall(c)
@@ -335,7 +344,7 @@ def available():
                COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
                LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = 'available' '''
+               WHERE f.status = 'available' AND f.expiry::timestamp > NOW() '''
     params = []
     if category:
         query += ' AND f.category=%s'
@@ -705,6 +714,53 @@ def forgot_password():
         except Exception as e:
             flash('Something went wrong.', 'danger')
     return render_template('forgot_password.html')
+
+@app.route('/cron/check-expiry')
+def cron_check_expiry():
+    secret = request.args.get('key', '')
+    if secret != os.environ.get('CRON_SECRET', ''):
+        return jsonify({'error': 'unauthorized'}), 401
+
+    conn = get_db()
+    c = conn.cursor()
+
+    # 1. Mark truly expired listings as 'expired' so they stop showing as available
+    c.execute('''UPDATE food SET status='expired'
+                 WHERE status='available' AND expiry::timestamp < NOW()
+                 RETURNING id''')
+    expired_ids = [row[0] for row in c.fetchall()]
+
+    # 2. Find listings expiring within the next 24 hours that haven't been reminded yet
+    c.execute('''SELECT f.*, u.email as donor_email, u.name as donor_name
+                 FROM food f JOIN users u ON f.donor_id = u.id
+                 WHERE f.status='available'
+                 AND f.reminder_sent = FALSE
+                 AND f.expiry::timestamp > NOW()
+                 AND f.expiry::timestamp < NOW() + INTERVAL '24 hours' ''')
+    soon_expiring = fetchall(c)
+
+    reminded_ids = []
+    for food in soon_expiring:
+        send_email(
+            food['donor_email'],
+            f'"{food["food_name"]}" expires soon on SharePlate',
+            f'Hi {food["donor_name"]},\n\n'
+            f'Your listing "{food["food_name"]}" expires within 24 hours.\n\n'
+            f'If it hasn\'t been claimed yet, consider sharing it directly with someone nearby, '
+            f'or check your dashboard:\nhttps://shareplate-0s8z.onrender.com/dashboard\n\n'
+            f'— SharePlate'
+        )
+        reminded_ids.append(food['id'])
+
+    if reminded_ids:
+        c.execute('UPDATE food SET reminder_sent=TRUE WHERE id = ANY(%s)', (reminded_ids,))
+
+    conn.commit()
+    conn.close()
+    return jsonify({
+        'marked_expired': len(expired_ids),
+        'reminders_sent': len(reminded_ids)
+    })
 
 if __name__ == '__main__':
     init_db()
