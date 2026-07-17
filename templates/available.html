@@ -13,7 +13,10 @@
 
     <!-- Advanced Filters -->
     <form method="GET" class="filter-bar">
-      <input type="text" name="search" value="{{ search }}" placeholder="🔍 Search food, location..." />
+      <div class="autocomplete-wrapper">
+        <input type="text" name="search" id="search-input" value="{{ search }}" placeholder="🔍 Search food, location..." autocomplete="off" />
+        <div id="search-suggestions" class="search-suggestions"></div>
+      </div>
       <input type="text" name="location" value="{{ location }}" placeholder="📍 Filter by location..." />
       <select name="category">
         <option value="">All Categories</option>
@@ -133,4 +136,50 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+const searchInput = document.getElementById('search-input');
+const suggestionsBox = document.getElementById('search-suggestions');
+let debounceTimer;
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  const query = searchInput.value.trim();
+  if (query.length < 2) {
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.style.display = 'none';
+    return;
+  }
+  debounceTimer = setTimeout(() => {
+    fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.length === 0) {
+          suggestionsBox.innerHTML = '';
+          suggestionsBox.style.display = 'none';
+          return;
+        }
+        suggestionsBox.innerHTML = data.map(item =>
+          `<div class="suggestion-item">${item}</div>`
+        ).join('');
+        suggestionsBox.style.display = 'block';
+      });
+  }, 250);
+});
+
+suggestionsBox.addEventListener('click', (e) => {
+  if (e.target.classList.contains('suggestion-item')) {
+    searchInput.value = e.target.textContent;
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.style.display = 'none';
+    searchInput.form.submit();
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+    suggestionsBox.style.display = 'none';
+  }
+});
+</script>
 {% endblock %}

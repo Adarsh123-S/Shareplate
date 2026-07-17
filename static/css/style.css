@@ -638,3 +638,37 @@ img { max-width: 100%; display: block; }
   border-color: rgba(255,255,255,0.08);
 }
 .status-expired { background: #FEE2E2; color: #991B1B; }
+/* ── Search Autocomplete ── */
+.autocomplete-wrapper {
+  position: relative;
+  flex: 1;
+}
+.search-suggestions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--warm-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl);
+  margin-top: 0.3rem;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.suggestion-item {
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+.suggestion-item:hover {
+  background: var(--cream);
+  color: var(--green);
+}

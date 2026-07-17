@@ -329,7 +329,19 @@ def add_food():
         flash('Food listed successfully! 🎉', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_food.html')
-
+@app.route('/api/search-suggestions')
+def search_suggestions():
+    q = request.args.get('q', '').strip()
+    if len(q) < 2:
+        return jsonify([])
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('''SELECT DISTINCT food_name FROM food
+               WHERE status='available' AND food_name ILIKE %s
+               ORDER BY food_name LIMIT 8''', (f'%{q}%',))
+    suggestions = [row[0] for row in c.fetchall()]
+    conn.close()
+    return jsonify(suggestions)
 @app.route('/available')
 def available():
     conn = get_db()
