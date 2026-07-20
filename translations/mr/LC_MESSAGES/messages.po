@@ -1,0 +1,75 @@
+# Marathi translations for PROJECT.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-20 11:18+0530\n"
+"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: mr\n"
+"Language-Team: mr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: templates/base.html:27 templates/base.html:67
+msgid "Browse"
+msgstr "ब्राउझ करा"
+
+#: templates/base.html:28
+msgid "Leaders"
+msgstr "आघाडीचे"
+
+#: templates/base.html:29
+msgid "Stats"
+msgstr "आकडेवारी"
+
+#: templates/base.html:31
+msgid "Donate"
+msgstr "दान करा"
+
+#: templates/base.html:32
+msgid "Dashboard"
+msgstr "डॅशबोर्ड"
+
+#: templates/base.html:33
+msgid "Profile"
+msgstr "प्रोफाइल"
+
+#: templates/base.html:34
+msgid "Logout"
+msgstr "लॉगआउट"
+
+#: templates/base.html:36
+msgid "Login"
+msgstr "लॉगिन"
+
+#: templates/base.html:37
+msgid "Join Free"
+msgstr "मोफत सामील व्हा"
+
+#: templates/base.html:65
+msgid "Share Food. Reduce Waste. Feed Hope."
+msgstr "अन्न सामायिक करा. कचरा कमी करा. आशा जोपासा."
+
+#: templates/base.html:68
+msgid "Leaderboard"
+msgstr "लीडरबोर्ड"
+
+#: templates/base.html:69
+msgid "Analytics"
+msgstr "विश्लेषण"
+
+#: templates/base.html:70
+msgid "Join"
+msgstr "सामील व्हा"
+
+#: templates/base.html:72
+msgid "Made with"
+msgstr "याद्वारे तयार केले"
+
+#: templates/base.html:72
+msgid "to end food waste"
+msgstr "अन्नाची नासाडी संपवण्यासाठी"

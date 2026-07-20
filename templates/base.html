@@ -24,17 +24,17 @@
     <span class="brand-icon">🍱</span> SharePlate
   </a>
   <div class="nav-links">
-    <a href="{{ url_for('available') }}">Browse</a>
-    <a href="{{ url_for('leaderboard') }}">🏆 Leaders</a>
-    <a href="{{ url_for('analytics') }}">📊 Stats</a>
+    <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
+    <a href="{{ url_for('leaderboard') }}">🏆 {{ _('Leaders') }}</a>
+    <a href="{{ url_for('analytics') }}">📊 {{ _('Stats') }}</a>
     {% if session.user_id %}
-      <a href="{{ url_for('add_food') }}">+ Donate</a>
-      <a href="{{ url_for('dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('profile') }}">Profile</a>
-      <a href="{{ url_for('logout') }}" class="btn-nav">Logout</a>
+      <a href="{{ url_for('add_food') }}">+ {{ _('Donate') }}</a>
+      <a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
+      <a href="{{ url_for('profile') }}">{{ _('Profile') }}</a>
+      <a href="{{ url_for('logout') }}" class="btn-nav">{{ _('Logout') }}</a>
     {% else %}
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}" class="btn-nav">Join Free</a>
+      <a href="{{ url_for('login') }}">{{ _('Login') }}</a>
+      <a href="{{ url_for('register') }}" class="btn-nav">{{ _('Join Free') }}</a>
     {% endif %}
     <div class="lang-dropdown">
   <button class="lang-toggle" onclick="document.getElementById('lang-menu').classList.toggle('open')">🌐</button>
@@ -62,14 +62,14 @@
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">🍱 SharePlate</div>
-    <p>Share Food. Reduce Waste. Feed Hope.</p>
+    <p>{{ _('Share Food. Reduce Waste. Feed Hope.') }}</p>
     <div class="footer-links">
-      <a href="{{ url_for('available') }}">Browse</a>
-      <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
-      <a href="{{ url_for('analytics') }}">Analytics</a>
-      <a href="{{ url_for('register') }}">Join</a>
+      <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
+      <a href="{{ url_for('leaderboard') }}">{{ _('Leaderboard') }}</a>
+      <a href="{{ url_for('analytics') }}">{{ _('Analytics') }}</a>
+      <a href="{{ url_for('register') }}">{{ _('Join') }}</a>
     </div>
-    <p class="footer-copy">© 2024 SharePlate · Made with ❤️ to end food waste</p>
+    <p class="footer-copy">© 2024 SharePlate · {{ _('Made with') }} ❤️ {{ _('to end food waste') }}</p>
   </div>
 </footer>
 

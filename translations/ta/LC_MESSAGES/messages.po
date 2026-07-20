@@ -1,0 +1,75 @@
+# Tamil translations for PROJECT.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-20 11:18+0530\n"
+"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ta\n"
+"Language-Team: ta <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: templates/base.html:27 templates/base.html:67
+msgid "Browse"
+msgstr "உலாவு"
+
+#: templates/base.html:28
+msgid "Leaders"
+msgstr "முன்னணியாளர்கள்"
+
+#: templates/base.html:29
+msgid "Stats"
+msgstr "புள்ளிவிவரங்கள்"
+
+#: templates/base.html:31
+msgid "Donate"
+msgstr "நன்கொடை"
+
+#: templates/base.html:32
+msgid "Dashboard"
+msgstr "டாஷ்போர்டு"
+
+#: templates/base.html:33
+msgid "Profile"
+msgstr "சுயவிவரம்"
+
+#: templates/base.html:34
+msgid "Logout"
+msgstr "வெளியேறு"
+
+#: templates/base.html:36
+msgid "Login"
+msgstr "உள்நுழை"
+
+#: templates/base.html:37
+msgid "Join Free"
+msgstr "இலவசமாக இணையுங்கள்"
+
+#: templates/base.html:65
+msgid "Share Food. Reduce Waste. Feed Hope."
+msgstr "உணவைப் பகிருங்கள். வீணாவதைக் குறையுங்கள். நம்பிக்கையை வளர்யுங்கள்."
+
+#: templates/base.html:68
+msgid "Leaderboard"
+msgstr "லீடர்போர்டு"
+
+#: templates/base.html:69
+msgid "Analytics"
+msgstr "பகுப்பாய்வு"
+
+#: templates/base.html:70
+msgid "Join"
+msgstr "இணையுங்கள்"
+
+#: templates/base.html:72
+msgid "Made with"
+msgstr "இதனுடன் உருவாக்கப்பட்டது"
+
+#: templates/base.html:72
+msgid "to end food waste"
+msgstr "உணவு வீணாவதை முடிவுக்குக் கொண்டுவர"

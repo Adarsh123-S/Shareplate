@@ -1,0 +1,75 @@
+# Kannada translations for PROJECT.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-20 11:18+0530\n"
+"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: kn\n"
+"Language-Team: kn <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: templates/base.html:27 templates/base.html:67
+msgid "Browse"
+msgstr "ಬ್ರೌಸ್ ಮಾಡಿ"
+
+#: templates/base.html:28
+msgid "Leaders"
+msgstr "ಮುಂದಾಳುಗಳು"
+
+#: templates/base.html:29
+msgid "Stats"
+msgstr "ಅಂಕಿಅಂಶಗಳು"
+
+#: templates/base.html:31
+msgid "Donate"
+msgstr "ದಾನ ಮಾಡಿ"
+
+#: templates/base.html:32
+msgid "Dashboard"
+msgstr "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+
+#: templates/base.html:33
+msgid "Profile"
+msgstr "ಪ್ರೊಫೈಲ್"
+
+#: templates/base.html:34
+msgid "Logout"
+msgstr "ಲಾಗ್ ಔಟ್"
+
+#: templates/base.html:36
+msgid "Login"
+msgstr "ಲಾಗಿನ್"
+
+#: templates/base.html:37
+msgid "Join Free"
+msgstr "ಉಚಿತವಾಗಿ ಸೇರಿ"
+
+#: templates/base.html:65
+msgid "Share Food. Reduce Waste. Feed Hope."
+msgstr "ಆಹಾರ ಹಂಚಿಕೊಳ್ಳಿ. ವ್ಯರ್ಥ ಕಡಿಮೆ ಮಾಡಿ. ಭರವಸೆ ನೀಡಿ."
+
+#: templates/base.html:68
+msgid "Leaderboard"
+msgstr "ಲೀಡರ್‌ಬೋರ್ಡ್"
+
+#: templates/base.html:69
+msgid "Analytics"
+msgstr "ವಿಶ್ಲೇಷಣೆ"
+
+#: templates/base.html:70
+msgid "Join"
+msgstr "ಸೇರಿ"
+
+#: templates/base.html:72
+msgid "Made with"
+msgstr "ಇದರೊಂದಿಗೆ ಮಾಡಲಾಗಿದೆ"
+
+#: templates/base.html:72
+msgid "to end food waste"
+msgstr "ಆಹಾರ ವ್ಯರ್ಥವನ್ನು ಕೊನೆಗೊಳಿಸಲು"

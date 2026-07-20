@@ -1,0 +1,77 @@
+# Hindi translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-20 11:18+0530\n"
+"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: hi\n"
+"Language-Team: hi <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: templates/base.html:27 templates/base.html:67
+msgid "Browse"
+msgstr "ब्राउज़ करें"
+
+#: templates/base.html:28
+msgid "Leaders"
+msgstr "अग्रणी"
+
+#: templates/base.html:29
+msgid "Stats"
+msgstr "आँकड़े"
+
+#: templates/base.html:31
+msgid "Donate"
+msgstr "दान करें"
+
+#: templates/base.html:32
+msgid "Dashboard"
+msgstr "डैशबोर्ड"
+
+#: templates/base.html:33
+msgid "Profile"
+msgstr "प्रोफ़ाइल"
+
+#: templates/base.html:34
+msgid "Logout"
+msgstr "लॉग आउट"
+
+#: templates/base.html:36
+msgid "Login"
+msgstr "लॉगिन"
+
+#: templates/base.html:37
+msgid "Join Free"
+msgstr "मुफ़्त जुड़ें"
+
+#: templates/base.html:65
+msgid "Share Food. Reduce Waste. Feed Hope."
+msgstr "भोजन साझा करें। बर्बादी कम करें। आशा को पोषित करें।"
+
+#: templates/base.html:68
+msgid "Leaderboard"
+msgstr "लीडरबोर्ड"
+
+#: templates/base.html:69
+msgid "Analytics"
+msgstr "विश्लेषण"
+
+#: templates/base.html:70
+msgid "Join"
+msgstr "जुड़ें"
+
+#: templates/base.html:72
+msgid "Made with"
+msgstr "बनाया गया"
+
+#: templates/base.html:72
+msgid "to end food waste"
+msgstr "भोजन की बर्बादी खत्म करने के लिए"
