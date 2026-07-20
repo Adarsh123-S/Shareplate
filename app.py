@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -10,9 +13,6 @@ import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_socketio import SocketIO, join_room, emit
 import requests as http_requests
-import eventlet
-eventlet.monkey_patch()
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
