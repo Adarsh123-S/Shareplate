@@ -36,6 +36,14 @@
       <a href="{{ url_for('login') }}">Login</a>
       <a href="{{ url_for('register') }}" class="btn-nav">Join Free</a>
     {% endif %}
+    <div class="lang-dropdown">
+  <button class="lang-toggle" onclick="document.getElementById('lang-menu').classList.toggle('open')">🌐</button>
+  <div id="lang-menu" class="lang-menu">
+    {% for code, name in config.LANGUAGES.items() %}
+    <a href="{{ url_for('set_language', lang=code) }}">{{ name }}</a>
+    {% endfor %}
+  </div>
+</div>
     <button class="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   </div>
   <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>

@@ -672,3 +672,40 @@ img { max-width: 100%; display: block; }
   background: var(--cream);
   color: var(--green);
 }
+/* ── Language Dropdown ── */
+.lang-dropdown {
+  position: relative;
+}
+.lang-toggle {
+  background: none; border: 1.5px solid var(--border); border-radius: 50px;
+  padding: 0.35rem 0.7rem; cursor: pointer; font-size: 1rem; transition: all .18s;
+}
+.lang-toggle:hover { background: var(--green-faint); }
+.lang-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--warm-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: 0.4rem;
+  min-width: 140px;
+  overflow: hidden;
+  z-index: 60;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.lang-menu.open {
+  display: block;
+}
+.lang-menu a {
+  display: block;
+  padding: 0.6rem 1rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  transition: background .15s;
+}
+.lang-menu a:hover {
+  background: var(--cream);
+  color: var(--green);
+}

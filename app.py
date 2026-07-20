@@ -8,6 +8,7 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_babel import Babel, gettext
 from flask_socketio import SocketIO, join_room, emit
 import requests as http_requests
 
@@ -16,6 +17,29 @@ app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+app.config['LANGUAGES'] = {
+    'en': 'English',
+    'hi': 'हिन्दी',
+    'kn': 'ಕನ್ನಡ',
+    'te': 'తెలుగు',
+    'ta': 'தமிழ்',
+    'mr': 'मराठी',
+    'ml': 'മലയാളം'
+}
+app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+
+def get_locale():
+    if 'language' in session:
+        return session['language']
+    return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
+
+babel = Babel(app, locale_selector=get_locale)
+
+@app.route('/set-language/<lang>')
+def set_language(lang):
+    if lang in app.config['LANGUAGES']:
+        session['language'] = lang
+    return redirect(request.referrer or url_for('index'))
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
