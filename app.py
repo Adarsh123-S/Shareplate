@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -18,7 +15,7 @@ app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -334,6 +331,7 @@ def add_food():
         flash('Food listed successfully! 🎉', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_food.html')
+
 @app.route('/api/search-suggestions')
 def search_suggestions():
     q = request.args.get('q', '').strip()
@@ -347,6 +345,7 @@ def search_suggestions():
     suggestions = [row[0] for row in c.fetchall()]
     conn.close()
     return jsonify(suggestions)
+
 @app.route('/available')
 def available():
     conn = get_db()
@@ -448,6 +447,7 @@ def rate_food(food_id):
     conn.close()
     flash('Rating submitted! ⭐', 'success')
     return redirect(url_for('food_detail', food_id=food_id))
+
 @socketio.on('join')
 def on_join(data):
     food_id = data.get('food_id')
@@ -502,6 +502,7 @@ def handle_send_message(data):
         'message': message_text,
         'created_at': new_row[1].strftime('%b %d, %I:%M %p')
     }, room=f'food_{food_id}')
+
 @app.route('/send-message/<int:food_id>', methods=['POST'])
 def send_message(food_id):
     if 'user_id' not in session:
