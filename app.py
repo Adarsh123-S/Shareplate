@@ -8,12 +8,14 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_socketio import SocketIO, join_room, emit
 import requests as http_requests
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -443,7 +445,60 @@ def rate_food(food_id):
     conn.close()
     flash('Rating submitted! ⭐', 'success')
     return redirect(url_for('food_detail', food_id=food_id))
+@socketio.on('join')
+def on_join(data):
+    food_id = data.get('food_id')
+    if food_id:
+        join_room(f'food_{food_id}')
 
+@socketio.on('send_message')
+def handle_send_message(data):
+    food_id = data.get('food_id')
+    message_text = data.get('message', '').strip()
+    if 'user_id' not in session or not message_text or not food_id:
+        return
+
+    uid = session['user_id']
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
+    food = fetchone(c)
+    if not food:
+        conn.close()
+        return
+
+    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
+    if not receiver_id:
+        conn.close()
+        return
+
+    c.execute('INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s) RETURNING id, created_at',
+              (food_id, uid, receiver_id, message_text))
+    new_row = c.fetchone()
+    add_notification(receiver_id, f'New message about "{food["food_name"]}"')
+    c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
+    receiver = fetchone(c)
+    c.execute('SELECT name FROM users WHERE id=%s', (uid,))
+    sender = fetchone(c)
+    conn.commit()
+    conn.close()
+
+    if receiver:
+        send_email(
+            receiver['email'],
+            f'New message about "{food["food_name"]}" on SharePlate',
+            f'Hi {receiver["name"]},\n\n{sender["name"] if sender else "Someone"} sent you a message '
+            f'about "{food["food_name"]}":\n\n"{message_text}"\n\n'
+            f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
+            f'— SharePlate'
+        )
+
+    emit('receive_message', {
+        'sender_id': uid,
+        'sender_name': sender['name'] if sender else 'Someone',
+        'message': message_text,
+        'created_at': new_row[1].strftime('%b %d, %I:%M %p')
+    }, room=f'food_{food_id}')
 @app.route('/send-message/<int:food_id>', methods=['POST'])
 def send_message(food_id):
     if 'user_id' not in session:
@@ -776,4 +831,4 @@ def cron_check_expiry():
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    socketio.run(app, debug=True)

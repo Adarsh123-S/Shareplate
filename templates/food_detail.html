@@ -76,7 +76,7 @@
         {% if session.user_id %}
         <div class="chat-card">
           <h3>💬 Chat with {{ food.donor_name }}</h3>
-          <div class="chat-messages">
+          <div class="chat-messages" id="chat-messages">
             {% if messages %}
               {% for msg in messages %}
               <div class="chat-msg {% if msg.sender_id == session.user_id %}chat-msg-mine{% else %}chat-msg-theirs{% endif %}">
@@ -86,14 +86,14 @@
               </div>
               {% endfor %}
             {% else %}
-              <p class="no-messages">No messages yet. Start the conversation!</p>
+              <p class="no-messages" id="no-messages">No messages yet. Start the conversation!</p>
             {% endif %}
           </div>
           {% if session.user_id != food.donor_id %}
-          <form method="post" action="{{ url_for('send_message', food_id=food.id) }}" class="chat-form">
-            <input type="text" name="message" placeholder="Type a message..." required />
-            <button type="submit" class="btn-primary">Send</button>
-          </form>
+          <div class="chat-form">
+            <input type="text" id="chat-input" placeholder="Type a message..." />
+            <button onclick="sendMessage()" class="btn-primary">Send</button>
+          </div>
           {% endif %}
         </div>
         {% endif %}
@@ -197,4 +197,33 @@ function initMap() {
 }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap" async defer></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+const socket = io();
+const foodId = {{ food.id }};
+const myUserId = {{ session.user_id or 'null' }};
+socket.emit('join', { food_id: foodId });
+socket.on('receive_message', function(data) {
+  const noMsg = document.getElementById('no-messages');
+  if (noMsg) noMsg.remove();
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (data.sender_id == myUserId ? 'chat-msg-mine' : 'chat-msg-theirs');
+  div.innerHTML = `<div class="chat-msg-name">${data.sender_name}</div>
+    <div class="chat-msg-text">${data.message}</div>
+    <div class="chat-msg-time">${data.created_at}</div>`;
+  const msgs = document.getElementById('chat-messages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+});
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  socket.emit('send_message', { food_id: foodId, message: msg });
+  input.value = '';
+}
+document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') sendMessage();
+});
+</script>
 {% endblock %}
