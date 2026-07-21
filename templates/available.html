@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Browse Food — SharePlate{% endblock %}
+{% block title %}{{ _('Browse Food') }} — SharePlate{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <h1>Available Food 🔍</h1>
-    <p>Browse free food listed by generous people in your community.</p>
+    <h1>{{ _('Available Food') }} 🔍</h1>
+    <p>{{ _('Browse free food listed by generous people in your community.') }}</p>
   </div>
 </div>
 
@@ -14,40 +14,40 @@
     <!-- Advanced Filters -->
     <form method="GET" class="filter-bar">
       <div class="autocomplete-wrapper">
-        <input type="text" name="search" id="search-input" value="{{ search }}" placeholder="🔍 Search food, location..." autocomplete="off" />
+        <input type="text" name="search" id="search-input" value="{{ search }}" placeholder="🔍 {{ _('Search food, location...') }}" autocomplete="off" />
         <div id="search-suggestions" class="search-suggestions"></div>
       </div>
-      <input type="text" name="location" value="{{ location }}" placeholder="📍 Filter by location..." />
+      <input type="text" name="location" value="{{ location }}" placeholder="📍 {{ _('Filter by location...') }}" />
       <select name="category">
-        <option value="">All Categories</option>
-        <option {% if category=='Cooked Meal' %}selected{% endif %}>Cooked Meal</option>
-        <option {% if category=='Snacks' %}selected{% endif %}>Snacks</option>
-        <option {% if category=='Fruits & Vegetables' %}selected{% endif %}>Fruits & Vegetables</option>
-        <option {% if category=='Bakery' %}selected{% endif %}>Bakery</option>
-        <option {% if category=='Beverages' %}selected{% endif %}>Beverages</option>
-        <option {% if category=='Raw Ingredients' %}selected{% endif %}>Raw Ingredients</option>
-        <option {% if category=='Other' %}selected{% endif %}>Other</option>
+        <option value="">{{ _('All Categories') }}</option>
+        <option {% if category=='Cooked Meal' %}selected{% endif %}>{{ _('Cooked Meal') }}</option>
+        <option {% if category=='Snacks' %}selected{% endif %}>{{ _('Snacks') }}</option>
+        <option {% if category=='Fruits & Vegetables' %}selected{% endif %}>{{ _('Fruits & Vegetables') }}</option>
+        <option {% if category=='Bakery' %}selected{% endif %}>{{ _('Bakery') }}</option>
+        <option {% if category=='Beverages' %}selected{% endif %}>{{ _('Beverages') }}</option>
+        <option {% if category=='Raw Ingredients' %}selected{% endif %}>{{ _('Raw Ingredients') }}</option>
+        <option {% if category=='Other' %}selected{% endif %}>{{ _('Other') }}</option>
       </select>
       <select name="min_rating">
-        <option value="">Any Rating</option>
+        <option value="">{{ _('Any Rating') }}</option>
         <option value="4" {% if min_rating=='4' %}selected{% endif %}>⭐⭐⭐⭐ 4+</option>
         <option value="3" {% if min_rating=='3' %}selected{% endif %}>⭐⭐⭐ 3+</option>
       </select>
       <select name="sort">
-        <option value="newest" {% if sort=='newest' %}selected{% endif %}>Newest First</option>
-        <option value="rating" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
-        <option value="expiry" {% if sort=='expiry' %}selected{% endif %}>Expiring Soon</option>
+        <option value="newest" {% if sort=='newest' %}selected{% endif %}>{{ _('Newest First') }}</option>
+        <option value="rating" {% if sort=='rating' %}selected{% endif %}>{{ _('Top Rated') }}</option>
+        <option value="expiry" {% if sort=='expiry' %}selected{% endif %}>{{ _('Expiring Soon') }}</option>
       </select>
-      <button type="submit" class="btn-primary">Search</button>
+      <button type="submit" class="btn-primary">{{ _('Search') }}</button>
       {% if search or category or location or min_rating %}
-      <a href="{{ url_for('available') }}" class="btn-outline">Clear</a>
+      <a href="{{ url_for('available') }}" class="btn-outline">{{ _('Clear') }}</a>
       {% endif %}
     </form>
 
     <!-- Recommendations -->
     {% if recommendations %}
     <div class="recommendations">
-      <div class="section-label">✨ Recommended For You</div>
+      <div class="section-label">✨ {{ _('Recommended For You') }}</div>
       <div class="food-grid food-grid-sm">
         {% for food in recommendations %}
         <div class="food-card">
@@ -57,7 +57,7 @@
           <div class="food-card-emoji">🍱</div>
           {% endif %}
           <div class="food-card-body">
-            <div class="food-category-tag">{{ food.category or 'Food' }}</div>
+            <div class="food-category-tag">{{ food.category or _('Food') }}</div>
             <h3><a href="{{ url_for('food_detail', food_id=food.id) }}" style="color:inherit;">{{ food.food_name }}</a></h3>
             <div class="food-meta">
               <span>📍 {{ food.location }}</span>
@@ -71,7 +71,7 @@
     {% endif %}
 
     {% if foods %}
-    <p class="result-count">{{ foods|length }} listing{{ 's' if foods|length != 1 }} found</p>
+    <p class="result-count">{{ foods|length }} {{ _('listing') }}{{ 's' if foods|length != 1 }} {{ _('found') }}</p>
     <div class="food-grid">
       {% for food in foods %}
       <div class="food-card">
@@ -88,7 +88,7 @@
         </div>
         {% endif %}
         <div class="food-card-body">
-          <div class="food-category-tag">{{ food.category or 'Food' }}</div>
+          <div class="food-category-tag">{{ food.category or _('Food') }}</div>
           <h3><a href="{{ url_for('food_detail', food_id=food.id) }}" style="color:inherit;">{{ food.food_name }}</a></h3>
           {% if food.avg_rating > 0 %}
           <div style="font-size:0.82rem; color: var(--amber); margin-bottom:0.4rem;">
@@ -101,20 +101,20 @@
             <span>⏰ {{ food.expiry }}</span>
           </div>
           <div class="food-card-footer">
-            <span class="donor-name">by {{ food.donor_name }}</span>
+            <span class="donor-name">{{ _('by') }} {{ food.donor_name }}</span>
             <div style="display:flex; gap:0.4rem; align-items:center;">
               <!-- Social Share -->
-              <a href="https://wa.me/?text=Free food available: {{ food.food_name }} at {{ food.location }} - {{ request.url_root }}food/{{ food.id }}" target="_blank" class="share-btn" title="Share on WhatsApp">📤</a>
+              <a href="https://wa.me/?text=Free food available: {{ food.food_name }} at {{ food.location }} - {{ request.url_root }}food/{{ food.id }}" target="_blank" class="share-btn" title="{{ _('Share on WhatsApp') }}">📤</a>
               {% if session.user_id %}
                 {% if session.user_id != food.donor_id %}
                 <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}" style="display:inline">
-                  <button class="btn-claim">Claim</button>
+                  <button class="btn-claim">{{ _('Claim') }}</button>
                 </form>
                 {% else %}
-                <span class="own-tag">Your listing</span>
+                <span class="own-tag">{{ _('Your listing') }}</span>
                 {% endif %}
               {% else %}
-              <a href="{{ url_for('login') }}" class="btn-claim">Claim</a>
+              <a href="{{ url_for('login') }}" class="btn-claim">{{ _('Claim') }}</a>
               {% endif %}
             </div>
           </div>
@@ -125,12 +125,12 @@
     {% else %}
     <div class="empty-state">
       <div class="empty-icon">🍽️</div>
-      <h3>No food available right now</h3>
-      <p>Be the first to donate!</p>
+      <h3>{{ _('No food available right now') }}</h3>
+      <p>{{ _('Be the first to donate!') }}</p>
       {% if session.user_id %}
-      <a href="{{ url_for('add_food') }}" class="btn-primary">+ Donate Food</a>
+      <a href="{{ url_for('add_food') }}" class="btn-primary">+ {{ _('Donate Food') }}</a>
       {% else %}
-      <a href="{{ url_for('register') }}" class="btn-primary">Join & Donate</a>
+      <a href="{{ url_for('register') }}" class="btn-primary">{{ _('Join & Donate') }}</a>
       {% endif %}
     </div>
     {% endif %}

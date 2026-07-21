@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-20 11:18+0530\n"
-"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"POT-Creation-Date: 2026-07-21 06:59+0530\n"
+"PO-Revision-Date: 2026-07-21 06:59+0530\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: mr\n"
 "Language-Team: mr <LL@li.org>\n"
@@ -13,6 +13,365 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: templates/add_food.html:2 templates/available.html:131
+#: templates/dashboard.html:10
+msgid "Donate Food"
+msgstr "अन्न दान करा"
+
+#: templates/add_food.html:6
+msgid "Share Your Food"
+msgstr "तुमचे अन्न सामायिक करा"
+
+#: templates/add_food.html:7
+msgid "Fill in the details below and your listing goes live instantly."
+msgstr "खालील तपशील भरा आणि तुमची यादी लगेच लाइव्ह होईल."
+
+#: templates/add_food.html:16
+msgid "Food Name"
+msgstr "अन्नाचे नाव"
+
+#: templates/add_food.html:17
+msgid "e.g. Vegetable Biryani"
+msgstr "उदा. व्हेजिटेबल बिर्याणी"
+
+#: templates/add_food.html:20
+msgid "Category"
+msgstr "श्रेणी"
+
+#: templates/add_food.html:22
+msgid "Select category"
+msgstr "श्रेणी निवडा"
+
+#: templates/add_food.html:23 templates/available.html:23
+msgid "Cooked Meal"
+msgstr "शिजवलेले जेवण"
+
+#: templates/add_food.html:24 templates/available.html:24
+msgid "Snacks"
+msgstr "नाश्ता"
+
+#: templates/add_food.html:25 templates/available.html:25
+msgid "Fruits & Vegetables"
+msgstr "फळे आणि भाज्या"
+
+#: templates/add_food.html:26 templates/available.html:26
+msgid "Bakery"
+msgstr "बेकरी"
+
+#: templates/add_food.html:27 templates/available.html:27
+msgid "Beverages"
+msgstr "पेये"
+
+#: templates/add_food.html:28 templates/available.html:28
+msgid "Raw Ingredients"
+msgstr "कच्चा माल"
+
+#: templates/add_food.html:29 templates/analytics.html:65
+#: templates/available.html:29
+msgid "Other"
+msgstr "इतर"
+
+#: templates/add_food.html:35 templates/dashboard.html:25
+msgid "Quantity"
+msgstr "प्रमाण"
+
+#: templates/add_food.html:36
+msgid "e.g. 5 plates, 2 kg"
+msgstr "उदा. 5 प्लेट्स, 2 किलो"
+
+#: templates/add_food.html:39
+msgid "Available Until"
+msgstr "कधीपर्यंत उपलब्ध"
+
+#: templates/add_food.html:44 templates/dashboard.html:75
+#: templates/food_detail.html:64
+msgid "Pickup Location"
+msgstr "पिकअप स्थान"
+
+#: templates/add_food.html:45
+msgid "e.g. 3rd Floor, XYZ Apartments, Koramangala"
+msgstr "उदा. तिसरा मजला, XYZ अपार्टमेंट्स, कोरमंगला"
+
+#: templates/add_food.html:48
+msgid "Contact Number"
+msgstr "संपर्क क्रमांक"
+
+#: templates/add_food.html:49 templates/profile.html:54
+msgid "e.g. 9876543210"
+msgstr "उदा. 9876543210"
+
+#: templates/add_food.html:52
+msgid "Food Photo (optional)"
+msgstr "अन्नाचा फोटो (ऐच्छिक)"
+
+#: templates/add_food.html:54
+msgid "JPG, PNG, WEBP — max 5MB"
+msgstr "JPG, PNG, WEBP — कमाल 5MB"
+
+#: templates/add_food.html:60
+msgid "Additional Notes"
+msgstr "अतिरिक्त टिपा"
+
+#: templates/add_food.html:61
+msgid "Any allergies, preparation info, special instructions..."
+msgstr "कोणतीही ऍलर्जी, तयारीची माहिती, विशेष सूचना..."
+
+#: templates/add_food.html:64
+msgid "Cancel"
+msgstr "रद्द करा"
+
+#: templates/add_food.html:65
+msgid "List Food"
+msgstr "अन्न सूचीबद्ध करा"
+
+#: templates/admin.html:2 templates/admin.html:6
+msgid "Admin Panel"
+msgstr "प्रशासक पॅनेल"
+
+#: templates/admin.html:7
+msgid "Manage users, food listings, and platform stats."
+msgstr "वापरकर्ते, अन्न याद्या आणि प्लॅटफॉर्म आकडेवारी व्यवस्थापित करा."
+
+#: templates/admin.html:18
+msgid "Total Users"
+msgstr "एकूण वापरकर्ते"
+
+#: templates/admin.html:23
+msgid "Total Listings"
+msgstr "एकूण याद्या"
+
+#: templates/admin.html:28 templates/analytics.html:33
+msgid "Available Now"
+msgstr "आता उपलब्ध"
+
+#: templates/admin.html:33 templates/analytics.html:118
+#: templates/leaderboard.html:58 templates/profile.html:32
+msgid "Completed"
+msgstr "पूर्ण झाले"
+
+#: templates/admin.html:38 templates/analytics.html:38
+msgid "Total Claims"
+msgstr "एकूण दावे"
+
+#: templates/admin.html:43
+msgid "All Users"
+msgstr "सर्व वापरकर्ते"
+
+#: templates/admin.html:48
+msgid "Name"
+msgstr "नाव"
+
+#: templates/admin.html:48
+msgid "Email"
+msgstr "ईमेल"
+
+#: templates/admin.html:49 templates/admin.html:85 templates/dashboard.html:26
+#: templates/leaderboard.html:56 templates/profile.html:49
+msgid "Location"
+msgstr "स्थान"
+
+#: templates/admin.html:49
+msgid "Role"
+msgstr "भूमिका"
+
+#: templates/admin.html:49
+msgid "Joined"
+msgstr "सामील झाले"
+
+#: templates/admin.html:49 templates/admin.html:85
+msgid "Action"
+msgstr "कृती"
+
+#: templates/admin.html:64
+msgid "Delete this user?"
+msgstr "या वापरकर्त्याला हटवायचे?"
+
+#: templates/admin.html:65 templates/admin.html:100
+msgid "Delete"
+msgstr "हटवा"
+
+#: templates/admin.html:68
+msgid "Admin"
+msgstr "प्रशासक"
+
+#: templates/admin.html:79
+msgid "All Food Listings"
+msgstr "सर्व अन्न याद्या"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/available.html:60 templates/available.html:91
+#: templates/dashboard.html:24 templates/dashboard.html:74
+msgid "Food"
+msgstr "अन्न"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/dashboard.html:77 templates/leaderboard.html:55
+msgid "Donor"
+msgstr "दाता"
+
+#: templates/admin.html:85 templates/analytics.html:80
+#: templates/dashboard.html:28 templates/dashboard.html:78
+msgid "Status"
+msgstr "स्थिती"
+
+#: templates/admin.html:85
+msgid "Posted"
+msgstr "पोस्ट केले"
+
+#: templates/admin.html:99
+msgid "Delete this listing?"
+msgstr "ही यादी हटवायची?"
+
+#: templates/analytics.html:2 templates/base.html:69
+msgid "Analytics"
+msgstr "विश्लेषण"
+
+#: templates/analytics.html:6
+msgid "Platform Analytics"
+msgstr "प्लॅटफॉर्म विश्लेषण"
+
+#: templates/analytics.html:7
+msgid "Real-time insights about SharePlate's impact."
+msgstr "SharePlate च्या प्रभावाबद्दल रिअल-टाइम माहिती."
+
+#: templates/analytics.html:18
+msgid "Total Food Listed"
+msgstr "एकूण सूचीबद्ध अन्न"
+
+#: templates/analytics.html:23
+msgid "Meals Shared"
+msgstr "सामायिक केलेले जेवण"
+
+#: templates/analytics.html:28 templates/index.html:17
+msgid "Members"
+msgstr "सदस्य"
+
+#: templates/analytics.html:43
+msgid "Reviews Given"
+msgstr "दिलेल्या समीक्षा"
+
+#: templates/analytics.html:50
+msgid "Food by Category"
+msgstr "श्रेणीनुसार अन्न"
+
+#: templates/analytics.html:54
+msgid "Food Status Distribution"
+msgstr "अन्न स्थिती वितरण"
+
+#: templates/analytics.html:61
+msgid "Category Breakdown"
+msgstr "श्रेणी विभाजन"
+
+#: templates/analytics.html:76
+msgid "Recent Activity"
+msgstr "अलीकडील क्रियाकलाप"
+
+#: templates/analytics.html:80
+msgid "Date"
+msgstr "तारीख"
+
+#: templates/analytics.html:118 templates/index.html:28 templates/index.html:36
+#: templates/index.html:44
+msgid "Available"
+msgstr "उपलब्ध"
+
+#: templates/analytics.html:118
+msgid "Requested"
+msgstr "विनंती केली"
+
+#: templates/analytics.html:118
+msgid "Collected"
+msgstr "गोळा केले"
+
+#: templates/available.html:2 templates/dashboard.html:97
+msgid "Browse Food"
+msgstr "अन्न ब्राउझ करा"
+
+#: templates/available.html:6
+msgid "Available Food"
+msgstr "उपलब्ध अन्न"
+
+#: templates/available.html:7
+msgid "Browse free food listed by generous people in your community."
+msgstr "तुमच्या समुदायातील उदार लोकांनी सूचीबद्ध केलेले मोफत अन्न ब्राउझ करा."
+
+#: templates/available.html:17
+msgid "Search food, location..."
+msgstr "अन्न, स्थान शोधा..."
+
+#: templates/available.html:20
+msgid "Filter by location..."
+msgstr "स्थानानुसार फिल्टर करा..."
+
+#: templates/available.html:22
+msgid "All Categories"
+msgstr "सर्व श्रेण्या"
+
+#: templates/available.html:32
+msgid "Any Rating"
+msgstr "कोणतीही रेटिंग"
+
+#: templates/available.html:37
+msgid "Newest First"
+msgstr "नवीन प्रथम"
+
+#: templates/available.html:38
+msgid "Top Rated"
+msgstr "सर्वोच्च रेटेड"
+
+#: templates/available.html:39
+msgid "Expiring Soon"
+msgstr "लवकरच कालबाह्य"
+
+#: templates/available.html:41
+msgid "Search"
+msgstr "शोधा"
+
+#: templates/available.html:43
+msgid "Clear"
+msgstr "साफ करा"
+
+#: templates/available.html:50
+msgid "Recommended For You"
+msgstr "तुमच्यासाठी शिफारस केलेले"
+
+#: templates/available.html:74
+msgid "listing"
+msgstr "यादी"
+
+#: templates/available.html:74
+msgid "found"
+msgstr "सापडले"
+
+#: templates/available.html:104 templates/index.html:100
+msgid "by"
+msgstr "द्वारे"
+
+#: templates/available.html:107
+msgid "Share on WhatsApp"
+msgstr "व्हॉट्सअॅपवर सामायिक करा"
+
+#: templates/available.html:111 templates/available.html:117
+#: templates/index.html:103 templates/index.html:106
+msgid "Claim"
+msgstr "दावा करा"
+
+#: templates/available.html:114
+msgid "Your listing"
+msgstr "तुमची यादी"
+
+#: templates/available.html:128
+msgid "No food available right now"
+msgstr "सध्या कोणतेही अन्न उपलब्ध नाही"
+
+#: templates/available.html:129
+msgid "Be the first to donate!"
+msgstr "दान करणारे पहिले व्हा!"
+
+#: templates/available.html:133
+msgid "Join & Donate"
+msgstr "सामील व्हा आणि दान करा"
 
 #: templates/base.html:27 templates/base.html:67
 msgid "Browse"
@@ -30,7 +389,7 @@ msgstr "आकडेवारी"
 msgid "Donate"
 msgstr "दान करा"
 
-#: templates/base.html:32
+#: templates/base.html:32 templates/dashboard.html:2
 msgid "Dashboard"
 msgstr "डॅशबोर्ड"
 
@@ -42,7 +401,7 @@ msgstr "प्रोफाइल"
 msgid "Logout"
 msgstr "लॉगआउट"
 
-#: templates/base.html:36
+#: templates/base.html:36 templates/login.html:2 templates/login.html:64
 msgid "Login"
 msgstr "लॉगिन"
 
@@ -54,13 +413,9 @@ msgstr "मोफत सामील व्हा"
 msgid "Share Food. Reduce Waste. Feed Hope."
 msgstr "अन्न सामायिक करा. कचरा कमी करा. आशा जोपासा."
 
-#: templates/base.html:68
+#: templates/base.html:68 templates/leaderboard.html:2
 msgid "Leaderboard"
 msgstr "लीडरबोर्ड"
-
-#: templates/base.html:69
-msgid "Analytics"
-msgstr "विश्लेषण"
 
 #: templates/base.html:70
 msgid "Join"
@@ -73,3 +428,529 @@ msgstr "याद्वारे तयार केले"
 #: templates/base.html:72
 msgid "to end food waste"
 msgstr "अन्नाची नासाडी संपवण्यासाठी"
+
+#: templates/dashboard.html:7
+msgid "Hi,"
+msgstr "नमस्कार,"
+
+#: templates/dashboard.html:8
+msgid "Here's everything you've shared and claimed."
+msgstr "तुम्ही सामायिक केलेले आणि दावा केलेले सर्व काही येथे आहे."
+
+#: templates/dashboard.html:18
+msgid "My Donations"
+msgstr "माझी दाने"
+
+#: templates/dashboard.html:27 templates/dashboard.html:76
+msgid "Expiry"
+msgstr "कालबाह्यता"
+
+#: templates/dashboard.html:29
+msgid "Actions"
+msgstr "क्रिया"
+
+#: templates/dashboard.html:42
+msgid "Mark Collected"
+msgstr "गोळा केले म्हणून चिन्हांकित करा"
+
+#: templates/dashboard.html:45
+msgid "Mark Completed"
+msgstr "पूर्ण झाले म्हणून चिन्हांकित करा"
+
+#: templates/dashboard.html:48
+msgid "Complete"
+msgstr "पूर्ण करा"
+
+#: templates/dashboard.html:50
+msgid "Remove this listing?"
+msgstr "ही यादी काढायची?"
+
+#: templates/dashboard.html:51
+msgid "Remove"
+msgstr "काढा"
+
+#: templates/dashboard.html:61
+msgid "You haven't donated any food yet."
+msgstr "तुम्ही अजून कोणतेही अन्न दान केलेले नाही."
+
+#: templates/dashboard.html:62 templates/leaderboard.html:97
+msgid "Donate Now"
+msgstr "आता दान करा"
+
+#: templates/dashboard.html:68
+msgid "My Claims"
+msgstr "माझे दावे"
+
+#: templates/dashboard.html:96
+msgid "You haven't claimed any food yet."
+msgstr "तुम्ही अजून कोणतेही अन्न दावा केलेले नाही."
+
+#: templates/food_detail.html:6
+msgid "Back to listings"
+msgstr "याद्यांकडे परत जा"
+
+#: templates/food_detail.html:8
+msgid "Posted by"
+msgstr "पोस्ट केले"
+
+#: templates/food_detail.html:42
+msgid "reviews"
+msgstr "समीक्षा"
+
+#: templates/food_detail.html:57
+msgid "Claim This Food"
+msgstr "हे अन्न दावा करा"
+
+#: templates/food_detail.html:67
+msgid "Open in Google Maps"
+msgstr "गूगल मॅप्समध्ये उघडा"
+
+#: templates/food_detail.html:78
+msgid "Chat with"
+msgstr "यांच्याशी चॅट करा"
+
+#: templates/food_detail.html:89
+msgid "No messages yet. Start the conversation!"
+msgstr "अजून कोणतेही संदेश नाहीत. संभाषण सुरू करा!"
+
+#: templates/food_detail.html:94
+msgid "Type a message..."
+msgstr "संदेश टाइप करा..."
+
+#: templates/food_detail.html:95
+msgid "Send"
+msgstr "पाठवा"
+
+#: templates/food_detail.html:103
+msgid "Reviews"
+msgstr "समीक्षा"
+
+#: templates/food_detail.html:107
+msgid "Your Rating"
+msgstr "तुमची रेटिंग"
+
+#: templates/food_detail.html:109
+msgid "Excellent"
+msgstr "उत्कृष्ट"
+
+#: templates/food_detail.html:110
+msgid "Good"
+msgstr "चांगले"
+
+#: templates/food_detail.html:111
+msgid "Average"
+msgstr "सरासरी"
+
+#: templates/food_detail.html:112
+msgid "Poor"
+msgstr "खराब"
+
+#: templates/food_detail.html:113
+msgid "Terrible"
+msgstr "खूप वाईट"
+
+#: templates/food_detail.html:117
+msgid "Your Review"
+msgstr "तुमची समीक्षा"
+
+#: templates/food_detail.html:118
+msgid "Share your experience..."
+msgstr "तुमचा अनुभव सामायिक करा..."
+
+#: templates/food_detail.html:120
+msgid "Submit Review"
+msgstr "समीक्षा सबमिट करा"
+
+#: templates/food_detail.html:138
+msgid "No reviews yet."
+msgstr "अजून कोणतीही समीक्षा नाही."
+
+#: templates/forgot_password.html:2
+msgid "Forgot Password"
+msgstr "पासवर्ड विसरलात"
+
+#: templates/forgot_password.html:8 templates/forgot_password.html:24
+#: templates/reset_password.html:2
+msgid "Reset Password"
+msgstr "पासवर्ड रीसेट करा"
+
+#: templates/forgot_password.html:9
+msgid "Answer your security question to reset"
+msgstr "रीसेट करण्यासाठी तुमच्या सुरक्षा प्रश्नाचे उत्तर द्या"
+
+#: templates/forgot_password.html:13 templates/login.html:56
+#: templates/register.html:17
+msgid "Email Address"
+msgstr "ईमेल पत्ता"
+
+#: templates/forgot_password.html:17
+msgid "What is your mother's name?"
+msgstr "तुमच्या आईचे नाव काय आहे?"
+
+#: templates/forgot_password.html:18 templates/register.html:38
+msgid "Your answer"
+msgstr "तुमचे उत्तर"
+
+#: templates/forgot_password.html:21 templates/reset_password.html:13
+msgid "New Password"
+msgstr "नवीन पासवर्ड"
+
+#: templates/forgot_password.html:22 templates/register.html:22
+#: templates/reset_password.html:14
+msgid "Min. 6 characters"
+msgstr "किमान 6 अक्षरे"
+
+#: templates/forgot_password.html:26 templates/reset_password.html:18
+msgid "Back to Login"
+msgstr "लॉगिनकडे परत जा"
+
+#: templates/index.html:2
+msgid "Share Food, Reduce Waste"
+msgstr "अन्न सामायिक करा, कचरा कमी करा"
+
+#: templates/index.html:7
+msgid "Community Food Sharing"
+msgstr "समुदाय अन्न सामायिकरण"
+
+#: templates/index.html:8
+msgid "Good food deserves"
+msgstr "चांगल्या अन्नाला मिळायला हवी"
+
+#: templates/index.html:8
+msgid "a second chance."
+msgstr "दुसरी संधी."
+
+#: templates/index.html:9
+msgid ""
+"SharePlate connects people with surplus food to those who need it most. "
+"Zero waste. Real impact. One plate at a time."
+msgstr "SharePlate अतिरिक्त अन्न असलेल्या लोकांना गरज असलेल्यांशी जोडते. शून्य कचरा. खरा परिणाम. एका वेळी एक ताट."
+
+#: templates/index.html:11
+msgid "Find Food Near You"
+msgstr "तुमच्या जवळचे अन्न शोधा"
+
+#: templates/index.html:12
+msgid "Start Donating"
+msgstr "दान करणे सुरू करा"
+
+#: templates/index.html:15
+msgid "Plates Shared"
+msgstr "सामायिक केलेली ताटे"
+
+#: templates/index.html:19
+msgid "Meals Delivered"
+msgstr "पोहोचवलेले जेवण"
+
+#: templates/index.html:26
+msgid "Vegetable Rice"
+msgstr "व्हेजिटेबल राइस"
+
+#: templates/index.html:27
+msgid "plates"
+msgstr "ताटे"
+
+#: templates/index.html:34
+msgid "Fresh Salad Bowl"
+msgstr "ताजे सलाड बाऊल"
+
+#: templates/index.html:35
+msgid "servings"
+msgstr "सर्व्हिंग्स"
+
+#: templates/index.html:42
+msgid "Biryani Box"
+msgstr "बिर्याणी बॉक्स"
+
+#: templates/index.html:43
+msgid "portions"
+msgstr "भाग"
+
+#: templates/index.html:52
+msgid "How It Works"
+msgstr "हे कसे कार्य करते"
+
+#: templates/index.html:53
+msgid "Simple. Fast. Impactful."
+msgstr "सोपे. जलद. प्रभावी."
+
+#: templates/index.html:57
+msgid "List your food"
+msgstr "तुमचे अन्न सूचीबद्ध करा"
+
+#: templates/index.html:58
+msgid "Got leftovers from a party, hostel, or kitchen? Post it in 30 seconds."
+msgstr "पार्टी, वसतिगृह किंवा स्वयंपाकघरातून उरलेले अन्न आहे? ते 30 सेकंदात पोस्ट करा."
+
+#: templates/index.html:63
+msgid "Someone finds it"
+msgstr "कोणीतरी ते शोधतो"
+
+#: templates/index.html:64
+msgid "People nearby browse available food and claim what they need."
+msgstr "जवळपासचे लोक उपलब्ध अन्न ब्राउझ करतात आणि त्यांना हवे ते दावा करतात."
+
+#: templates/index.html:69
+msgid "Food gets shared"
+msgstr "अन्न सामायिक होते"
+
+#: templates/index.html:70
+msgid "Donor and receiver connect, food is picked up. Waste avoided."
+msgstr "दाता आणि प्राप्तकर्ता जोडले जातात, अन्न उचलले जाते. कचरा टाळला जातो."
+
+#: templates/index.html:79
+msgid "Fresh Listings"
+msgstr "ताज्या याद्या"
+
+#: templates/index.html:80
+msgid "Available Right Now"
+msgstr "आत्ता उपलब्ध"
+
+#: templates/index.html:97
+msgid "Until"
+msgstr "पर्यंत"
+
+#: templates/index.html:114
+msgid "View All Listings"
+msgstr "सर्व याद्या पहा"
+
+#: templates/index.html:122
+msgid "Every meal shared is a step toward a world with no waste."
+msgstr "सामायिक केलेले प्रत्येक जेवण कचरामुक्त जगाच्या दिशेने एक पाऊल आहे."
+
+#: templates/index.html:124
+msgid "Join SharePlate Today"
+msgstr "आजच SharePlate मध्ये सामील व्हा"
+
+#: templates/leaderboard.html:6
+msgid "Top Donors Leaderboard"
+msgstr "अव्वल दाते लीडरबोर्ड"
+
+#: templates/leaderboard.html:7
+msgid "Celebrating our food heroes who make a difference!"
+msgstr "बदल घडवणाऱ्या आमच्या अन्न नायकांचा उत्सव साजरा करत आहोत!"
+
+#: templates/leaderboard.html:21 templates/leaderboard.html:31
+#: templates/leaderboard.html:40
+msgid "donations"
+msgstr "दाने"
+
+#: templates/leaderboard.html:22
+msgid "2nd"
+msgstr "2रा"
+
+#: templates/leaderboard.html:32
+msgid "1st"
+msgstr "1ला"
+
+#: templates/leaderboard.html:41
+msgid "3rd"
+msgstr "3रा"
+
+#: templates/leaderboard.html:49
+msgid "All Donors"
+msgstr "सर्व दाते"
+
+#: templates/leaderboard.html:54
+msgid "Rank"
+msgstr "क्रमांक"
+
+#: templates/leaderboard.html:57
+msgid "Total Donations"
+msgstr "एकूण दाने"
+
+#: templates/leaderboard.html:59
+msgid "Badge"
+msgstr "बॅज"
+
+#: templates/leaderboard.html:81
+msgid "Legend"
+msgstr "आख्यायिका"
+
+#: templates/leaderboard.html:82
+msgid "Hero"
+msgstr "नायक"
+
+#: templates/leaderboard.html:83
+msgid "Active"
+msgstr "सक्रिय"
+
+#: templates/leaderboard.html:84
+msgid "Starter"
+msgstr "सुरुवात करणारा"
+
+#: templates/leaderboard.html:95
+msgid "No donors yet!"
+msgstr "अजून कोणतेही दाते नाहीत!"
+
+#: templates/leaderboard.html:96
+msgid "Be the first to donate food and top the leaderboard!"
+msgstr "अन्न दान करणारे पहिले व्हा आणि लीडरबोर्डवर अव्वल रहा!"
+
+#: templates/login.html:21
+msgid "Good food"
+msgstr "चांगले अन्न"
+
+#: templates/login.html:21
+msgid "shouldn't go to waste."
+msgstr "वाया जाऊ नये."
+
+#: templates/login.html:22
+msgid "Connect with neighbors sharing surplus food nearby — one plate at a time."
+msgstr "जवळपास अतिरिक्त अन्न सामायिक करणाऱ्या शेजाऱ्यांशी जोडा — एका वेळी एक ताट."
+
+#: templates/login.html:27
+msgid "Meals shared"
+msgstr "सामायिक केलेले जेवण"
+
+#: templates/login.html:32
+msgid "Active members"
+msgstr "सक्रिय सदस्य"
+
+#: templates/login.html:43
+msgid "Welcome back"
+msgstr "पुन्हा स्वागत आहे"
+
+#: templates/login.html:44
+msgid "Login to share or claim food"
+msgstr "अन्न सामायिक करण्यासाठी किंवा दावा करण्यासाठी लॉगिन करा"
+
+#: templates/login.html:49
+msgid "Continue with Google"
+msgstr "Google सह सुरू ठेवा"
+
+#: templates/login.html:52
+msgid "or"
+msgstr "किंवा"
+
+#: templates/login.html:60 templates/register.html:21
+msgid "Password"
+msgstr "पासवर्ड"
+
+#: templates/login.html:61
+msgid "Your password"
+msgstr "तुमचा पासवर्ड"
+
+#: templates/login.html:68
+msgid "Forgot password?"
+msgstr "पासवर्ड विसरलात?"
+
+#: templates/login.html:71
+msgid "New to SharePlate?"
+msgstr "SharePlate वर नवीन आहात?"
+
+#: templates/login.html:71
+msgid "Create an account"
+msgstr "खाते तयार करा"
+
+#: templates/profile.html:2 templates/profile.html:6
+msgid "My Profile"
+msgstr "माझी प्रोफाइल"
+
+#: templates/profile.html:7
+msgid "Manage your account and view your stats."
+msgstr "तुमचे खाते व्यवस्थापित करा आणि तुमची आकडेवारी पहा."
+
+#: templates/profile.html:19
+msgid "Location not set"
+msgstr "स्थान सेट केलेले नाही"
+
+#: templates/profile.html:24
+msgid "Donations"
+msgstr "दाने"
+
+#: templates/profile.html:28
+msgid "Claims"
+msgstr "दावे"
+
+#: templates/profile.html:38
+msgid "Member since"
+msgstr "सदस्य झाल्यापासून"
+
+#: templates/profile.html:42
+msgid "Edit Profile"
+msgstr "प्रोफाइल संपादित करा"
+
+#: templates/profile.html:45 templates/register.html:13
+msgid "Full Name"
+msgstr "पूर्ण नाव"
+
+#: templates/profile.html:50 templates/register.html:26
+msgid "e.g. Koramangala, Bengaluru"
+msgstr "उदा. कोरमंगला, बेंगळुरू"
+
+#: templates/profile.html:53
+msgid "Phone Number"
+msgstr "फोन नंबर"
+
+#: templates/profile.html:57
+msgid "Bio"
+msgstr "बायो"
+
+#: templates/profile.html:58
+msgid "Tell the community about yourself..."
+msgstr "समुदायाला तुमच्याबद्दल सांगा..."
+
+#: templates/profile.html:60
+msgid "Save Changes"
+msgstr "बदल जतन करा"
+
+#: templates/register.html:2
+msgid "Join SharePlate"
+msgstr "SharePlate मध्ये सामील व्हा"
+
+#: templates/register.html:8
+msgid "Create your account"
+msgstr "तुमचे खाते तयार करा"
+
+#: templates/register.html:9
+msgid "Join the community fighting food waste"
+msgstr "अन्न कचऱ्याविरुद्ध लढणाऱ्या समुदायात सामील व्हा"
+
+#: templates/register.html:25
+msgid "Your Location"
+msgstr "तुमचे स्थान"
+
+#: templates/register.html:29
+msgid "I want to"
+msgstr "मला हवे आहे"
+
+#: templates/register.html:31
+msgid "Both Donate & Receive"
+msgstr "दान आणि प्राप्त दोन्ही"
+
+#: templates/register.html:32
+msgid "Only Donate Food"
+msgstr "फक्त अन्न दान करा"
+
+#: templates/register.html:33
+msgid "Only Receive Food"
+msgstr "फक्त अन्न प्राप्त करा"
+
+#: templates/register.html:37
+msgid "Security Question — What is your mother's name?"
+msgstr "सुरक्षा प्रश्न — तुमच्या आईचे नाव काय आहे?"
+
+#: templates/register.html:40
+msgid "Create Account"
+msgstr "खाते तयार करा"
+
+#: templates/register.html:42
+msgid "Already have an account?"
+msgstr "आधीच खाते आहे?"
+
+#: templates/register.html:42
+msgid "Login here"
+msgstr "येथे लॉगिन करा"
+
+#: templates/reset_password.html:8
+msgid "Set New Password"
+msgstr "नवीन पासवर्ड सेट करा"
+
+#: templates/reset_password.html:9
+msgid "Enter your new password below"
+msgstr "खाली तुमचा नवीन पासवर्ड टाका"
+
+#: templates/reset_password.html:16
+msgid "Save New Password"
+msgstr "नवीन पासवर्ड जतन करा"

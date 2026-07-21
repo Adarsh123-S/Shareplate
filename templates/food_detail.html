@@ -3,9 +3,9 @@
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <a href="{{ url_for('available') }}" class="back-link">← Back to listings</a>
+    <a href="{{ url_for('available') }}" class="back-link">← {{ _('Back to listings') }}</a>
     <h1>{{ food.food_name }}</h1>
-    <p>Posted by {{ food.donor_name }}</p>
+    <p>{{ _('Posted by') }} {{ food.donor_name }}</p>
   </div>
 </div>
 
@@ -39,7 +39,7 @@
             {% for i in range(1, 6) %}
               {% if i <= avg_rating|round %}⭐{% else %}☆{% endif %}
             {% endfor %}
-            <span class="rating-count">({{ reviews|length }} reviews)</span>
+            <span class="rating-count">({{ reviews|length }} {{ _('reviews') }})</span>
           </div>
 
           <div class="detail-meta">
@@ -54,17 +54,17 @@
 
           {% if session.user_id and session.user_id != food.donor_id and food.status == 'available' %}
           <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}">
-            <button class="btn-primary" style="width:100%; margin-top:1rem;">🙌 Claim This Food</button>
+            <button class="btn-primary" style="width:100%; margin-top:1rem;">🙌 {{ _('Claim This Food') }}</button>
           </form>
           {% endif %}
         </div>
 
         <!-- Google Maps -->
         <div class="map-card">
-          <h3>📍 Pickup Location</h3>
+          <h3>📍 {{ _('Pickup Location') }}</h3>
           <div id="map" style="height: 300px; border-radius: 12px; overflow:hidden;"></div>
           <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.75rem; display:inline-block;">
-            🗺️ Open in Google Maps
+            🗺️ {{ _('Open in Google Maps') }}
           </a>
         </div>
       </div>
@@ -75,7 +75,7 @@
         <!-- Chat -->
         {% if session.user_id %}
         <div class="chat-card">
-          <h3>💬 Chat with {{ food.donor_name }}</h3>
+          <h3>💬 {{ _('Chat with') }} {{ food.donor_name }}</h3>
           <div class="chat-messages" id="chat-messages">
             {% if messages %}
               {% for msg in messages %}
@@ -86,13 +86,13 @@
               </div>
               {% endfor %}
             {% else %}
-              <p class="no-messages" id="no-messages">No messages yet. Start the conversation!</p>
+              <p class="no-messages" id="no-messages">{{ _('No messages yet. Start the conversation!') }}</p>
             {% endif %}
           </div>
           {% if session.user_id != food.donor_id %}
           <div class="chat-form">
-            <input type="text" id="chat-input" placeholder="Type a message..." />
-            <button onclick="sendMessage()" class="btn-primary">Send</button>
+            <input type="text" id="chat-input" placeholder="{{ _('Type a message...') }}" />
+            <button onclick="sendMessage()" class="btn-primary">{{ _('Send') }}</button>
           </div>
           {% endif %}
         </div>
@@ -100,24 +100,24 @@
 
         <!-- Reviews -->
         <div class="reviews-card">
-          <h3>⭐ Reviews</h3>
+          <h3>⭐ {{ _('Reviews') }}</h3>
           {% if session.user_id and food.status == 'completed' %}
           <form method="post" action="{{ url_for('rate_food', food_id=food.id) }}" class="review-form">
             <div class="form-group">
-              <label>Your Rating</label>
+              <label>{{ _('Your Rating') }}</label>
               <select name="rating" class="star-select">
-                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-                <option value="4">⭐⭐⭐⭐ Good</option>
-                <option value="3">⭐⭐⭐ Average</option>
-                <option value="2">⭐⭐ Poor</option>
-                <option value="1">⭐ Terrible</option>
+                <option value="5">⭐⭐⭐⭐⭐ {{ _('Excellent') }}</option>
+                <option value="4">⭐⭐⭐⭐ {{ _('Good') }}</option>
+                <option value="3">⭐⭐⭐ {{ _('Average') }}</option>
+                <option value="2">⭐⭐ {{ _('Poor') }}</option>
+                <option value="1">⭐ {{ _('Terrible') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Your Review</label>
-              <textarea name="review" rows="3" placeholder="Share your experience..."></textarea>
+              <label>{{ _('Your Review') }}</label>
+              <textarea name="review" rows="3" placeholder="{{ _('Share your experience...') }}"></textarea>
             </div>
-            <button type="submit" class="btn-primary">Submit Review</button>
+            <button type="submit" class="btn-primary">{{ _('Submit Review') }}</button>
           </form>
           {% endif %}
 
@@ -135,7 +135,7 @@
             </div>
             {% endfor %}
           {% else %}
-            <p class="no-reviews">No reviews yet.</p>
+            <p class="no-reviews">{{ _('No reviews yet.') }}</p>
           {% endif %}
         </div>
 

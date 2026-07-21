@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — SharePlate{% endblock %}
+{% block title %}{{ _('Dashboard') }} — SharePlate{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="section-inner dash-header-row">
     <div>
-      <h1>Hi, {{ session.user_name }} 👋</h1>
-      <p>Here's everything you've shared and claimed.</p>
+      <h1>{{ _('Hi,') }} {{ session.user_name }} 👋</h1>
+      <p>{{ _("Here's everything you've shared and claimed.") }}</p>
     </div>
-    <a href="{{ url_for('add_food') }}" class="btn-primary">+ Donate Food</a>
+    <a href="{{ url_for('add_food') }}" class="btn-primary">+ {{ _('Donate Food') }}</a>
   </div>
 </div>
 
@@ -15,18 +15,18 @@
   <div class="section-inner">
 
     <div class="dash-section">
-      <h2 class="dash-section-title">🍱 My Donations</h2>
+      <h2 class="dash-section-title">🍱 {{ _('My Donations') }}</h2>
       {% if my_donations %}
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
             <tr>
-              <th>Food</th>
-              <th>Quantity</th>
-              <th>Location</th>
-              <th>Expiry</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{{ _('Food') }}</th>
+              <th>{{ _('Quantity') }}</th>
+              <th>{{ _('Location') }}</th>
+              <th>{{ _('Expiry') }}</th>
+              <th>{{ _('Status') }}</th>
+              <th>{{ _('Actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -39,16 +39,16 @@
               <td><span class="status-badge status-{{ food.status }}">{{ food.status }}</span></td>
               <td class="action-cell">
                 {% if food.status == 'requested' %}
-                <a href="{{ url_for('update_status', food_id=food.id, status='collected') }}" class="btn-sm btn-green">Mark Collected</a>
+                <a href="{{ url_for('update_status', food_id=food.id, status='collected') }}" class="btn-sm btn-green">{{ _('Mark Collected') }}</a>
                 {% endif %}
                 {% if food.status == 'collected' %}
-                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-green">Mark Completed</a>
+                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-green">{{ _('Mark Completed') }}</a>
                 {% endif %}
                 {% if food.status == 'available' %}
-                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-outline-sm">Complete</a>
+                <a href="{{ url_for('update_status', food_id=food.id, status='completed') }}" class="btn-sm btn-outline-sm">{{ _('Complete') }}</a>
                 {% endif %}
-                <form method="post" action="{{ url_for('delete_food', food_id=food.id) }}" style="display:inline" onsubmit="return confirm('Remove this listing?')">
-                  <button class="btn-sm btn-red">Remove</button>
+                <form method="post" action="{{ url_for('delete_food', food_id=food.id) }}" style="display:inline" onsubmit="return confirm('{{ _('Remove this listing?') }}')">
+                  <button class="btn-sm btn-red">{{ _('Remove') }}</button>
                 </form>
               </td>
             </tr>
@@ -58,24 +58,24 @@
       </div>
       {% else %}
       <div class="empty-state-sm">
-        <p>You haven't donated any food yet.</p>
-        <a href="{{ url_for('add_food') }}" class="btn-primary">Donate Now</a>
+        <p>{{ _("You haven't donated any food yet.") }}</p>
+        <a href="{{ url_for('add_food') }}" class="btn-primary">{{ _('Donate Now') }}</a>
       </div>
       {% endif %}
     </div>
 
     <div class="dash-section">
-      <h2 class="dash-section-title">🙌 My Claims</h2>
+      <h2 class="dash-section-title">🙌 {{ _('My Claims') }}</h2>
       {% if my_claims %}
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
             <tr>
-              <th>Food</th>
-              <th>Pickup Location</th>
-              <th>Expiry</th>
-              <th>Donor</th>
-              <th>Status</th>
+              <th>{{ _('Food') }}</th>
+              <th>{{ _('Pickup Location') }}</th>
+              <th>{{ _('Expiry') }}</th>
+              <th>{{ _('Donor') }}</th>
+              <th>{{ _('Status') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -93,8 +93,8 @@
       </div>
       {% else %}
       <div class="empty-state-sm">
-        <p>You haven't claimed any food yet.</p>
-        <a href="{{ url_for('available') }}" class="btn-outline">Browse Food</a>
+        <p>{{ _("You haven't claimed any food yet.") }}</p>
+        <a href="{{ url_for('available') }}" class="btn-outline">{{ _('Browse Food') }}</a>
       </div>
       {% endif %}
     </div>

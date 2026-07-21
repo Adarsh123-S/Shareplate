@@ -1,45 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Join SharePlate{% endblock %}
+{% block title %}{{ _('Join SharePlate') }}{% endblock %}
 {% block content %}
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-header">
       <div class="auth-icon">🍱</div>
-      <h1>Create your account</h1>
-      <p>Join the community fighting food waste</p>
+      <h1>{{ _('Create your account') }}</h1>
+      <p>{{ _('Join the community fighting food waste') }}</p>
     </div>
     <form method="POST" class="auth-form">
       <div class="form-group">
-        <label>Full Name</label>
+        <label>{{ _('Full Name') }}</label>
         <input type="text" name="name" placeholder="Adarsh Gowda" required />
       </div>
       <div class="form-group">
-        <label>Email Address</label>
+        <label>{{ _('Email Address') }}</label>
         <input type="email" name="email" placeholder="you@example.com" required />
       </div>
       <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Min. 6 characters" required minlength="6" />
+        <label>{{ _('Password') }}</label>
+        <input type="password" name="password" placeholder="{{ _('Min. 6 characters') }}" required minlength="6" />
       </div>
       <div class="form-group">
-        <label>Your Location</label>
-        <input type="text" name="location" placeholder="e.g. Koramangala, Bengaluru" required />
+        <label>{{ _('Your Location') }}</label>
+        <input type="text" name="location" placeholder="{{ _('e.g. Koramangala, Bengaluru') }}" required />
       </div>
       <div class="form-group">
-        <label>I want to</label>
+        <label>{{ _('I want to') }}</label>
         <select name="role">
-          <option value="both">Both Donate & Receive</option>
-          <option value="donor">Only Donate Food</option>
-          <option value="receiver">Only Receive Food</option>
+          <option value="both">{{ _('Both Donate & Receive') }}</option>
+          <option value="donor">{{ _('Only Donate Food') }}</option>
+          <option value="receiver">{{ _('Only Receive Food') }}</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Security Question — What is your mother's name?</label>
-        <input type="text" name="security_answer" placeholder="Your answer" />
+        <label>{{ _("Security Question — What is your mother's name?") }}</label>
+        <input type="text" name="security_answer" placeholder="{{ _('Your answer') }}" />
       </div>
-      <button type="submit" class="btn-submit">Create Account →</button>
+      <button type="submit" class="btn-submit">{{ _('Create Account') }} →</button>
     </form>
-    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    <p class="auth-switch">{{ _('Already have an account?') }} <a href="{{ url_for('login') }}">{{ _('Login here') }}</a></p>
   </div>
 </div>
 {% endblock %}

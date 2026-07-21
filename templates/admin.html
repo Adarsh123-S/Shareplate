@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Admin Panel — SharePlate{% endblock %}
+{% block title %}{{ _('Admin Panel') }} — SharePlate{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <h1>🛡️ Admin Panel</h1>
-    <p>Manage users, food listings, and platform stats.</p>
+    <h1>🛡️ {{ _('Admin Panel') }}</h1>
+    <p>{{ _('Manage users, food listings, and platform stats.') }}</p>
   </div>
 </div>
 
@@ -15,38 +15,38 @@
       <div class="admin-stat-card">
         <div class="astat-icon">👥</div>
         <div class="astat-num">{{ stats.total_users }}</div>
-        <div class="astat-label">Total Users</div>
+        <div class="astat-label">{{ _('Total Users') }}</div>
       </div>
       <div class="admin-stat-card">
         <div class="astat-icon">🍱</div>
         <div class="astat-num">{{ stats.total_food }}</div>
-        <div class="astat-label">Total Listings</div>
+        <div class="astat-label">{{ _('Total Listings') }}</div>
       </div>
       <div class="admin-stat-card">
         <div class="astat-icon">✅</div>
         <div class="astat-num">{{ stats.available }}</div>
-        <div class="astat-label">Available Now</div>
+        <div class="astat-label">{{ _('Available Now') }}</div>
       </div>
       <div class="admin-stat-card">
         <div class="astat-icon">🤝</div>
         <div class="astat-num">{{ stats.completed }}</div>
-        <div class="astat-label">Completed</div>
+        <div class="astat-label">{{ _('Completed') }}</div>
       </div>
       <div class="admin-stat-card">
         <div class="astat-icon">📋</div>
         <div class="astat-num">{{ stats.total_claims }}</div>
-        <div class="astat-label">Total Claims</div>
+        <div class="astat-label">{{ _('Total Claims') }}</div>
       </div>
     </div>
 
     <div class="dash-section">
-      <h2 class="dash-section-title">👥 All Users</h2>
+      <h2 class="dash-section-title">👥 {{ _('All Users') }}</h2>
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
             <tr>
-              <th>ID</th><th>Name</th><th>Email</th>
-              <th>Location</th><th>Role</th><th>Joined</th><th>Action</th>
+              <th>ID</th><th>{{ _('Name') }}</th><th>{{ _('Email') }}</th>
+              <th>{{ _('Location') }}</th><th>{{ _('Role') }}</th><th>{{ _('Joined') }}</th><th>{{ _('Action') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +61,11 @@
               <td>
                 {% if u.email != 'admin@shareplate.com' %}
                 <form method="post" action="{{ url_for('admin_delete_user', uid=u.id) }}"
-                  onsubmit="return confirm('Delete this user?')">
-                  <button class="btn-sm btn-red">Delete</button>
+                  onsubmit="return confirm('{{ _('Delete this user?') }}')">
+                  <button class="btn-sm btn-red">{{ _('Delete') }}</button>
                 </form>
                 {% else %}
-                <span style="color:var(--green);font-size:0.8rem;font-weight:700;">Admin</span>
+                <span style="color:var(--green);font-size:0.8rem;font-weight:700;">{{ _('Admin') }}</span>
                 {% endif %}
               </td>
             </tr>
@@ -76,13 +76,13 @@
     </div>
 
     <div class="dash-section">
-      <h2 class="dash-section-title">🍱 All Food Listings</h2>
+      <h2 class="dash-section-title">🍱 {{ _('All Food Listings') }}</h2>
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
             <tr>
-              <th>ID</th><th>Food</th><th>Donor</th>
-              <th>Location</th><th>Status</th><th>Posted</th><th>Action</th>
+              <th>ID</th><th>{{ _('Food') }}</th><th>{{ _('Donor') }}</th>
+              <th>{{ _('Location') }}</th><th>{{ _('Status') }}</th><th>{{ _('Posted') }}</th><th>{{ _('Action') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -96,8 +96,8 @@
               <td>{{ f.created_at[:10] }}</td>
               <td>
                 <form method="post" action="{{ url_for('admin_delete_food', fid=f.id) }}"
-                  onsubmit="return confirm('Delete this listing?')">
-                  <button class="btn-sm btn-red">Delete</button>
+                  onsubmit="return confirm('{{ _('Delete this listing?') }}')">
+                  <button class="btn-sm btn-red">{{ _('Delete') }}</button>
                 </form>
               </td>
             </tr>

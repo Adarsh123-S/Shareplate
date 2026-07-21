@@ -1,47 +1,47 @@
 {% extends "base.html" %}
-{% block title %}SharePlate — Share Food, Reduce Waste{% endblock %}
+{% block title %}SharePlate — {{ _('Share Food, Reduce Waste') }}{% endblock %}
 {% block content %}
 
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-tag">🌱 Community Food Sharing</div>
-    <h1 class="hero-title">Good food deserves<br/><span class="accent">a second chance.</span></h1>
-    <p class="hero-sub">SharePlate connects people with surplus food to those who need it most. Zero waste. Real impact. One plate at a time.</p>
+    <div class="hero-tag">🌱 {{ _('Community Food Sharing') }}</div>
+    <h1 class="hero-title">{{ _('Good food deserves') }}<br/><span class="accent">{{ _('a second chance.') }}</span></h1>
+    <p class="hero-sub">{{ _('SharePlate connects people with surplus food to those who need it most. Zero waste. Real impact. One plate at a time.') }}</p>
     <div class="hero-cta">
-      <a href="{{ url_for('available') }}" class="btn-primary">Find Food Near You</a>
-      <a href="{{ url_for('register') }}" class="btn-outline">Start Donating</a>
+      <a href="{{ url_for('available') }}" class="btn-primary">{{ _('Find Food Near You') }}</a>
+      <a href="{{ url_for('register') }}" class="btn-outline">{{ _('Start Donating') }}</a>
     </div>
     <div class="hero-stats">
-      <div class="stat"><span class="stat-num">{{ stats.total_food }}</span><span class="stat-label">Plates Shared</span></div>
+      <div class="stat"><span class="stat-num">{{ stats.total_food }}</span><span class="stat-label">{{ _('Plates Shared') }}</span></div>
       <div class="stat-div"></div>
-      <div class="stat"><span class="stat-num">{{ stats.total_users }}</span><span class="stat-label">Members</span></div>
+      <div class="stat"><span class="stat-num">{{ stats.total_users }}</span><span class="stat-label">{{ _('Members') }}</span></div>
       <div class="stat-div"></div>
-      <div class="stat"><span class="stat-num">{{ stats.completed }}</span><span class="stat-label">Meals Delivered</span></div>
+      <div class="stat"><span class="stat-num">{{ stats.completed }}</span><span class="stat-label">{{ _('Meals Delivered') }}</span></div>
     </div>
   </div>
   <div class="hero-visual">
     <div class="plate-card floating">
       <div class="plate-emoji">🍛</div>
       <div class="plate-info">
-        <strong>Vegetable Rice</strong>
-        <span>5 plates · Koramangala</span>
-        <span class="tag-avail">Available</span>
+        <strong>{{ _('Vegetable Rice') }}</strong>
+        <span>5 {{ _('plates') }} · Koramangala</span>
+        <span class="tag-avail">{{ _('Available') }}</span>
       </div>
     </div>
     <div class="plate-card floating delay1">
       <div class="plate-emoji">🥗</div>
       <div class="plate-info">
-        <strong>Fresh Salad Bowl</strong>
-        <span>3 servings · Indiranagar</span>
-        <span class="tag-avail">Available</span>
+        <strong>{{ _('Fresh Salad Bowl') }}</strong>
+        <span>3 {{ _('servings') }} · Indiranagar</span>
+        <span class="tag-avail">{{ _('Available') }}</span>
       </div>
     </div>
     <div class="plate-card floating delay2">
       <div class="plate-emoji">🍱</div>
       <div class="plate-info">
-        <strong>Biryani Box</strong>
-        <span>10 portions · HSR Layout</span>
-        <span class="tag-avail">Available</span>
+        <strong>{{ _('Biryani Box') }}</strong>
+        <span>10 {{ _('portions') }} · HSR Layout</span>
+        <span class="tag-avail">{{ _('Available') }}</span>
       </div>
     </div>
   </div>
@@ -49,25 +49,25 @@
 
 <section class="how-it-works">
   <div class="section-inner">
-    <div class="section-label">How It Works</div>
-    <h2 class="section-title">Simple. Fast. Impactful.</h2>
+    <div class="section-label">{{ _('How It Works') }}</div>
+    <h2 class="section-title">{{ _('Simple. Fast. Impactful.') }}</h2>
     <div class="steps">
       <div class="step">
         <div class="step-icon">📝</div>
-        <h3>List your food</h3>
-        <p>Got leftovers from a party, hostel, or kitchen? Post it in 30 seconds.</p>
+        <h3>{{ _('List your food') }}</h3>
+        <p>{{ _('Got leftovers from a party, hostel, or kitchen? Post it in 30 seconds.') }}</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
         <div class="step-icon">🔍</div>
-        <h3>Someone finds it</h3>
-        <p>People nearby browse available food and claim what they need.</p>
+        <h3>{{ _('Someone finds it') }}</h3>
+        <p>{{ _('People nearby browse available food and claim what they need.') }}</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
         <div class="step-icon">🤝</div>
-        <h3>Food gets shared</h3>
-        <p>Donor and receiver connect, food is picked up. Waste avoided.</p>
+        <h3>{{ _('Food gets shared') }}</h3>
+        <p>{{ _('Donor and receiver connect, food is picked up. Waste avoided.') }}</p>
       </div>
     </div>
   </div>
@@ -76,8 +76,8 @@
 {% if foods %}
 <section class="recent-section">
   <div class="section-inner">
-    <div class="section-label">Fresh Listings</div>
-    <h2 class="section-title">Available Right Now</h2>
+    <div class="section-label">{{ _('Fresh Listings') }}</div>
+    <h2 class="section-title">{{ _('Available Right Now') }}</h2>
     <div class="food-grid">
       {% for food in foods %}
       <div class="food-card">
@@ -94,16 +94,16 @@
           <div class="food-meta">
             <span>📦 {{ food.quantity }}</span>
             <span>📍 {{ food.location }}</span>
-            <span>⏰ Until {{ food.expiry }}</span>
+            <span>⏰ {{ _('Until') }} {{ food.expiry }}</span>
           </div>
           <div class="food-card-footer">
-            <span class="donor-name">by {{ food.donor_name }}</span>
+            <span class="donor-name">{{ _('by') }} {{ food.donor_name }}</span>
             {% if session.user_id %}
             <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}" style="display:inline">
-              <button class="btn-claim">Claim</button>
+              <button class="btn-claim">{{ _('Claim') }}</button>
             </form>
             {% else %}
-            <a href="{{ url_for('login') }}" class="btn-claim">Claim</a>
+            <a href="{{ url_for('login') }}" class="btn-claim">{{ _('Claim') }}</a>
             {% endif %}
           </div>
         </div>
@@ -111,7 +111,7 @@
       {% endfor %}
     </div>
     <div class="view-all">
-      <a href="{{ url_for('available') }}" class="btn-outline">View All Listings →</a>
+      <a href="{{ url_for('available') }}" class="btn-outline">{{ _('View All Listings') }} →</a>
     </div>
   </div>
 </section>
@@ -119,9 +119,9 @@
 
 <section class="cta-banner">
   <div class="section-inner cta-inner">
-    <h2>"Every meal shared is a step toward a world with no waste."</h2>
+    <h2>"{{ _('Every meal shared is a step toward a world with no waste.') }}"</h2>
     <div class="cta-buttons">
-      <a href="{{ url_for('register') }}" class="btn-primary">Join SharePlate Today</a>
+      <a href="{{ url_for('register') }}" class="btn-primary">{{ _('Join SharePlate Today') }}</a>
     </div>
   </div>
 </section>

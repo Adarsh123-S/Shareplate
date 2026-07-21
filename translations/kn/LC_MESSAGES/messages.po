@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-20 11:18+0530\n"
-"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"POT-Creation-Date: 2026-07-21 06:59+0530\n"
+"PO-Revision-Date: 2026-07-21 06:59+0530\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: kn\n"
 "Language-Team: kn <LL@li.org>\n"
@@ -13,6 +13,365 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: templates/add_food.html:2 templates/available.html:131
+#: templates/dashboard.html:10
+msgid "Donate Food"
+msgstr "ಆಹಾರ ದಾನ ಮಾಡಿ"
+
+#: templates/add_food.html:6
+msgid "Share Your Food"
+msgstr "ನಿಮ್ಮ ಆಹಾರ ಹಂಚಿಕೊಳ್ಳಿ"
+
+#: templates/add_food.html:7
+msgid "Fill in the details below and your listing goes live instantly."
+msgstr "ಕೆಳಗಿನ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಪಟ್ಟಿ ತಕ್ಷಣ ಲೈವ್ ಆಗುತ್ತದೆ."
+
+#: templates/add_food.html:16
+msgid "Food Name"
+msgstr "ಆಹಾರದ ಹೆಸರು"
+
+#: templates/add_food.html:17
+msgid "e.g. Vegetable Biryani"
+msgstr "ಉದಾ. ತರಕಾರಿ ಬಿರಿಯಾನಿ"
+
+#: templates/add_food.html:20
+msgid "Category"
+msgstr "ವರ್ಗ"
+
+#: templates/add_food.html:22
+msgid "Select category"
+msgstr "ವರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ"
+
+#: templates/add_food.html:23 templates/available.html:23
+msgid "Cooked Meal"
+msgstr "ಬೇಯಿಸಿದ ಊಟ"
+
+#: templates/add_food.html:24 templates/available.html:24
+msgid "Snacks"
+msgstr "ತಿಂಡಿಗಳು"
+
+#: templates/add_food.html:25 templates/available.html:25
+msgid "Fruits & Vegetables"
+msgstr "ಹಣ್ಣುಗಳು ಮತ್ತು ತರಕಾರಿಗಳು"
+
+#: templates/add_food.html:26 templates/available.html:26
+msgid "Bakery"
+msgstr "ಬೇಕರಿ"
+
+#: templates/add_food.html:27 templates/available.html:27
+msgid "Beverages"
+msgstr "ಪಾನೀಯಗಳು"
+
+#: templates/add_food.html:28 templates/available.html:28
+msgid "Raw Ingredients"
+msgstr "ಕಚ್ಚಾ ಪದಾರ್ಥಗಳು"
+
+#: templates/add_food.html:29 templates/analytics.html:65
+#: templates/available.html:29
+msgid "Other"
+msgstr "ಇತರೆ"
+
+#: templates/add_food.html:35 templates/dashboard.html:25
+msgid "Quantity"
+msgstr "ಪ್ರಮಾಣ"
+
+#: templates/add_food.html:36
+msgid "e.g. 5 plates, 2 kg"
+msgstr "ಉದಾ. 5 ತಟ್ಟೆಗಳು, 2 ಕೆಜಿ"
+
+#: templates/add_food.html:39
+msgid "Available Until"
+msgstr "ಇಲ್ಲಿಯವರೆಗೆ ಲಭ್ಯವಿದೆ"
+
+#: templates/add_food.html:44 templates/dashboard.html:75
+#: templates/food_detail.html:64
+msgid "Pickup Location"
+msgstr "ಪಿಕಪ್ ಸ್ಥಳ"
+
+#: templates/add_food.html:45
+msgid "e.g. 3rd Floor, XYZ Apartments, Koramangala"
+msgstr "ಉದಾ. 3ನೇ ಮಹಡಿ, XYZ ಅಪಾರ್ಟ್‌ಮೆಂಟ್ಸ್, ಕೋರಮಂಗಲ"
+
+#: templates/add_food.html:48
+msgid "Contact Number"
+msgstr "ಸಂಪರ್ಕ ಸಂಖ್ಯೆ"
+
+#: templates/add_food.html:49 templates/profile.html:54
+msgid "e.g. 9876543210"
+msgstr "ಉದಾ. 9876543210"
+
+#: templates/add_food.html:52
+msgid "Food Photo (optional)"
+msgstr "ಆಹಾರದ ಫೋಟೋ (ಐಚ್ಛಿಕ)"
+
+#: templates/add_food.html:54
+msgid "JPG, PNG, WEBP — max 5MB"
+msgstr "JPG, PNG, WEBP — ಗರಿಷ್ಠ 5MB"
+
+#: templates/add_food.html:60
+msgid "Additional Notes"
+msgstr "ಹೆಚ್ಚುವರಿ ಟಿಪ್ಪಣಿಗಳು"
+
+#: templates/add_food.html:61
+msgid "Any allergies, preparation info, special instructions..."
+msgstr "ಯಾವುದೇ ಅಲರ್ಜಿಗಳು, ತಯಾರಿಕೆಯ ಮಾಹಿತಿ, ವಿಶೇಷ ಸೂಚನೆಗಳು..."
+
+#: templates/add_food.html:64
+msgid "Cancel"
+msgstr "ರದ್ದುಮಾಡಿ"
+
+#: templates/add_food.html:65
+msgid "List Food"
+msgstr "ಆಹಾರವನ್ನು ಪಟ್ಟಿ ಮಾಡಿ"
+
+#: templates/admin.html:2 templates/admin.html:6
+msgid "Admin Panel"
+msgstr "ನಿರ್ವಾಹಕ ಫಲಕ"
+
+#: templates/admin.html:7
+msgid "Manage users, food listings, and platform stats."
+msgstr "ಬಳಕೆದಾರರು, ಆಹಾರ ಪಟ್ಟಿಗಳು ಮತ್ತು ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಅಂಕಿಅಂಶಗಳನ್ನು ನಿರ್ವಹಿಸಿ."
+
+#: templates/admin.html:18
+msgid "Total Users"
+msgstr "ಒಟ್ಟು ಬಳಕೆದಾರರು"
+
+#: templates/admin.html:23
+msgid "Total Listings"
+msgstr "ಒಟ್ಟು ಪಟ್ಟಿಗಳು"
+
+#: templates/admin.html:28 templates/analytics.html:33
+msgid "Available Now"
+msgstr "ಈಗ ಲಭ್ಯವಿದೆ"
+
+#: templates/admin.html:33 templates/analytics.html:118
+#: templates/leaderboard.html:58 templates/profile.html:32
+msgid "Completed"
+msgstr "ಪೂರ್ಣಗೊಂಡಿದೆ"
+
+#: templates/admin.html:38 templates/analytics.html:38
+msgid "Total Claims"
+msgstr "ಒಟ್ಟು ಹಕ್ಕುಗಳು"
+
+#: templates/admin.html:43
+msgid "All Users"
+msgstr "ಎಲ್ಲಾ ಬಳಕೆದಾರರು"
+
+#: templates/admin.html:48
+msgid "Name"
+msgstr "ಹೆಸರು"
+
+#: templates/admin.html:48
+msgid "Email"
+msgstr "ಇಮೇಲ್"
+
+#: templates/admin.html:49 templates/admin.html:85 templates/dashboard.html:26
+#: templates/leaderboard.html:56 templates/profile.html:49
+msgid "Location"
+msgstr "ಸ್ಥಳ"
+
+#: templates/admin.html:49
+msgid "Role"
+msgstr "ಪಾತ್ರ"
+
+#: templates/admin.html:49
+msgid "Joined"
+msgstr "ಸೇರಿದ ದಿನಾಂಕ"
+
+#: templates/admin.html:49 templates/admin.html:85
+msgid "Action"
+msgstr "ಕ್ರಿಯೆ"
+
+#: templates/admin.html:64
+msgid "Delete this user?"
+msgstr "ಈ ಬಳಕೆದಾರರನ್ನು ಅಳಿಸಬೇಕೇ?"
+
+#: templates/admin.html:65 templates/admin.html:100
+msgid "Delete"
+msgstr "ಅಳಿಸಿ"
+
+#: templates/admin.html:68
+msgid "Admin"
+msgstr "ನಿರ್ವಾಹಕ"
+
+#: templates/admin.html:79
+msgid "All Food Listings"
+msgstr "ಎಲ್ಲಾ ಆಹಾರ ಪಟ್ಟಿಗಳು"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/available.html:60 templates/available.html:91
+#: templates/dashboard.html:24 templates/dashboard.html:74
+msgid "Food"
+msgstr "ಆಹಾರ"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/dashboard.html:77 templates/leaderboard.html:55
+msgid "Donor"
+msgstr "ದಾನಿ"
+
+#: templates/admin.html:85 templates/analytics.html:80
+#: templates/dashboard.html:28 templates/dashboard.html:78
+msgid "Status"
+msgstr "ಸ್ಥಿತಿ"
+
+#: templates/admin.html:85
+msgid "Posted"
+msgstr "ಪೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ"
+
+#: templates/admin.html:99
+msgid "Delete this listing?"
+msgstr "ಈ ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಬೇಕೇ?"
+
+#: templates/analytics.html:2 templates/base.html:69
+msgid "Analytics"
+msgstr "ವಿಶ್ಲೇಷಣೆ"
+
+#: templates/analytics.html:6
+msgid "Platform Analytics"
+msgstr "ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ವಿಶ್ಲೇಷಣೆ"
+
+#: templates/analytics.html:7
+msgid "Real-time insights about SharePlate's impact."
+msgstr "SharePlate ನ ಪ್ರಭಾವದ ಬಗ್ಗೆ ನೈಜ-ಸಮಯದ ಒಳನೋಟಗಳು."
+
+#: templates/analytics.html:18
+msgid "Total Food Listed"
+msgstr "ಒಟ್ಟು ಪಟ್ಟಿ ಮಾಡಿದ ಆಹಾರ"
+
+#: templates/analytics.html:23
+msgid "Meals Shared"
+msgstr "ಹಂಚಿಕೊಂಡ ಊಟಗಳು"
+
+#: templates/analytics.html:28 templates/index.html:17
+msgid "Members"
+msgstr "ಸದಸ್ಯರು"
+
+#: templates/analytics.html:43
+msgid "Reviews Given"
+msgstr "ನೀಡಿದ ವಿಮರ್ಶೆಗಳು"
+
+#: templates/analytics.html:50
+msgid "Food by Category"
+msgstr "ವರ್ಗದ ಪ್ರಕಾರ ಆಹಾರ"
+
+#: templates/analytics.html:54
+msgid "Food Status Distribution"
+msgstr "ಆಹಾರ ಸ್ಥಿತಿ ವಿತರಣೆ"
+
+#: templates/analytics.html:61
+msgid "Category Breakdown"
+msgstr "ವರ್ಗ ವಿಭಜನೆ"
+
+#: templates/analytics.html:76
+msgid "Recent Activity"
+msgstr "ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ"
+
+#: templates/analytics.html:80
+msgid "Date"
+msgstr "ದಿನಾಂಕ"
+
+#: templates/analytics.html:118 templates/index.html:28 templates/index.html:36
+#: templates/index.html:44
+msgid "Available"
+msgstr "ಲಭ್ಯವಿದೆ"
+
+#: templates/analytics.html:118
+msgid "Requested"
+msgstr "ವಿನಂತಿಸಲಾಗಿದೆ"
+
+#: templates/analytics.html:118
+msgid "Collected"
+msgstr "ಸಂಗ್ರಹಿಸಲಾಗಿದೆ"
+
+#: templates/available.html:2 templates/dashboard.html:97
+msgid "Browse Food"
+msgstr "ಆಹಾರ ಬ್ರೌಸ್ ಮಾಡಿ"
+
+#: templates/available.html:6
+msgid "Available Food"
+msgstr "ಲಭ್ಯವಿರುವ ಆಹಾರ"
+
+#: templates/available.html:7
+msgid "Browse free food listed by generous people in your community."
+msgstr "ನಿಮ್ಮ ಸಮುದಾಯದ ಉದಾರ ಜನರು ಪಟ್ಟಿ ಮಾಡಿದ ಉಚಿತ ಆಹಾರವನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ."
+
+#: templates/available.html:17
+msgid "Search food, location..."
+msgstr "ಆಹಾರ, ಸ್ಥಳ ಹುಡುಕಿ..."
+
+#: templates/available.html:20
+msgid "Filter by location..."
+msgstr "ಸ್ಥಳದ ಮೂಲಕ ಫಿಲ್ಟರ್ ಮಾಡಿ..."
+
+#: templates/available.html:22
+msgid "All Categories"
+msgstr "ಎಲ್ಲಾ ವರ್ಗಗಳು"
+
+#: templates/available.html:32
+msgid "Any Rating"
+msgstr "ಯಾವುದೇ ರೇಟಿಂಗ್"
+
+#: templates/available.html:37
+msgid "Newest First"
+msgstr "ಹೊಸದು ಮೊದಲು"
+
+#: templates/available.html:38
+msgid "Top Rated"
+msgstr "ಅಗ್ರ ರೇಟೆಡ್"
+
+#: templates/available.html:39
+msgid "Expiring Soon"
+msgstr "ಶೀಘ್ರದಲ್ಲೇ ಮುಕ್ತಾಯ"
+
+#: templates/available.html:41
+msgid "Search"
+msgstr "ಹುಡುಕಿ"
+
+#: templates/available.html:43
+msgid "Clear"
+msgstr "ಅಳಿಸಿ"
+
+#: templates/available.html:50
+msgid "Recommended For You"
+msgstr "ನಿಮಗಾಗಿ ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ"
+
+#: templates/available.html:74
+msgid "listing"
+msgstr "ಪಟ್ಟಿ"
+
+#: templates/available.html:74
+msgid "found"
+msgstr "ಕಂಡುಬಂದಿದೆ"
+
+#: templates/available.html:104 templates/index.html:100
+msgid "by"
+msgstr "ಇವರಿಂದ"
+
+#: templates/available.html:107
+msgid "Share on WhatsApp"
+msgstr "ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ"
+
+#: templates/available.html:111 templates/available.html:117
+#: templates/index.html:103 templates/index.html:106
+msgid "Claim"
+msgstr "ಪಡೆಯಿರಿ"
+
+#: templates/available.html:114
+msgid "Your listing"
+msgstr "ನಿಮ್ಮ ಪಟ್ಟಿ"
+
+#: templates/available.html:128
+msgid "No food available right now"
+msgstr "ಈಗ ಯಾವುದೇ ಆಹಾರ ಲಭ್ಯವಿಲ್ಲ"
+
+#: templates/available.html:129
+msgid "Be the first to donate!"
+msgstr "ದಾನ ಮಾಡಿದ ಮೊದಲಿಗರಾಗಿ!"
+
+#: templates/available.html:133
+msgid "Join & Donate"
+msgstr "ಸೇರಿ ಮತ್ತು ದಾನ ಮಾಡಿ"
 
 #: templates/base.html:27 templates/base.html:67
 msgid "Browse"
@@ -30,7 +389,7 @@ msgstr "ಅಂಕಿಅಂಶಗಳು"
 msgid "Donate"
 msgstr "ದಾನ ಮಾಡಿ"
 
-#: templates/base.html:32
+#: templates/base.html:32 templates/dashboard.html:2
 msgid "Dashboard"
 msgstr "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
 
@@ -42,7 +401,7 @@ msgstr "ಪ್ರೊಫೈಲ್"
 msgid "Logout"
 msgstr "ಲಾಗ್ ಔಟ್"
 
-#: templates/base.html:36
+#: templates/base.html:36 templates/login.html:2 templates/login.html:64
 msgid "Login"
 msgstr "ಲಾಗಿನ್"
 
@@ -54,13 +413,9 @@ msgstr "ಉಚಿತವಾಗಿ ಸೇರಿ"
 msgid "Share Food. Reduce Waste. Feed Hope."
 msgstr "ಆಹಾರ ಹಂಚಿಕೊಳ್ಳಿ. ವ್ಯರ್ಥ ಕಡಿಮೆ ಮಾಡಿ. ಭರವಸೆ ನೀಡಿ."
 
-#: templates/base.html:68
+#: templates/base.html:68 templates/leaderboard.html:2
 msgid "Leaderboard"
 msgstr "ಲೀಡರ್‌ಬೋರ್ಡ್"
-
-#: templates/base.html:69
-msgid "Analytics"
-msgstr "ವಿಶ್ಲೇಷಣೆ"
 
 #: templates/base.html:70
 msgid "Join"
@@ -73,3 +428,529 @@ msgstr "ಇದರೊಂದಿಗೆ ಮಾಡಲಾಗಿದೆ"
 #: templates/base.html:72
 msgid "to end food waste"
 msgstr "ಆಹಾರ ವ್ಯರ್ಥವನ್ನು ಕೊನೆಗೊಳಿಸಲು"
+
+#: templates/dashboard.html:7
+msgid "Hi,"
+msgstr "ನಮಸ್ಕಾರ,"
+
+#: templates/dashboard.html:8
+msgid "Here's everything you've shared and claimed."
+msgstr "ನೀವು ಹಂಚಿಕೊಂಡ ಮತ್ತು ಪಡೆದ ಎಲ್ಲವೂ ಇಲ್ಲಿದೆ."
+
+#: templates/dashboard.html:18
+msgid "My Donations"
+msgstr "ನನ್ನ ದೇಣಿಗೆಗಳು"
+
+#: templates/dashboard.html:27 templates/dashboard.html:76
+msgid "Expiry"
+msgstr "ಮುಕ್ತಾಯ"
+
+#: templates/dashboard.html:29
+msgid "Actions"
+msgstr "ಕ್ರಿಯೆಗಳು"
+
+#: templates/dashboard.html:42
+msgid "Mark Collected"
+msgstr "ಸಂಗ್ರಹಿಸಿದಂತೆ ಗುರುತಿಸಿ"
+
+#: templates/dashboard.html:45
+msgid "Mark Completed"
+msgstr "ಪೂರ್ಣಗೊಂಡಂತೆ ಗುರುತಿಸಿ"
+
+#: templates/dashboard.html:48
+msgid "Complete"
+msgstr "ಪೂರ್ಣಗೊಳಿಸಿ"
+
+#: templates/dashboard.html:50
+msgid "Remove this listing?"
+msgstr "ಈ ಪಟ್ಟಿಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?"
+
+#: templates/dashboard.html:51
+msgid "Remove"
+msgstr "ತೆಗೆದುಹಾಕಿ"
+
+#: templates/dashboard.html:61
+msgid "You haven't donated any food yet."
+msgstr "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಆಹಾರವನ್ನು ದಾನ ಮಾಡಿಲ್ಲ."
+
+#: templates/dashboard.html:62 templates/leaderboard.html:97
+msgid "Donate Now"
+msgstr "ಈಗ ದಾನ ಮಾಡಿ"
+
+#: templates/dashboard.html:68
+msgid "My Claims"
+msgstr "ನನ್ನ ಹಕ್ಕುಗಳು"
+
+#: templates/dashboard.html:96
+msgid "You haven't claimed any food yet."
+msgstr "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ಆಹಾರವನ್ನು ಪಡೆದಿಲ್ಲ."
+
+#: templates/food_detail.html:6
+msgid "Back to listings"
+msgstr "ಪಟ್ಟಿಗಳಿಗೆ ಹಿಂತಿರುಗಿ"
+
+#: templates/food_detail.html:8
+msgid "Posted by"
+msgstr "ಪೋಸ್ಟ್ ಮಾಡಿದವರು"
+
+#: templates/food_detail.html:42
+msgid "reviews"
+msgstr "ವಿಮರ್ಶೆಗಳು"
+
+#: templates/food_detail.html:57
+msgid "Claim This Food"
+msgstr "ಈ ಆಹಾರವನ್ನು ಪಡೆಯಿರಿ"
+
+#: templates/food_detail.html:67
+msgid "Open in Google Maps"
+msgstr "ಗೂಗಲ್ ಮ್ಯಾಪ್ಸ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ"
+
+#: templates/food_detail.html:78
+msgid "Chat with"
+msgstr "ಇವರೊಂದಿಗೆ ಚಾಟ್ ಮಾಡಿ"
+
+#: templates/food_detail.html:89
+msgid "No messages yet. Start the conversation!"
+msgstr "ಇನ್ನೂ ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ. ಸಂಭಾಷಣೆ ಪ್ರಾರಂಭಿಸಿ!"
+
+#: templates/food_detail.html:94
+msgid "Type a message..."
+msgstr "ಸಂದೇಶ ಟೈಪ್ ಮಾಡಿ..."
+
+#: templates/food_detail.html:95
+msgid "Send"
+msgstr "ಕಳುಹಿಸಿ"
+
+#: templates/food_detail.html:103
+msgid "Reviews"
+msgstr "ವಿಮರ್ಶೆಗಳು"
+
+#: templates/food_detail.html:107
+msgid "Your Rating"
+msgstr "ನಿಮ್ಮ ರೇಟಿಂಗ್"
+
+#: templates/food_detail.html:109
+msgid "Excellent"
+msgstr "ಅತ್ಯುತ್ತಮ"
+
+#: templates/food_detail.html:110
+msgid "Good"
+msgstr "ಒಳ್ಳೆಯದು"
+
+#: templates/food_detail.html:111
+msgid "Average"
+msgstr "ಸಾಧಾರಣ"
+
+#: templates/food_detail.html:112
+msgid "Poor"
+msgstr "ಕಳಪೆ"
+
+#: templates/food_detail.html:113
+msgid "Terrible"
+msgstr "ತೀರಾ ಕಳಪೆ"
+
+#: templates/food_detail.html:117
+msgid "Your Review"
+msgstr "ನಿಮ್ಮ ವಿಮರ್ಶೆ"
+
+#: templates/food_detail.html:118
+msgid "Share your experience..."
+msgstr "ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ..."
+
+#: templates/food_detail.html:120
+msgid "Submit Review"
+msgstr "ವಿಮರ್ಶೆ ಸಲ್ಲಿಸಿ"
+
+#: templates/food_detail.html:138
+msgid "No reviews yet."
+msgstr "ಇನ್ನೂ ಯಾವುದೇ ವಿಮರ್ಶೆಗಳಿಲ್ಲ."
+
+#: templates/forgot_password.html:2
+msgid "Forgot Password"
+msgstr "ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿದ್ದೀರಾ"
+
+#: templates/forgot_password.html:8 templates/forgot_password.html:24
+#: templates/reset_password.html:2
+msgid "Reset Password"
+msgstr "ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸಿ"
+
+#: templates/forgot_password.html:9
+msgid "Answer your security question to reset"
+msgstr "ಮರುಹೊಂದಿಸಲು ನಿಮ್ಮ ಭದ್ರತಾ ಪ್ರಶ್ನೆಗೆ ಉತ್ತರಿಸಿ"
+
+#: templates/forgot_password.html:13 templates/login.html:56
+#: templates/register.html:17
+msgid "Email Address"
+msgstr "ಇಮೇಲ್ ವಿಳಾಸ"
+
+#: templates/forgot_password.html:17
+msgid "What is your mother's name?"
+msgstr "ನಿಮ್ಮ ತಾಯಿಯ ಹೆಸರೇನು?"
+
+#: templates/forgot_password.html:18 templates/register.html:38
+msgid "Your answer"
+msgstr "ನಿಮ್ಮ ಉತ್ತರ"
+
+#: templates/forgot_password.html:21 templates/reset_password.html:13
+msgid "New Password"
+msgstr "ಹೊಸ ಪಾಸ್‌ವರ್ಡ್"
+
+#: templates/forgot_password.html:22 templates/register.html:22
+#: templates/reset_password.html:14
+msgid "Min. 6 characters"
+msgstr "ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳು"
+
+#: templates/forgot_password.html:26 templates/reset_password.html:18
+msgid "Back to Login"
+msgstr "ಲಾಗಿನ್‌ಗೆ ಹಿಂತಿರುಗಿ"
+
+#: templates/index.html:2
+msgid "Share Food, Reduce Waste"
+msgstr "ಆಹಾರ ಹಂಚಿಕೊಳ್ಳಿ, ವ್ಯರ್ಥ ಕಡಿಮೆ ಮಾಡಿ"
+
+#: templates/index.html:7
+msgid "Community Food Sharing"
+msgstr "ಸಮುದಾಯ ಆಹಾರ ಹಂಚಿಕೆ"
+
+#: templates/index.html:8
+msgid "Good food deserves"
+msgstr "ಒಳ್ಳೆಯ ಆಹಾರಕ್ಕೆ ಅರ್ಹವಾಗಿದೆ"
+
+#: templates/index.html:8
+msgid "a second chance."
+msgstr "ಎರಡನೇ ಅವಕಾಶ."
+
+#: templates/index.html:9
+msgid ""
+"SharePlate connects people with surplus food to those who need it most. "
+"Zero waste. Real impact. One plate at a time."
+msgstr "SharePlate ಹೆಚ್ಚುವರಿ ಆಹಾರ ಹೊಂದಿರುವ ಜನರನ್ನು ಅದು ಹೆಚ್ಚು ಅಗತ್ಯವಿರುವವರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ. ಶೂನ್ಯ ವ್ಯರ್ಥ. ನೈಜ ಪ್ರಭಾವ. ಒಮ್ಮೆಗೆ ಒಂದು ತಟ್ಟೆ."
+
+#: templates/index.html:11
+msgid "Find Food Near You"
+msgstr "ನಿಮ್ಮ ಬಳಿ ಆಹಾರ ಹುಡುಕಿ"
+
+#: templates/index.html:12
+msgid "Start Donating"
+msgstr "ದಾನ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ"
+
+#: templates/index.html:15
+msgid "Plates Shared"
+msgstr "ಹಂಚಿಕೊಂಡ ತಟ್ಟೆಗಳು"
+
+#: templates/index.html:19
+msgid "Meals Delivered"
+msgstr "ತಲುಪಿಸಿದ ಊಟಗಳು"
+
+#: templates/index.html:26
+msgid "Vegetable Rice"
+msgstr "ತರಕಾರಿ ಅನ್ನ"
+
+#: templates/index.html:27
+msgid "plates"
+msgstr "ತಟ್ಟೆಗಳು"
+
+#: templates/index.html:34
+msgid "Fresh Salad Bowl"
+msgstr "ತಾಜಾ ಸಲಾಡ್ ಬೌಲ್"
+
+#: templates/index.html:35
+msgid "servings"
+msgstr "ಸರ್ವಿಂಗ್‌ಗಳು"
+
+#: templates/index.html:42
+msgid "Biryani Box"
+msgstr "ಬಿರಿಯಾನಿ ಬಾಕ್ಸ್"
+
+#: templates/index.html:43
+msgid "portions"
+msgstr "ಭಾಗಗಳು"
+
+#: templates/index.html:52
+msgid "How It Works"
+msgstr "ಇದು ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ"
+
+#: templates/index.html:53
+msgid "Simple. Fast. Impactful."
+msgstr "ಸರಳ. ವೇಗ. ಪ್ರಭಾವಶಾಲಿ."
+
+#: templates/index.html:57
+msgid "List your food"
+msgstr "ನಿಮ್ಮ ಆಹಾರವನ್ನು ಪಟ್ಟಿ ಮಾಡಿ"
+
+#: templates/index.html:58
+msgid "Got leftovers from a party, hostel, or kitchen? Post it in 30 seconds."
+msgstr "ಪಾರ್ಟಿ, ಹಾಸ್ಟೆಲ್ ಅಥವಾ ಅಡುಗೆಮನೆಯಿಂದ ಉಳಿದ ಆಹಾರ ಇದೆಯೇ? 30 ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಪೋಸ್ಟ್ ಮಾಡಿ."
+
+#: templates/index.html:63
+msgid "Someone finds it"
+msgstr "ಯಾರಾದರೂ ಅದನ್ನು ಕಂಡುಕೊಳ್ಳುತ್ತಾರೆ"
+
+#: templates/index.html:64
+msgid "People nearby browse available food and claim what they need."
+msgstr "ಹತ್ತಿರದ ಜನರು ಲಭ್ಯವಿರುವ ಆಹಾರವನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ ಅವರಿಗೆ ಬೇಕಾದುದನ್ನು ಪಡೆಯುತ್ತಾರೆ."
+
+#: templates/index.html:69
+msgid "Food gets shared"
+msgstr "ಆಹಾರ ಹಂಚಿಕೆಯಾಗುತ್ತದೆ"
+
+#: templates/index.html:70
+msgid "Donor and receiver connect, food is picked up. Waste avoided."
+msgstr "ದಾನಿ ಮತ್ತು ಸ್ವೀಕರಿಸುವವರು ಸಂಪರ್ಕಿಸುತ್ತಾರೆ, ಆಹಾರವನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತದೆ. ವ್ಯರ್ಥ ತಪ್ಪಿಸಲಾಗಿದೆ."
+
+#: templates/index.html:79
+msgid "Fresh Listings"
+msgstr "ತಾಜಾ ಪಟ್ಟಿಗಳು"
+
+#: templates/index.html:80
+msgid "Available Right Now"
+msgstr "ಈಗ ಲಭ್ಯವಿದೆ"
+
+#: templates/index.html:97
+msgid "Until"
+msgstr "ವರೆಗೆ"
+
+#: templates/index.html:114
+msgid "View All Listings"
+msgstr "ಎಲ್ಲಾ ಪಟ್ಟಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ"
+
+#: templates/index.html:122
+msgid "Every meal shared is a step toward a world with no waste."
+msgstr "ಹಂಚಿಕೊಂಡ ಪ್ರತಿ ಊಟವು ವ್ಯರ್ಥವಿಲ್ಲದ ಜಗತ್ತಿನ ಕಡೆಗೆ ಒಂದು ಹೆಜ್ಜೆ."
+
+#: templates/index.html:124
+msgid "Join SharePlate Today"
+msgstr "ಇಂದೇ SharePlate ಸೇರಿ"
+
+#: templates/leaderboard.html:6
+msgid "Top Donors Leaderboard"
+msgstr "ಅಗ್ರ ದಾನಿಗಳ ಲೀಡರ್‌ಬೋರ್ಡ್"
+
+#: templates/leaderboard.html:7
+msgid "Celebrating our food heroes who make a difference!"
+msgstr "ಬದಲಾವಣೆ ತರುವ ನಮ್ಮ ಆಹಾರ ವೀರರನ್ನು ಆಚರಿಸುತ್ತಿದ್ದೇವೆ!"
+
+#: templates/leaderboard.html:21 templates/leaderboard.html:31
+#: templates/leaderboard.html:40
+msgid "donations"
+msgstr "ದೇಣಿಗೆಗಳು"
+
+#: templates/leaderboard.html:22
+msgid "2nd"
+msgstr "2ನೇ"
+
+#: templates/leaderboard.html:32
+msgid "1st"
+msgstr "1ನೇ"
+
+#: templates/leaderboard.html:41
+msgid "3rd"
+msgstr "3ನೇ"
+
+#: templates/leaderboard.html:49
+msgid "All Donors"
+msgstr "ಎಲ್ಲಾ ದಾನಿಗಳು"
+
+#: templates/leaderboard.html:54
+msgid "Rank"
+msgstr "ಶ್ರೇಣಿ"
+
+#: templates/leaderboard.html:57
+msgid "Total Donations"
+msgstr "ಒಟ್ಟು ದೇಣಿಗೆಗಳು"
+
+#: templates/leaderboard.html:59
+msgid "Badge"
+msgstr "ಬ್ಯಾಡ್ಜ್"
+
+#: templates/leaderboard.html:81
+msgid "Legend"
+msgstr "ದಂತಕಥೆ"
+
+#: templates/leaderboard.html:82
+msgid "Hero"
+msgstr "ವೀರ"
+
+#: templates/leaderboard.html:83
+msgid "Active"
+msgstr "ಸಕ್ರಿಯ"
+
+#: templates/leaderboard.html:84
+msgid "Starter"
+msgstr "ಆರಂಭಿಕ"
+
+#: templates/leaderboard.html:95
+msgid "No donors yet!"
+msgstr "ಇನ್ನೂ ದಾನಿಗಳಿಲ್ಲ!"
+
+#: templates/leaderboard.html:96
+msgid "Be the first to donate food and top the leaderboard!"
+msgstr "ಆಹಾರ ದಾನ ಮಾಡಿ ಲೀಡರ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ಮೊದಲಿಗರಾಗಿ!"
+
+#: templates/login.html:21
+msgid "Good food"
+msgstr "ಒಳ್ಳೆಯ ಆಹಾರ"
+
+#: templates/login.html:21
+msgid "shouldn't go to waste."
+msgstr "ವ್ಯರ್ಥವಾಗಬಾರದು."
+
+#: templates/login.html:22
+msgid "Connect with neighbors sharing surplus food nearby — one plate at a time."
+msgstr "ಹತ್ತಿರದಲ್ಲಿ ಹೆಚ್ಚುವರಿ ಆಹಾರ ಹಂಚಿಕೊಳ್ಳುವ ನೆರೆಹೊರೆಯವರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ — ಒಮ್ಮೆಗೆ ಒಂದು ತಟ್ಟೆ."
+
+#: templates/login.html:27
+msgid "Meals shared"
+msgstr "ಹಂಚಿಕೊಂಡ ಊಟಗಳು"
+
+#: templates/login.html:32
+msgid "Active members"
+msgstr "ಸಕ್ರಿಯ ಸದಸ್ಯರು"
+
+#: templates/login.html:43
+msgid "Welcome back"
+msgstr "ಮತ್ತೆ ಸ್ವಾಗತ"
+
+#: templates/login.html:44
+msgid "Login to share or claim food"
+msgstr "ಆಹಾರ ಹಂಚಿಕೊಳ್ಳಲು ಅಥವಾ ಪಡೆಯಲು ಲಾಗಿನ್ ಮಾಡಿ"
+
+#: templates/login.html:49
+msgid "Continue with Google"
+msgstr "ಗೂಗಲ್‌ನೊಂದಿಗೆ ಮುಂದುವರಿಸಿ"
+
+#: templates/login.html:52
+msgid "or"
+msgstr "ಅಥವಾ"
+
+#: templates/login.html:60 templates/register.html:21
+msgid "Password"
+msgstr "ಪಾಸ್‌ವರ್ಡ್"
+
+#: templates/login.html:61
+msgid "Your password"
+msgstr "ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್"
+
+#: templates/login.html:68
+msgid "Forgot password?"
+msgstr "ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿದ್ದೀರಾ?"
+
+#: templates/login.html:71
+msgid "New to SharePlate?"
+msgstr "SharePlate ಗೆ ಹೊಸಬರೇ?"
+
+#: templates/login.html:71
+msgid "Create an account"
+msgstr "ಖಾತೆ ರಚಿಸಿ"
+
+#: templates/profile.html:2 templates/profile.html:6
+msgid "My Profile"
+msgstr "ನನ್ನ ಪ್ರೊಫೈಲ್"
+
+#: templates/profile.html:7
+msgid "Manage your account and view your stats."
+msgstr "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಅಂಕಿಅಂಶಗಳನ್ನು ವೀಕ್ಷಿಸಿ."
+
+#: templates/profile.html:19
+msgid "Location not set"
+msgstr "ಸ್ಥಳ ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
+
+#: templates/profile.html:24
+msgid "Donations"
+msgstr "ದೇಣಿಗೆಗಳು"
+
+#: templates/profile.html:28
+msgid "Claims"
+msgstr "ಹಕ್ಕುಗಳು"
+
+#: templates/profile.html:38
+msgid "Member since"
+msgstr "ಸದಸ್ಯರಾದ ದಿನಾಂಕ"
+
+#: templates/profile.html:42
+msgid "Edit Profile"
+msgstr "ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ"
+
+#: templates/profile.html:45 templates/register.html:13
+msgid "Full Name"
+msgstr "ಪೂರ್ಣ ಹೆಸರು"
+
+#: templates/profile.html:50 templates/register.html:26
+msgid "e.g. Koramangala, Bengaluru"
+msgstr "ಉದಾ. ಕೋರಮಂಗಲ, ಬೆಂಗಳೂರು"
+
+#: templates/profile.html:53
+msgid "Phone Number"
+msgstr "ಫೋನ್ ಸಂಖ್ಯೆ"
+
+#: templates/profile.html:57
+msgid "Bio"
+msgstr "ಬಯೋ"
+
+#: templates/profile.html:58
+msgid "Tell the community about yourself..."
+msgstr "ನಿಮ್ಮ ಬಗ್ಗೆ ಸಮುದಾಯಕ್ಕೆ ತಿಳಿಸಿ..."
+
+#: templates/profile.html:60
+msgid "Save Changes"
+msgstr "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ"
+
+#: templates/register.html:2
+msgid "Join SharePlate"
+msgstr "SharePlate ಸೇರಿ"
+
+#: templates/register.html:8
+msgid "Create your account"
+msgstr "ನಿಮ್ಮ ಖಾತೆ ರಚಿಸಿ"
+
+#: templates/register.html:9
+msgid "Join the community fighting food waste"
+msgstr "ಆಹಾರ ವ್ಯರ್ಥದ ವಿರುದ್ಧ ಹೋರಾಡುವ ಸಮುದಾಯ ಸೇರಿ"
+
+#: templates/register.html:25
+msgid "Your Location"
+msgstr "ನಿಮ್ಮ ಸ್ಥಳ"
+
+#: templates/register.html:29
+msgid "I want to"
+msgstr "ನಾನು ಬಯಸುತ್ತೇನೆ"
+
+#: templates/register.html:31
+msgid "Both Donate & Receive"
+msgstr "ದಾನ ಮತ್ತು ಸ್ವೀಕಾರ ಎರಡೂ"
+
+#: templates/register.html:32
+msgid "Only Donate Food"
+msgstr "ಕೇವಲ ಆಹಾರ ದಾನ"
+
+#: templates/register.html:33
+msgid "Only Receive Food"
+msgstr "ಕೇವಲ ಆಹಾರ ಸ್ವೀಕಾರ"
+
+#: templates/register.html:37
+msgid "Security Question — What is your mother's name?"
+msgstr "ಭದ್ರತಾ ಪ್ರಶ್ನೆ — ನಿಮ್ಮ ತಾಯಿಯ ಹೆಸರೇನು?"
+
+#: templates/register.html:40
+msgid "Create Account"
+msgstr "ಖಾತೆ ರಚಿಸಿ"
+
+#: templates/register.html:42
+msgid "Already have an account?"
+msgstr "ಈಗಾಗಲೇ ಖಾತೆ ಹೊಂದಿದ್ದೀರಾ?"
+
+#: templates/register.html:42
+msgid "Login here"
+msgstr "ಇಲ್ಲಿ ಲಾಗಿನ್ ಮಾಡಿ"
+
+#: templates/reset_password.html:8
+msgid "Set New Password"
+msgstr "ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಸಿ"
+
+#: templates/reset_password.html:9
+msgid "Enter your new password below"
+msgstr "ಕೆಳಗೆ ನಿಮ್ಮ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ"
+
+#: templates/reset_password.html:16
+msgid "Save New Password"
+msgstr "ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಿ"

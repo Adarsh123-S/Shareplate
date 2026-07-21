@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Leaderboard — SharePlate{% endblock %}
+{% block title %}{{ _('Leaderboard') }} — SharePlate{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <h1>🏆 Top Donors Leaderboard</h1>
-    <p>Celebrating our food heroes who make a difference!</p>
+    <h1>🏆 {{ _('Top Donors Leaderboard') }}</h1>
+    <p>{{ _('Celebrating our food heroes who make a difference!') }}</p>
   </div>
 </div>
 
@@ -18,8 +18,8 @@
       <div class="podium-item podium-2">
         <div class="podium-avatar">{{ donors[1].name[0].upper() }}</div>
         <div class="podium-name">{{ donors[1].name }}</div>
-        <div class="podium-count">{{ donors[1].total }} donations</div>
-        <div class="podium-rank">2nd</div>
+        <div class="podium-count">{{ donors[1].total }} {{ _('donations') }}</div>
+        <div class="podium-rank">{{ _('2nd') }}</div>
         <div class="podium-bar bar-2"></div>
       </div>
       {% endif %}
@@ -28,8 +28,8 @@
         <div class="podium-crown">👑</div>
         <div class="podium-avatar">{{ donors[0].name[0].upper() }}</div>
         <div class="podium-name">{{ donors[0].name }}</div>
-        <div class="podium-count">{{ donors[0].total }} donations</div>
-        <div class="podium-rank">1st</div>
+        <div class="podium-count">{{ donors[0].total }} {{ _('donations') }}</div>
+        <div class="podium-rank">{{ _('1st') }}</div>
         <div class="podium-bar bar-1"></div>
       </div>
       {% endif %}
@@ -37,8 +37,8 @@
       <div class="podium-item podium-3">
         <div class="podium-avatar">{{ donors[2].name[0].upper() }}</div>
         <div class="podium-name">{{ donors[2].name }}</div>
-        <div class="podium-count">{{ donors[2].total }} donations</div>
-        <div class="podium-rank">3rd</div>
+        <div class="podium-count">{{ donors[2].total }} {{ _('donations') }}</div>
+        <div class="podium-rank">{{ _('3rd') }}</div>
         <div class="podium-bar bar-3"></div>
       </div>
       {% endif %}
@@ -46,17 +46,17 @@
 
     <!-- Full List -->
     <div class="leaderboard-table">
-      <h2 class="dash-section-title">All Donors</h2>
+      <h2 class="dash-section-title">{{ _('All Donors') }}</h2>
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
             <tr>
-              <th>Rank</th>
-              <th>Donor</th>
-              <th>Location</th>
-              <th>Total Donations</th>
-              <th>Completed</th>
-              <th>Badge</th>
+              <th>{{ _('Rank') }}</th>
+              <th>{{ _('Donor') }}</th>
+              <th>{{ _('Location') }}</th>
+              <th>{{ _('Total Donations') }}</th>
+              <th>{{ _('Completed') }}</th>
+              <th>{{ _('Badge') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -78,10 +78,10 @@
               <td><strong>{{ donor.total }}</strong></td>
               <td>{{ donor.completed }}</td>
               <td>
-                {% if donor.total >= 20 %}🌟 Legend
-                {% elif donor.total >= 10 %}🔥 Hero
-                {% elif donor.total >= 5 %}⭐ Active
-                {% else %}🌱 Starter{% endif %}
+                {% if donor.total >= 20 %}🌟 {{ _('Legend') }}
+                {% elif donor.total >= 10 %}🔥 {{ _('Hero') }}
+                {% elif donor.total >= 5 %}⭐ {{ _('Active') }}
+                {% else %}🌱 {{ _('Starter') }}{% endif %}
               </td>
             </tr>
             {% endfor %}
@@ -92,9 +92,9 @@
     {% else %}
     <div class="empty-state">
       <div class="empty-icon">🏆</div>
-      <h3>No donors yet!</h3>
-      <p>Be the first to donate food and top the leaderboard!</p>
-      <a href="{{ url_for('add_food') }}" class="btn-primary">Donate Now</a>
+      <h3>{{ _('No donors yet!') }}</h3>
+      <p>{{ _('Be the first to donate food and top the leaderboard!') }}</p>
+      <a href="{{ url_for('add_food') }}" class="btn-primary">{{ _('Donate Now') }}</a>
     </div>
     {% endif %}
 

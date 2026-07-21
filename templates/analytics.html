@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Analytics — SharePlate{% endblock %}
+{% block title %}{{ _('Analytics') }} — SharePlate{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <h1>📊 Platform Analytics</h1>
-    <p>Real-time insights about SharePlate's impact.</p>
+    <h1>📊 {{ _('Platform Analytics') }}</h1>
+    <p>{{ _("Real-time insights about SharePlate's impact.") }}</p>
   </div>
 </div>
 
@@ -15,54 +15,54 @@
       <div class="analytics-card">
         <div class="analytics-icon">🍱</div>
         <div class="analytics-num">{{ stats.total_food }}</div>
-        <div class="analytics-label">Total Food Listed</div>
+        <div class="analytics-label">{{ _('Total Food Listed') }}</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">✅</div>
         <div class="analytics-num">{{ stats.completed }}</div>
-        <div class="analytics-label">Meals Shared</div>
+        <div class="analytics-label">{{ _('Meals Shared') }}</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">👥</div>
         <div class="analytics-num">{{ stats.total_users }}</div>
-        <div class="analytics-label">Members</div>
+        <div class="analytics-label">{{ _('Members') }}</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">🌱</div>
         <div class="analytics-num">{{ stats.available }}</div>
-        <div class="analytics-label">Available Now</div>
+        <div class="analytics-label">{{ _('Available Now') }}</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">📋</div>
         <div class="analytics-num">{{ stats.total_claims }}</div>
-        <div class="analytics-label">Total Claims</div>
+        <div class="analytics-label">{{ _('Total Claims') }}</div>
       </div>
       <div class="analytics-card">
         <div class="analytics-icon">⭐</div>
         <div class="analytics-num">{{ stats.total_ratings }}</div>
-        <div class="analytics-label">Reviews Given</div>
+        <div class="analytics-label">{{ _('Reviews Given') }}</div>
       </div>
     </div>
 
     <!-- Charts -->
     <div class="charts-grid">
       <div class="chart-card">
-        <h3>🍽️ Food by Category</h3>
+        <h3>🍽️ {{ _('Food by Category') }}</h3>
         <canvas id="categoryChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>📈 Food Status Distribution</h3>
+        <h3>📈 {{ _('Food Status Distribution') }}</h3>
         <canvas id="statusChart"></canvas>
       </div>
     </div>
 
     <!-- Category Bars -->
     <div class="analytics-section">
-      <h2 class="dash-section-title">🍽️ Category Breakdown</h2>
+      <h2 class="dash-section-title">🍽️ {{ _('Category Breakdown') }}</h2>
       <div class="category-bars">
         {% for cat in categories %}
         <div class="cat-bar-item">
-          <div class="cat-bar-label">{{ cat.category or 'Other' }}</div>
+          <div class="cat-bar-label">{{ cat.category or _('Other') }}</div>
           <div class="cat-bar-track">
             <div class="cat-bar-fill" style="width: {% if stats.total_food > 0 %}{{ (cat.count / stats.total_food * 100)|round }}{% else %}0{% endif %}%"></div>
           </div>
@@ -73,11 +73,11 @@
     </div>
 
     <div class="analytics-section">
-      <h2 class="dash-section-title">🕐 Recent Activity</h2>
+      <h2 class="dash-section-title">🕐 {{ _('Recent Activity') }}</h2>
       <div class="table-wrap">
         <table class="dash-table">
           <thead>
-            <tr><th>Food</th><th>Donor</th><th>Status</th><th>Date</th></tr>
+            <tr><th>{{ _('Food') }}</th><th>{{ _('Donor') }}</th><th>{{ _('Status') }}</th><th>{{ _('Date') }}</th></tr>
           </thead>
           <tbody>
             {% for food in recent_foods %}
@@ -115,7 +115,7 @@ new Chart(document.getElementById('categoryChart'), {
 new Chart(document.getElementById('statusChart'), {
   type: 'bar',
   data: {
-    labels: ['Available', 'Requested', 'Collected', 'Completed'],
+    labels: ['{{ _("Available") }}', '{{ _("Requested") }}', '{{ _("Collected") }}', '{{ _("Completed") }}'],
     datasets: [{
       data: [{{ stats.available }}, {{ stats.total_claims }}, 0, {{ stats.completed }}],
       backgroundColor: ['#52B788','#F4A261','#74C69D','#2D6A4F'],

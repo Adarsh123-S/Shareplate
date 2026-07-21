@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-20 11:18+0530\n"
-"PO-Revision-Date: 2026-07-20 11:18+0530\n"
+"POT-Creation-Date: 2026-07-21 06:59+0530\n"
+"PO-Revision-Date: 2026-07-21 06:59+0530\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: te\n"
 "Language-Team: te <LL@li.org>\n"
@@ -13,6 +13,365 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: templates/add_food.html:2 templates/available.html:131
+#: templates/dashboard.html:10
+msgid "Donate Food"
+msgstr "ఆహారం దానం చేయండి"
+
+#: templates/add_food.html:6
+msgid "Share Your Food"
+msgstr "మీ ఆహారాన్ని పంచుకోండి"
+
+#: templates/add_food.html:7
+msgid "Fill in the details below and your listing goes live instantly."
+msgstr "క్రింద వివరాలు నింపండి, మీ లిస్టింగ్ వెంటనే లైవ్ అవుతుంది."
+
+#: templates/add_food.html:16
+msgid "Food Name"
+msgstr "ఆహారం పేరు"
+
+#: templates/add_food.html:17
+msgid "e.g. Vegetable Biryani"
+msgstr "ఉదా. వెజిటబుల్ బిర్యానీ"
+
+#: templates/add_food.html:20
+msgid "Category"
+msgstr "వర్గం"
+
+#: templates/add_food.html:22
+msgid "Select category"
+msgstr "వర్గాన్ని ఎంచుకోండి"
+
+#: templates/add_food.html:23 templates/available.html:23
+msgid "Cooked Meal"
+msgstr "వండిన భోజనం"
+
+#: templates/add_food.html:24 templates/available.html:24
+msgid "Snacks"
+msgstr "స్నాక్స్"
+
+#: templates/add_food.html:25 templates/available.html:25
+msgid "Fruits & Vegetables"
+msgstr "పండ్లు & కూరగాయలు"
+
+#: templates/add_food.html:26 templates/available.html:26
+msgid "Bakery"
+msgstr "బేకరీ"
+
+#: templates/add_food.html:27 templates/available.html:27
+msgid "Beverages"
+msgstr "పానీయాలు"
+
+#: templates/add_food.html:28 templates/available.html:28
+msgid "Raw Ingredients"
+msgstr "పచ్చి పదార్థాలు"
+
+#: templates/add_food.html:29 templates/analytics.html:65
+#: templates/available.html:29
+msgid "Other"
+msgstr "ఇతర"
+
+#: templates/add_food.html:35 templates/dashboard.html:25
+msgid "Quantity"
+msgstr "పరిమాణం"
+
+#: templates/add_food.html:36
+msgid "e.g. 5 plates, 2 kg"
+msgstr "ఉదా. 5 ప్లేట్లు, 2 కేజీలు"
+
+#: templates/add_food.html:39
+msgid "Available Until"
+msgstr "ఎప్పటివరకు లభ్యం"
+
+#: templates/add_food.html:44 templates/dashboard.html:75
+#: templates/food_detail.html:64
+msgid "Pickup Location"
+msgstr "పికప్ స్థానం"
+
+#: templates/add_food.html:45
+msgid "e.g. 3rd Floor, XYZ Apartments, Koramangala"
+msgstr "ఉదా. 3వ అంతస్తు, XYZ అపార్ట్‌మెంట్స్, కోరమంగళ"
+
+#: templates/add_food.html:48
+msgid "Contact Number"
+msgstr "సంప్రదింపు నంబర్"
+
+#: templates/add_food.html:49 templates/profile.html:54
+msgid "e.g. 9876543210"
+msgstr "ఉదా. 9876543210"
+
+#: templates/add_food.html:52
+msgid "Food Photo (optional)"
+msgstr "ఆహారం ఫోటో (ఐచ్ఛికం)"
+
+#: templates/add_food.html:54
+msgid "JPG, PNG, WEBP — max 5MB"
+msgstr "JPG, PNG, WEBP — గరిష్టం 5MB"
+
+#: templates/add_food.html:60
+msgid "Additional Notes"
+msgstr "అదనపు గమనికలు"
+
+#: templates/add_food.html:61
+msgid "Any allergies, preparation info, special instructions..."
+msgstr "ఏవైనా అలర్జీలు, తయారీ సమాచారం, ప్రత్యేక సూచనలు..."
+
+#: templates/add_food.html:64
+msgid "Cancel"
+msgstr "రద్దు చేయండి"
+
+#: templates/add_food.html:65
+msgid "List Food"
+msgstr "ఆహారాన్ని జాబితా చేయండి"
+
+#: templates/admin.html:2 templates/admin.html:6
+msgid "Admin Panel"
+msgstr "అడ్మిన్ ప్యానెల్"
+
+#: templates/admin.html:7
+msgid "Manage users, food listings, and platform stats."
+msgstr "వినియోగదారులు, ఆహార జాబితాలు మరియు ప్లాట్‌ఫారమ్ గణాంకాలను నిర్వహించండి."
+
+#: templates/admin.html:18
+msgid "Total Users"
+msgstr "మొత్తం వినియోగదారులు"
+
+#: templates/admin.html:23
+msgid "Total Listings"
+msgstr "మొత్తం జాబితాలు"
+
+#: templates/admin.html:28 templates/analytics.html:33
+msgid "Available Now"
+msgstr "ఇప్పుడు లభ్యం"
+
+#: templates/admin.html:33 templates/analytics.html:118
+#: templates/leaderboard.html:58 templates/profile.html:32
+msgid "Completed"
+msgstr "పూర్తయింది"
+
+#: templates/admin.html:38 templates/analytics.html:38
+msgid "Total Claims"
+msgstr "మొత్తం క్లెయిమ్‌లు"
+
+#: templates/admin.html:43
+msgid "All Users"
+msgstr "అందరు వినియోగదారులు"
+
+#: templates/admin.html:48
+msgid "Name"
+msgstr "పేరు"
+
+#: templates/admin.html:48
+msgid "Email"
+msgstr "ఇమెయిల్"
+
+#: templates/admin.html:49 templates/admin.html:85 templates/dashboard.html:26
+#: templates/leaderboard.html:56 templates/profile.html:49
+msgid "Location"
+msgstr "స్థానం"
+
+#: templates/admin.html:49
+msgid "Role"
+msgstr "పాత్ర"
+
+#: templates/admin.html:49
+msgid "Joined"
+msgstr "చేరిన తేదీ"
+
+#: templates/admin.html:49 templates/admin.html:85
+msgid "Action"
+msgstr "చర్య"
+
+#: templates/admin.html:64
+msgid "Delete this user?"
+msgstr "ఈ వినియోగదారుని తొలగించాలా?"
+
+#: templates/admin.html:65 templates/admin.html:100
+msgid "Delete"
+msgstr "తొలగించండి"
+
+#: templates/admin.html:68
+msgid "Admin"
+msgstr "అడ్మిన్"
+
+#: templates/admin.html:79
+msgid "All Food Listings"
+msgstr "అన్ని ఆహార జాబితాలు"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/available.html:60 templates/available.html:91
+#: templates/dashboard.html:24 templates/dashboard.html:74
+msgid "Food"
+msgstr "ఆహారం"
+
+#: templates/admin.html:84 templates/analytics.html:80
+#: templates/dashboard.html:77 templates/leaderboard.html:55
+msgid "Donor"
+msgstr "దాత"
+
+#: templates/admin.html:85 templates/analytics.html:80
+#: templates/dashboard.html:28 templates/dashboard.html:78
+msgid "Status"
+msgstr "స్థితి"
+
+#: templates/admin.html:85
+msgid "Posted"
+msgstr "పోస్ట్ చేయబడింది"
+
+#: templates/admin.html:99
+msgid "Delete this listing?"
+msgstr "ఈ జాబితాను తొలగించాలా?"
+
+#: templates/analytics.html:2 templates/base.html:69
+msgid "Analytics"
+msgstr "విశ్లేషణలు"
+
+#: templates/analytics.html:6
+msgid "Platform Analytics"
+msgstr "ప్లాట్‌ఫారమ్ విశ్లేషణలు"
+
+#: templates/analytics.html:7
+msgid "Real-time insights about SharePlate's impact."
+msgstr "SharePlate ప్రభావం గురించి రియల్-టైమ్ అంతర్దృష్టులు."
+
+#: templates/analytics.html:18
+msgid "Total Food Listed"
+msgstr "మొత్తం జాబితా చేసిన ఆహారం"
+
+#: templates/analytics.html:23
+msgid "Meals Shared"
+msgstr "పంచుకున్న భోజనాలు"
+
+#: templates/analytics.html:28 templates/index.html:17
+msgid "Members"
+msgstr "సభ్యులు"
+
+#: templates/analytics.html:43
+msgid "Reviews Given"
+msgstr "ఇచ్చిన సమీక్షలు"
+
+#: templates/analytics.html:50
+msgid "Food by Category"
+msgstr "వర్గం వారీగా ఆహారం"
+
+#: templates/analytics.html:54
+msgid "Food Status Distribution"
+msgstr "ఆహార స్థితి పంపిణీ"
+
+#: templates/analytics.html:61
+msgid "Category Breakdown"
+msgstr "వర్గాల విభజన"
+
+#: templates/analytics.html:76
+msgid "Recent Activity"
+msgstr "ఇటీవలి కార్యకలాపం"
+
+#: templates/analytics.html:80
+msgid "Date"
+msgstr "తేదీ"
+
+#: templates/analytics.html:118 templates/index.html:28 templates/index.html:36
+#: templates/index.html:44
+msgid "Available"
+msgstr "లభ్యం"
+
+#: templates/analytics.html:118
+msgid "Requested"
+msgstr "అభ్యర్థించారు"
+
+#: templates/analytics.html:118
+msgid "Collected"
+msgstr "సేకరించారు"
+
+#: templates/available.html:2 templates/dashboard.html:97
+msgid "Browse Food"
+msgstr "ఆహారాన్ని బ్రౌజ్ చేయండి"
+
+#: templates/available.html:6
+msgid "Available Food"
+msgstr "లభ్యమైన ఆహారం"
+
+#: templates/available.html:7
+msgid "Browse free food listed by generous people in your community."
+msgstr "మీ సంఘంలోని దయగల వ్యక్తులు జాబితా చేసిన ఉచిత ఆహారాన్ని బ్రౌజ్ చేయండి."
+
+#: templates/available.html:17
+msgid "Search food, location..."
+msgstr "ఆహారం, స్థానం వెతకండి..."
+
+#: templates/available.html:20
+msgid "Filter by location..."
+msgstr "స్థానం ద్వారా ఫిల్టర్ చేయండి..."
+
+#: templates/available.html:22
+msgid "All Categories"
+msgstr "అన్ని వర్గాలు"
+
+#: templates/available.html:32
+msgid "Any Rating"
+msgstr "ఏదైనా రేటింగ్"
+
+#: templates/available.html:37
+msgid "Newest First"
+msgstr "కొత్తవి మొదట"
+
+#: templates/available.html:38
+msgid "Top Rated"
+msgstr "అత్యధిక రేటింగ్"
+
+#: templates/available.html:39
+msgid "Expiring Soon"
+msgstr "త్వరలో గడువు ముగుస్తుంది"
+
+#: templates/available.html:41
+msgid "Search"
+msgstr "వెతకండి"
+
+#: templates/available.html:43
+msgid "Clear"
+msgstr "క్లియర్ చేయండి"
+
+#: templates/available.html:50
+msgid "Recommended For You"
+msgstr "మీ కోసం సిఫార్సు చేయబడింది"
+
+#: templates/available.html:74
+msgid "listing"
+msgstr "జాబితా"
+
+#: templates/available.html:74
+msgid "found"
+msgstr "కనుగొనబడింది"
+
+#: templates/available.html:104 templates/index.html:100
+msgid "by"
+msgstr "ద్వారా"
+
+#: templates/available.html:107
+msgid "Share on WhatsApp"
+msgstr "వాట్సాప్‌లో పంచుకోండి"
+
+#: templates/available.html:111 templates/available.html:117
+#: templates/index.html:103 templates/index.html:106
+msgid "Claim"
+msgstr "క్లెయిమ్ చేయండి"
+
+#: templates/available.html:114
+msgid "Your listing"
+msgstr "మీ జాబితా"
+
+#: templates/available.html:128
+msgid "No food available right now"
+msgstr "ప్రస్తుతం ఆహారం లభ్యం లేదు"
+
+#: templates/available.html:129
+msgid "Be the first to donate!"
+msgstr "దానం చేసిన మొదటి వ్యక్తి అవ్వండి!"
+
+#: templates/available.html:133
+msgid "Join & Donate"
+msgstr "చేరండి & దానం చేయండి"
 
 #: templates/base.html:27 templates/base.html:67
 msgid "Browse"
@@ -30,7 +389,7 @@ msgstr "గణాంకాలు"
 msgid "Donate"
 msgstr "దానం చేయండి"
 
-#: templates/base.html:32
+#: templates/base.html:32 templates/dashboard.html:2
 msgid "Dashboard"
 msgstr "డాష్‌బోర్డ్"
 
@@ -42,7 +401,7 @@ msgstr "ప్రొఫైల్"
 msgid "Logout"
 msgstr "లాగ్ అవుట్"
 
-#: templates/base.html:36
+#: templates/base.html:36 templates/login.html:2 templates/login.html:64
 msgid "Login"
 msgstr "లాగిన్"
 
@@ -54,13 +413,9 @@ msgstr "ఉచితంగా చేరండి"
 msgid "Share Food. Reduce Waste. Feed Hope."
 msgstr "ఆహారాన్ని పంచుకోండి. వృథాను తగ్గించండి. ఆశను పోషించండి."
 
-#: templates/base.html:68
+#: templates/base.html:68 templates/leaderboard.html:2
 msgid "Leaderboard"
 msgstr "లీడర్‌బోర్డ్"
-
-#: templates/base.html:69
-msgid "Analytics"
-msgstr "విశ్లేషణలు"
 
 #: templates/base.html:70
 msgid "Join"
@@ -73,3 +428,529 @@ msgstr "దీనితో తయారు చేయబడింది"
 #: templates/base.html:72
 msgid "to end food waste"
 msgstr "ఆహార వృథాను అంతం చేయడానికి"
+
+#: templates/dashboard.html:7
+msgid "Hi,"
+msgstr "నమస్కారం,"
+
+#: templates/dashboard.html:8
+msgid "Here's everything you've shared and claimed."
+msgstr "మీరు పంచుకున్నవి మరియు క్లెయిమ్ చేసినవి అన్నీ ఇక్కడ ఉన్నాయి."
+
+#: templates/dashboard.html:18
+msgid "My Donations"
+msgstr "నా దానాలు"
+
+#: templates/dashboard.html:27 templates/dashboard.html:76
+msgid "Expiry"
+msgstr "గడువు"
+
+#: templates/dashboard.html:29
+msgid "Actions"
+msgstr "చర్యలు"
+
+#: templates/dashboard.html:42
+msgid "Mark Collected"
+msgstr "సేకరించినట్లు గుర్తించండి"
+
+#: templates/dashboard.html:45
+msgid "Mark Completed"
+msgstr "పూర్తయినట్లు గుర్తించండి"
+
+#: templates/dashboard.html:48
+msgid "Complete"
+msgstr "పూర్తి చేయండి"
+
+#: templates/dashboard.html:50
+msgid "Remove this listing?"
+msgstr "ఈ జాబితాను తీసివేయాలా?"
+
+#: templates/dashboard.html:51
+msgid "Remove"
+msgstr "తీసివేయండి"
+
+#: templates/dashboard.html:61
+msgid "You haven't donated any food yet."
+msgstr "మీరు ఇంకా ఏ ఆహారాన్ని దానం చేయలేదు."
+
+#: templates/dashboard.html:62 templates/leaderboard.html:97
+msgid "Donate Now"
+msgstr "ఇప్పుడే దానం చేయండి"
+
+#: templates/dashboard.html:68
+msgid "My Claims"
+msgstr "నా క్లెయిమ్‌లు"
+
+#: templates/dashboard.html:96
+msgid "You haven't claimed any food yet."
+msgstr "మీరు ఇంకా ఏ ఆహారాన్ని క్లెయిమ్ చేయలేదు."
+
+#: templates/food_detail.html:6
+msgid "Back to listings"
+msgstr "జాబితాలకు తిరిగి వెళ్ళండి"
+
+#: templates/food_detail.html:8
+msgid "Posted by"
+msgstr "పోస్ట్ చేసినవారు"
+
+#: templates/food_detail.html:42
+msgid "reviews"
+msgstr "సమీక్షలు"
+
+#: templates/food_detail.html:57
+msgid "Claim This Food"
+msgstr "ఈ ఆహారాన్ని క్లెయిమ్ చేయండి"
+
+#: templates/food_detail.html:67
+msgid "Open in Google Maps"
+msgstr "గూగుల్ మ్యాప్స్‌లో తెరవండి"
+
+#: templates/food_detail.html:78
+msgid "Chat with"
+msgstr "వీరితో చాట్ చేయండి"
+
+#: templates/food_detail.html:89
+msgid "No messages yet. Start the conversation!"
+msgstr "ఇంకా సందేశాలు లేవు. సంభాషణ ప్రారంభించండి!"
+
+#: templates/food_detail.html:94
+msgid "Type a message..."
+msgstr "సందేశం టైప్ చేయండి..."
+
+#: templates/food_detail.html:95
+msgid "Send"
+msgstr "పంపండి"
+
+#: templates/food_detail.html:103
+msgid "Reviews"
+msgstr "సమీక్షలు"
+
+#: templates/food_detail.html:107
+msgid "Your Rating"
+msgstr "మీ రేటింగ్"
+
+#: templates/food_detail.html:109
+msgid "Excellent"
+msgstr "అద్భుతం"
+
+#: templates/food_detail.html:110
+msgid "Good"
+msgstr "మంచిది"
+
+#: templates/food_detail.html:111
+msgid "Average"
+msgstr "సగటు"
+
+#: templates/food_detail.html:112
+msgid "Poor"
+msgstr "పేలవం"
+
+#: templates/food_detail.html:113
+msgid "Terrible"
+msgstr "చాలా చెడ్డది"
+
+#: templates/food_detail.html:117
+msgid "Your Review"
+msgstr "మీ సమీక్ష"
+
+#: templates/food_detail.html:118
+msgid "Share your experience..."
+msgstr "మీ అనుభవాన్ని పంచుకోండి..."
+
+#: templates/food_detail.html:120
+msgid "Submit Review"
+msgstr "సమీక్షను సమర్పించండి"
+
+#: templates/food_detail.html:138
+msgid "No reviews yet."
+msgstr "ఇంకా సమీక్షలు లేవు."
+
+#: templates/forgot_password.html:2
+msgid "Forgot Password"
+msgstr "పాస్‌వర్డ్ మర్చిపోయారా"
+
+#: templates/forgot_password.html:8 templates/forgot_password.html:24
+#: templates/reset_password.html:2
+msgid "Reset Password"
+msgstr "పాస్‌వర్డ్ రీసెట్ చేయండి"
+
+#: templates/forgot_password.html:9
+msgid "Answer your security question to reset"
+msgstr "రీసెట్ చేయడానికి మీ భద్రతా ప్రశ్నకు సమాధానం ఇవ్వండి"
+
+#: templates/forgot_password.html:13 templates/login.html:56
+#: templates/register.html:17
+msgid "Email Address"
+msgstr "ఇమెయిల్ చిరునామా"
+
+#: templates/forgot_password.html:17
+msgid "What is your mother's name?"
+msgstr "మీ తల్లి పేరు ఏమిటి?"
+
+#: templates/forgot_password.html:18 templates/register.html:38
+msgid "Your answer"
+msgstr "మీ సమాధానం"
+
+#: templates/forgot_password.html:21 templates/reset_password.html:13
+msgid "New Password"
+msgstr "కొత్త పాస్‌వర్డ్"
+
+#: templates/forgot_password.html:22 templates/register.html:22
+#: templates/reset_password.html:14
+msgid "Min. 6 characters"
+msgstr "కనీసం 6 అక్షరాలు"
+
+#: templates/forgot_password.html:26 templates/reset_password.html:18
+msgid "Back to Login"
+msgstr "లాగిన్‌కు తిరిగి వెళ్ళండి"
+
+#: templates/index.html:2
+msgid "Share Food, Reduce Waste"
+msgstr "ఆహారాన్ని పంచుకోండి, వృథాను తగ్గించండి"
+
+#: templates/index.html:7
+msgid "Community Food Sharing"
+msgstr "సంఘం ఆహార పంపిణీ"
+
+#: templates/index.html:8
+msgid "Good food deserves"
+msgstr "మంచి ఆహారానికి అర్హత ఉంది"
+
+#: templates/index.html:8
+msgid "a second chance."
+msgstr "రెండవ అవకాశం."
+
+#: templates/index.html:9
+msgid ""
+"SharePlate connects people with surplus food to those who need it most. "
+"Zero waste. Real impact. One plate at a time."
+msgstr "SharePlate అదనపు ఆహారం ఉన్నవారిని దాని అత్యంత అవసరం ఉన్నవారితో కలుపుతుంది. సున్నా వృథా. నిజమైన ప్రభావం. ఒక్కసారి ఒక ప్లేట్."
+
+#: templates/index.html:11
+msgid "Find Food Near You"
+msgstr "మీ దగ్గర ఆహారాన్ని కనుగొనండి"
+
+#: templates/index.html:12
+msgid "Start Donating"
+msgstr "దానం చేయడం ప్రారంభించండి"
+
+#: templates/index.html:15
+msgid "Plates Shared"
+msgstr "పంచుకున్న ప్లేట్లు"
+
+#: templates/index.html:19
+msgid "Meals Delivered"
+msgstr "అందించిన భోజనాలు"
+
+#: templates/index.html:26
+msgid "Vegetable Rice"
+msgstr "వెజిటబుల్ రైస్"
+
+#: templates/index.html:27
+msgid "plates"
+msgstr "ప్లేట్లు"
+
+#: templates/index.html:34
+msgid "Fresh Salad Bowl"
+msgstr "తాజా సలాడ్ బౌల్"
+
+#: templates/index.html:35
+msgid "servings"
+msgstr "సర్వింగ్‌లు"
+
+#: templates/index.html:42
+msgid "Biryani Box"
+msgstr "బిర్యానీ బాక్స్"
+
+#: templates/index.html:43
+msgid "portions"
+msgstr "భాగాలు"
+
+#: templates/index.html:52
+msgid "How It Works"
+msgstr "ఇది ఎలా పనిచేస్తుంది"
+
+#: templates/index.html:53
+msgid "Simple. Fast. Impactful."
+msgstr "సరళం. వేగవంతం. ప్రభావవంతం."
+
+#: templates/index.html:57
+msgid "List your food"
+msgstr "మీ ఆహారాన్ని జాబితా చేయండి"
+
+#: templates/index.html:58
+msgid "Got leftovers from a party, hostel, or kitchen? Post it in 30 seconds."
+msgstr "పార్టీ, హాస్టల్ లేదా వంటగది నుండి మిగిలిపోయిన ఆహారం ఉందా? 30 సెకన్లలో పోస్ట్ చేయండి."
+
+#: templates/index.html:63
+msgid "Someone finds it"
+msgstr "ఎవరైనా దానిని కనుగొంటారు"
+
+#: templates/index.html:64
+msgid "People nearby browse available food and claim what they need."
+msgstr "దగ్గర్లోని వ్యక్తులు లభ్యమైన ఆహారాన్ని బ్రౌజ్ చేసి, వారికి కావలసినది క్లెయిమ్ చేస్తారు."
+
+#: templates/index.html:69
+msgid "Food gets shared"
+msgstr "ఆహారం పంచుకోబడుతుంది"
+
+#: templates/index.html:70
+msgid "Donor and receiver connect, food is picked up. Waste avoided."
+msgstr "దాత మరియు స్వీకర్త కలుసుకుంటారు, ఆహారం తీసుకోబడుతుంది. వృథా నివారించబడుతుంది."
+
+#: templates/index.html:79
+msgid "Fresh Listings"
+msgstr "తాజా జాబితాలు"
+
+#: templates/index.html:80
+msgid "Available Right Now"
+msgstr "ఇప్పుడు లభ్యం"
+
+#: templates/index.html:97
+msgid "Until"
+msgstr "వరకు"
+
+#: templates/index.html:114
+msgid "View All Listings"
+msgstr "అన్ని జాబితాలను చూడండి"
+
+#: templates/index.html:122
+msgid "Every meal shared is a step toward a world with no waste."
+msgstr "పంచుకున్న ప్రతి భోజనం వృథా లేని ప్రపంచం వైపు ఒక అడుగు."
+
+#: templates/index.html:124
+msgid "Join SharePlate Today"
+msgstr "ఈరోజే SharePlateలో చేరండి"
+
+#: templates/leaderboard.html:6
+msgid "Top Donors Leaderboard"
+msgstr "అగ్రశ్రేణి దాతల లీడర్‌బోర్డ్"
+
+#: templates/leaderboard.html:7
+msgid "Celebrating our food heroes who make a difference!"
+msgstr "మార్పు తెచ్చే మా ఆహార హీరోలను జరుపుకుంటున్నాము!"
+
+#: templates/leaderboard.html:21 templates/leaderboard.html:31
+#: templates/leaderboard.html:40
+msgid "donations"
+msgstr "దానాలు"
+
+#: templates/leaderboard.html:22
+msgid "2nd"
+msgstr "2వ"
+
+#: templates/leaderboard.html:32
+msgid "1st"
+msgstr "1వ"
+
+#: templates/leaderboard.html:41
+msgid "3rd"
+msgstr "3వ"
+
+#: templates/leaderboard.html:49
+msgid "All Donors"
+msgstr "అందరు దాతలు"
+
+#: templates/leaderboard.html:54
+msgid "Rank"
+msgstr "ర్యాంక్"
+
+#: templates/leaderboard.html:57
+msgid "Total Donations"
+msgstr "మొత్తం దానాలు"
+
+#: templates/leaderboard.html:59
+msgid "Badge"
+msgstr "బ్యాడ్జ్"
+
+#: templates/leaderboard.html:81
+msgid "Legend"
+msgstr "లెజెండ్"
+
+#: templates/leaderboard.html:82
+msgid "Hero"
+msgstr "హీరో"
+
+#: templates/leaderboard.html:83
+msgid "Active"
+msgstr "క్రియాశీలం"
+
+#: templates/leaderboard.html:84
+msgid "Starter"
+msgstr "ప్రారంభకుడు"
+
+#: templates/leaderboard.html:95
+msgid "No donors yet!"
+msgstr "ఇంకా దాతలు లేరు!"
+
+#: templates/leaderboard.html:96
+msgid "Be the first to donate food and top the leaderboard!"
+msgstr "ఆహారం దానం చేసిన మొదటి వ్యక్తిగా లీడర్‌బోర్డ్‌లో అగ్రస్థానంలో నిలవండి!"
+
+#: templates/login.html:21
+msgid "Good food"
+msgstr "మంచి ఆహారం"
+
+#: templates/login.html:21
+msgid "shouldn't go to waste."
+msgstr "వృథా కాకూడదు."
+
+#: templates/login.html:22
+msgid "Connect with neighbors sharing surplus food nearby — one plate at a time."
+msgstr "దగ్గర్లో అదనపు ఆహారాన్ని పంచుకునే పొరుగువారితో కనెక్ట్ అవ్వండి — ఒక్కసారి ఒక ప్లేట్."
+
+#: templates/login.html:27
+msgid "Meals shared"
+msgstr "పంచుకున్న భోజనాలు"
+
+#: templates/login.html:32
+msgid "Active members"
+msgstr "క్రియాశీల సభ్యులు"
+
+#: templates/login.html:43
+msgid "Welcome back"
+msgstr "తిరిగి స్వాగతం"
+
+#: templates/login.html:44
+msgid "Login to share or claim food"
+msgstr "ఆహారాన్ని పంచుకోవడానికి లేదా క్లెయిమ్ చేయడానికి లాగిన్ చేయండి"
+
+#: templates/login.html:49
+msgid "Continue with Google"
+msgstr "గూగుల్‌తో కొనసాగించండి"
+
+#: templates/login.html:52
+msgid "or"
+msgstr "లేదా"
+
+#: templates/login.html:60 templates/register.html:21
+msgid "Password"
+msgstr "పాస్‌వర్డ్"
+
+#: templates/login.html:61
+msgid "Your password"
+msgstr "మీ పాస్‌వర్డ్"
+
+#: templates/login.html:68
+msgid "Forgot password?"
+msgstr "పాస్‌వర్డ్ మర్చిపోయారా?"
+
+#: templates/login.html:71
+msgid "New to SharePlate?"
+msgstr "SharePlateకు కొత్తా?"
+
+#: templates/login.html:71
+msgid "Create an account"
+msgstr "ఖాతా సృష్టించండి"
+
+#: templates/profile.html:2 templates/profile.html:6
+msgid "My Profile"
+msgstr "నా ప్రొఫైల్"
+
+#: templates/profile.html:7
+msgid "Manage your account and view your stats."
+msgstr "మీ ఖాతాను నిర్వహించండి మరియు మీ గణాంకాలను చూడండి."
+
+#: templates/profile.html:19
+msgid "Location not set"
+msgstr "స్థానం సెట్ చేయలేదు"
+
+#: templates/profile.html:24
+msgid "Donations"
+msgstr "దానాలు"
+
+#: templates/profile.html:28
+msgid "Claims"
+msgstr "క్లెయిమ్‌లు"
+
+#: templates/profile.html:38
+msgid "Member since"
+msgstr "సభ్యుడైన తేదీ"
+
+#: templates/profile.html:42
+msgid "Edit Profile"
+msgstr "ప్రొఫైల్‌ను సవరించండి"
+
+#: templates/profile.html:45 templates/register.html:13
+msgid "Full Name"
+msgstr "పూర్తి పేరు"
+
+#: templates/profile.html:50 templates/register.html:26
+msgid "e.g. Koramangala, Bengaluru"
+msgstr "ఉదా. కోరమంగళ, బెంగళూరు"
+
+#: templates/profile.html:53
+msgid "Phone Number"
+msgstr "ఫోన్ నంబర్"
+
+#: templates/profile.html:57
+msgid "Bio"
+msgstr "బయో"
+
+#: templates/profile.html:58
+msgid "Tell the community about yourself..."
+msgstr "మీ గురించి సంఘానికి చెప్పండి..."
+
+#: templates/profile.html:60
+msgid "Save Changes"
+msgstr "మార్పులను సేవ్ చేయండి"
+
+#: templates/register.html:2
+msgid "Join SharePlate"
+msgstr "SharePlateలో చేరండి"
+
+#: templates/register.html:8
+msgid "Create your account"
+msgstr "మీ ఖాతాను సృష్టించండి"
+
+#: templates/register.html:9
+msgid "Join the community fighting food waste"
+msgstr "ఆహార వృథాకు వ్యతిరేకంగా పోరాడే సంఘంలో చేరండి"
+
+#: templates/register.html:25
+msgid "Your Location"
+msgstr "మీ స్థానం"
+
+#: templates/register.html:29
+msgid "I want to"
+msgstr "నేను కోరుకుంటున్నాను"
+
+#: templates/register.html:31
+msgid "Both Donate & Receive"
+msgstr "దానం మరియు స్వీకరణ రెండూ"
+
+#: templates/register.html:32
+msgid "Only Donate Food"
+msgstr "కేవలం ఆహారం దానం చేయాలి"
+
+#: templates/register.html:33
+msgid "Only Receive Food"
+msgstr "కేవలం ఆహారం స్వీకరించాలి"
+
+#: templates/register.html:37
+msgid "Security Question — What is your mother's name?"
+msgstr "భద్రతా ప్రశ్న — మీ తల్లి పేరు ఏమిటి?"
+
+#: templates/register.html:40
+msgid "Create Account"
+msgstr "ఖాతా సృష్టించండి"
+
+#: templates/register.html:42
+msgid "Already have an account?"
+msgstr "ఇప్పటికే ఖాతా ఉందా?"
+
+#: templates/register.html:42
+msgid "Login here"
+msgstr "ఇక్కడ లాగిన్ చేయండి"
+
+#: templates/reset_password.html:8
+msgid "Set New Password"
+msgstr "కొత్త పాస్‌వర్డ్‌ను సెట్ చేయండి"
+
+#: templates/reset_password.html:9
+msgid "Enter your new password below"
+msgstr "క్రింద మీ కొత్త పాస్‌వర్డ్‌ను నమోదు చేయండి"
+
+#: templates/reset_password.html:16
+msgid "Save New Password"
+msgstr "కొత్త పాస్‌వర్డ్‌ను సేవ్ చేయండి"
