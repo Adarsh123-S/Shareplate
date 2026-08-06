@@ -23,19 +23,29 @@
   <a href="{{ url_for('index') }}" class="brand">
     <span class="brand-icon">🍱</span> SharePlate
   </a>
+
   <div class="nav-links">
-    <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
-    <a href="{{ url_for('leaderboard') }}">🏆 {{ _('Leaders') }}</a>
-    <a href="{{ url_for('analytics') }}">📊 {{ _('Stats') }}</a>
     {% if session.user_id %}
+      <!-- Profile First -->
+      <a href="{{ url_for('profile') }}">{{ _('Profile') }}</a>
       <a href="{{ url_for('add_food') }}">+ {{ _('Donate') }}</a>
       <a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a>
-      <a href="{{ url_for('profile') }}">{{ _('Profile') }}</a>
+
+      <!-- Remaining Links -->
+      <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
+      <a href="{{ url_for('leaderboard') }}">🏆 {{ _('Leaders') }}</a>
+      <a href="{{ url_for('analytics') }}">📊 {{ _('Stats') }}</a>
+
       <a href="{{ url_for('logout') }}" class="btn-nav">{{ _('Logout') }}</a>
     {% else %}
+      <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
+      <a href="{{ url_for('leaderboard') }}">🏆 {{ _('Leaders') }}</a>
+      <a href="{{ url_for('analytics') }}">📊 {{ _('Stats') }}</a>
+
       <a href="{{ url_for('login') }}">{{ _('Login') }}</a>
       <a href="{{ url_for('register') }}" class="btn-nav">{{ _('Join Free') }}</a>
     {% endif %}
+
     <div class="lang-dropdown">
       <button class="lang-toggle" onclick="document.getElementById('lang-menu').classList.toggle('open')">🌐</button>
       <div id="lang-menu" class="lang-menu">
@@ -44,8 +54,10 @@
         {% endfor %}
       </div>
     </div>
+
     <button class="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
   </div>
+
   <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
 </nav>
 
@@ -63,17 +75,22 @@
   <div class="footer-inner">
     <div class="footer-brand">🍱 SharePlate</div>
     <p>{{ _('Share Food. Reduce Waste. Feed Hope.') }}</p>
+
     <div class="footer-links">
       <a href="{{ url_for('available') }}">{{ _('Browse') }}</a>
       <a href="{{ url_for('leaderboard') }}">{{ _('Leaderboard') }}</a>
       <a href="{{ url_for('analytics') }}">{{ _('Analytics') }}</a>
       <a href="{{ url_for('register') }}">{{ _('Join') }}</a>
     </div>
-    <p class="footer-copy">© 2024 SharePlate · {{ _('Made with') }} ❤️ {{ _('to end food waste') }}</p>
+
+    <p class="footer-copy">
+      © 2024 SharePlate · {{ _('Made with') }} ❤️ {{ _('to end food waste') }}
+    </p>
   </div>
 </footer>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 <script>
 function toggleDark() {
   const html = document.documentElement;
@@ -82,9 +99,14 @@ function toggleDark() {
   localStorage.setItem('theme', isDark ? 'light' : 'dark');
   document.querySelector('.dark-toggle').textContent = isDark ? '🌙' : '☀️';
 }
+
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
-if (savedTheme === 'dark') document.querySelector('.dark-toggle').textContent = '☀️';
+
+if (savedTheme === 'dark') {
+  document.querySelector('.dark-toggle').textContent = '☀️';
+}
 </script>
+
 </body>
 </html>
