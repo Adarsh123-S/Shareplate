@@ -8,39 +8,14 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_babel import Babel, gettext
-from flask_socketio import SocketIO, join_room, emit
+from flask_socketio import SocketIO, emit, join_room
 import requests as http_requests
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
-app.config['LANGUAGES'] = {
-    'en': 'English',
-    'hi': 'हिन्दी',
-    'kn': 'ಕನ್ನಡ',
-    'te': 'తెలుగు',
-    'ta': 'தமிழ்',
-    'mr': 'मराठी',
-    'ml': 'മലയാളം'
-}
-app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-
-def get_locale():
-    if 'language' in session:
-        return session['language']
-    return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
-
-babel = Babel(app, locale_selector=get_locale)
-app.jinja_env.globals['_'] = gettext
-
-@app.route('/set-language/<lang>')
-def set_language(lang):
-    if lang in app.config['LANGUAGES']:
-        session['language'] = lang
-    return redirect(request.referrer or url_for('index'))
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -82,8 +57,7 @@ def send_email(to_email, subject, body):
 google_bp = make_google_blueprint(
     client_id=os.environ.get('GOOGLE_CLIENT_ID'),
     client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    scope=['profile', 'email'],
-    redirect_to='google_callback'
+    scope=['profile', 'email']
 )
 app.register_blueprint(google_bp, url_prefix='/google')
 
@@ -122,6 +96,12 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''ALTER TABLE food ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN DEFAULT FALSE''')
+    c.execute('''CREATE TABLE IF NOT EXISTS food_images (
+        id SERIAL PRIMARY KEY,
+        food_id INTEGER REFERENCES food(id) ON DELETE CASCADE,
+        image_url TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
     c.execute('''CREATE TABLE IF NOT EXISTS requests (
         id SERIAL PRIMARY KEY,
         food_id INTEGER REFERENCES food(id),
@@ -330,47 +310,43 @@ def add_food():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        image_url = None
-        if 'image' in request.files:
-            file = request.files['image']
-            if file and file.filename and allowed_file(file.filename):
-                try:
-                    upload_result = cloudinary.uploader.upload(
-                        file, folder='shareplate',
-                        transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
-                    )
-                    image_url = upload_result['secure_url']
-                except:
-                    flash('Image upload failed, listing without image.', 'warning')
+        uploaded_urls = []
+        had_file_attempt = False
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+            for file in files[:6]:  # cap at 6 images per listing
+                if file and file.filename:
+                    had_file_attempt = True
+                    if allowed_file(file.filename):
+                        try:
+                            upload_result = cloudinary.uploader.upload(
+                                file, folder='shareplate',
+                                transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
+                            )
+                            uploaded_urls.append(upload_result['secure_url'])
+                        except:
+                            pass
+        if had_file_attempt and not uploaded_urls:
+            flash('Image upload failed, listing without photos.', 'warning')
+        image_url = uploaded_urls[0] if uploaded_urls else None
         conn = get_db()
         c = conn.cursor()
         c.execute(
             '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id, image_url)
-               VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+               VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id''',
             (request.form['food_name'], request.form['category'],
              request.form['quantity'], request.form['location'],
              request.form['expiry'], request.form['contact'],
              request.form.get('notes', ''), session['user_id'], image_url)
         )
+        new_food_id = c.fetchone()[0]
+        for url in uploaded_urls:
+            c.execute('INSERT INTO food_images (food_id, image_url) VALUES (%s,%s)', (new_food_id, url))
         conn.commit()
         conn.close()
         flash('Food listed successfully! 🎉', 'success')
         return redirect(url_for('dashboard'))
     return render_template('add_food.html')
-
-@app.route('/api/search-suggestions')
-def search_suggestions():
-    q = request.args.get('q', '').strip()
-    if len(q) < 2:
-        return jsonify([])
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('''SELECT DISTINCT food_name FROM food
-               WHERE status='available' AND food_name ILIKE %s
-               ORDER BY food_name LIMIT 8''', (f'%{q}%',))
-    suggestions = [row[0] for row in c.fetchall()]
-    conn.close()
-    return jsonify(suggestions)
 
 @app.route('/available')
 def available():
@@ -447,9 +423,13 @@ def food_detail(food_id):
                FROM messages m JOIN users u ON m.sender_id = u.id
                WHERE m.food_id=%s ORDER BY m.created_at ASC''', (food_id,))
     messages = fetchall(c)
+    c.execute('SELECT image_url FROM food_images WHERE food_id=%s ORDER BY created_at ASC', (food_id,))
+    images = [row[0] for row in c.fetchall()]
+    if not images and food.get('image_url'):
+        images = [food['image_url']]
     conn.close()
     return render_template('food_detail.html', food=food, reviews=reviews,
-                           avg_rating=avg_rating, messages=messages,
+                           avg_rating=avg_rating, messages=messages, images=images,
                            google_maps_key=os.environ.get('GOOGLE_MAPS_API_KEY', ''))
 
 @app.route('/rate/<int:food_id>', methods=['POST'])
@@ -473,61 +453,6 @@ def rate_food(food_id):
     conn.close()
     flash('Rating submitted! ⭐', 'success')
     return redirect(url_for('food_detail', food_id=food_id))
-
-@socketio.on('join')
-def on_join(data):
-    food_id = data.get('food_id')
-    if food_id:
-        join_room(f'food_{food_id}')
-
-@socketio.on('send_message')
-def handle_send_message(data):
-    food_id = data.get('food_id')
-    message_text = data.get('message', '').strip()
-    if 'user_id' not in session or not message_text or not food_id:
-        return
-
-    uid = session['user_id']
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
-    food = fetchone(c)
-    if not food:
-        conn.close()
-        return
-
-    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
-    if not receiver_id:
-        conn.close()
-        return
-
-    c.execute('INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s) RETURNING id, created_at',
-              (food_id, uid, receiver_id, message_text))
-    new_row = c.fetchone()
-    add_notification(receiver_id, f'New message about "{food["food_name"]}"')
-    c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
-    receiver = fetchone(c)
-    c.execute('SELECT name FROM users WHERE id=%s', (uid,))
-    sender = fetchone(c)
-    conn.commit()
-    conn.close()
-
-    if receiver:
-        send_email(
-            receiver['email'],
-            f'New message about "{food["food_name"]}" on SharePlate',
-            f'Hi {receiver["name"]},\n\n{sender["name"] if sender else "Someone"} sent you a message '
-            f'about "{food["food_name"]}":\n\n"{message_text}"\n\n'
-            f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
-            f'— SharePlate'
-        )
-
-    emit('receive_message', {
-        'sender_id': uid,
-        'sender_name': sender['name'] if sender else 'Someone',
-        'message': message_text,
-        'created_at': new_row[1].strftime('%b %d, %I:%M %p')
-    }, room=f'food_{food_id}')
 
 @app.route('/send-message/<int:food_id>', methods=['POST'])
 def send_message(food_id):
@@ -566,7 +491,68 @@ def send_message(food_id):
     conn.close()
     return redirect(url_for('food_detail', food_id=food_id))
 
-@app.route('/claim/<int:food_id>', methods=['POST'])
+
+# ── Real-time chat via Socket.IO ──
+
+@socketio.on('join_food_room')
+def handle_join_food_room(data):
+    food_id = data.get('food_id')
+    if food_id:
+        join_room(f'food_{food_id}')
+
+@socketio.on('send_chat_message')
+def handle_send_chat_message(data):
+    if 'user_id' not in session:
+        return
+    uid = session['user_id']
+    food_id = data.get('food_id')
+    message = (data.get('message') or '').strip()
+    if not food_id or not message:
+        return
+
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
+    food = fetchone(c)
+    if not food:
+        conn.close()
+        return
+    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
+    if not receiver_id:
+        conn.close()
+        return
+
+    c.execute(
+        'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s) RETURNING id, created_at',
+        (food_id, uid, receiver_id, message)
+    )
+    new_id, created_at = c.fetchone()
+    add_notification(receiver_id, f'New message about "{food["food_name"]}"')
+    c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
+    receiver = fetchone(c)
+    conn.commit()
+    conn.close()
+
+    payload = {
+        'id': new_id,
+        'sender_id': uid,
+        'sender_name': session.get('user_name', 'User'),
+        'message': message,
+        'created_at': created_at.strftime('%Y-%m-%d %H:%M')
+    }
+    emit('new_chat_message', payload, room=f'food_{food_id}')
+
+    if receiver:
+        send_email(
+            receiver['email'],
+            f'New message about "{food["food_name"]}" on SharePlate',
+            f'Hi {receiver["name"]},\n\n{session.get("user_name", "Someone")} sent you a message '
+            f'about "{food["food_name"]}":\n\n"{message}"\n\n'
+            f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
+            f'— SharePlate'
+        )
+
+
 def claim_food(food_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))

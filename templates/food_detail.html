@@ -3,9 +3,9 @@
 {% block content %}
 <div class="page-header">
   <div class="section-inner">
-    <a href="{{ url_for('available') }}" class="back-link">← {{ _('Back to listings') }}</a>
+    <a href="{{ url_for('available') }}" class="back-link">← Back to listings</a>
     <h1>{{ food.food_name }}</h1>
-    <p>{{ _('Posted by') }} {{ food.donor_name }}</p>
+    <p>Posted by {{ food.donor_name }}</p>
   </div>
 </div>
 
@@ -15,8 +15,19 @@
 
       <!-- Left: Food Info -->
       <div class="detail-main">
-        {% if food.image_url %}
-        <img src="{{ food.image_url }}" class="detail-img" alt="{{ food.food_name }}"/>
+        {% if images %}
+        <div class="gallery">
+          <img src="{{ images[0] }}" class="detail-img" id="gallery-main-img" alt="{{ food.food_name }}"/>
+          {% if images|length > 1 %}
+          <div class="gallery-thumbs">
+            {% for img in images %}
+            <img src="{{ img }}" class="gallery-thumb {% if loop.first %}gallery-thumb-active{% endif %}"
+                 onclick="document.getElementById('gallery-main-img').src=this.src; document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('gallery-thumb-active')); this.classList.add('gallery-thumb-active');"
+                 alt="{{ food.food_name }} photo {{ loop.index }}"/>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
         {% else %}
         <div class="detail-emoji-box">
           {% if food.category == 'Cooked Meal' %}🍛
@@ -39,7 +50,7 @@
             {% for i in range(1, 6) %}
               {% if i <= avg_rating|round %}⭐{% else %}☆{% endif %}
             {% endfor %}
-            <span class="rating-count">({{ reviews|length }} {{ _('reviews') }})</span>
+            <span class="rating-count">({{ reviews|length }} reviews)</span>
           </div>
 
           <div class="detail-meta">
@@ -54,17 +65,27 @@
 
           {% if session.user_id and session.user_id != food.donor_id and food.status == 'available' %}
           <form method="post" action="{{ url_for('claim_food', food_id=food.id) }}">
-            <button class="btn-primary" style="width:100%; margin-top:1rem;">🙌 {{ _('Claim This Food') }}</button>
+            <button class="btn-primary" style="width:100%; margin-top:1rem;">🙌 Claim This Food</button>
           </form>
           {% endif %}
         </div>
 
         <!-- Google Maps -->
         <div class="map-card">
-          <h3>📍 {{ _('Pickup Location') }}</h3>
-          <div id="map" style="height: 300px; border-radius: 12px; overflow:hidden;"></div>
-          <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.75rem; display:inline-block;">
-            🗺️ {{ _('Open in Google Maps') }}
+          <h3>📍 Pickup Location</h3>
+          <div class="map-embed-wrap">
+            <iframe
+              width="100%"
+              height="250"
+              style="border:0; border-radius: 12px;"
+              loading="lazy"
+              allowfullscreen
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q={{ food.location|urlencode }}&output=embed">
+            </iframe>
+          </div>
+          <a href="https://maps.google.com/?q={{ food.location|urlencode }}" target="_blank" class="btn-outline" style="margin-top:0.5rem; display:inline-block;">
+            🗺️ Open in Google Maps
           </a>
         </div>
       </div>
@@ -75,49 +96,49 @@
         <!-- Chat -->
         {% if session.user_id %}
         <div class="chat-card">
-          <h3>💬 {{ _('Chat with') }} {{ food.donor_name }}</h3>
+          <h3>💬 Chat with {{ food.donor_name }}</h3>
           <div class="chat-messages" id="chat-messages">
             {% if messages %}
               {% for msg in messages %}
               <div class="chat-msg {% if msg.sender_id == session.user_id %}chat-msg-mine{% else %}chat-msg-theirs{% endif %}">
                 <div class="chat-msg-name">{{ msg.sender_name }}</div>
                 <div class="chat-msg-text">{{ msg.message }}</div>
-                <div class="chat-msg-time">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') if msg.created_at else '' }}</div>
+                <div class="chat-msg-time">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
               </div>
               {% endfor %}
             {% else %}
-              <p class="no-messages" id="no-messages">{{ _('No messages yet. Start the conversation!') }}</p>
+              <p class="no-messages" id="no-messages-placeholder">No messages yet. Start the conversation!</p>
             {% endif %}
           </div>
           {% if session.user_id != food.donor_id %}
-          <div class="chat-form">
-            <input type="text" id="chat-input" placeholder="{{ _('Type a message...') }}" />
-            <button onclick="sendMessage()" class="btn-primary">{{ _('Send') }}</button>
-          </div>
+          <form id="chat-form" class="chat-form">
+            <input type="text" id="chat-input" placeholder="Type a message..." required autocomplete="off" />
+            <button type="submit" class="btn-primary">Send</button>
+          </form>
           {% endif %}
         </div>
         {% endif %}
 
         <!-- Reviews -->
         <div class="reviews-card">
-          <h3>⭐ {{ _('Reviews') }}</h3>
+          <h3>⭐ Reviews</h3>
           {% if session.user_id and food.status == 'completed' %}
           <form method="post" action="{{ url_for('rate_food', food_id=food.id) }}" class="review-form">
             <div class="form-group">
-              <label>{{ _('Your Rating') }}</label>
+              <label>Your Rating</label>
               <select name="rating" class="star-select">
-                <option value="5">⭐⭐⭐⭐⭐ {{ _('Excellent') }}</option>
-                <option value="4">⭐⭐⭐⭐ {{ _('Good') }}</option>
-                <option value="3">⭐⭐⭐ {{ _('Average') }}</option>
-                <option value="2">⭐⭐ {{ _('Poor') }}</option>
-                <option value="1">⭐ {{ _('Terrible') }}</option>
+                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                <option value="4">⭐⭐⭐⭐ Good</option>
+                <option value="3">⭐⭐⭐ Average</option>
+                <option value="2">⭐⭐ Poor</option>
+                <option value="1">⭐ Terrible</option>
               </select>
             </div>
             <div class="form-group">
-              <label>{{ _('Your Review') }}</label>
-              <textarea name="review" rows="3" placeholder="{{ _('Share your experience...') }}"></textarea>
+              <label>Your Review</label>
+              <textarea name="review" rows="3" placeholder="Share your experience..."></textarea>
             </div>
-            <button type="submit" class="btn-primary">{{ _('Submit Review') }}</button>
+            <button type="submit" class="btn-primary">Submit Review</button>
           </form>
           {% endif %}
 
@@ -131,11 +152,11 @@
               {% if review.review %}
               <p class="review-text">{{ review.review }}</p>
               {% endif %}
-              <p class="review-date">{{ review.created_at.strftime('%Y-%m-%d') if review.created_at else '' }}</p>
+              <p class="review-date">{{ review.created_at.strftime('%Y-%m-%d') }}</p>
             </div>
             {% endfor %}
           {% else %}
-            <p class="no-reviews">{{ _('No reviews yet.') }}</p>
+            <p class="no-reviews">No reviews yet.</p>
           {% endif %}
         </div>
 
@@ -144,6 +165,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 // Expiry countdown timer
 function updateCountdown() {
@@ -172,58 +194,47 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 60000);
 
-// Google Maps
-function initMap() {
-  const location = "{{ food.location }}";
-  const geocoder = new google.maps.Geocoder();
-  geocoder.geocode({ address: location + ', India' }, function(results, status) {
-    if (status === 'OK') {
-      const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 15,
-        center: results[0].geometry.location,
-      });
-      new google.maps.Marker({
-        map: map,
-        position: results[0].geometry.location,
-        title: location,
-        icon: {
-          url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-        }
-      });
-    } else {
-      document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--green-faint);border-radius:12px;"><p>📍 ' + location + '</p></div>';
-    }
-  });
-}
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap" async defer></script>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
+{% if session.user_id %}
+// Real-time chat via Socket.IO
 const socket = io();
 const foodId = {{ food.id }};
-const myUserId = {{ session.user_id or 'null' }};
-socket.emit('join', { food_id: foodId });
-socket.on('receive_message', function(data) {
-  const noMsg = document.getElementById('no-messages');
-  if (noMsg) noMsg.remove();
-  const div = document.createElement('div');
-  div.className = 'chat-msg ' + (data.sender_id == myUserId ? 'chat-msg-mine' : 'chat-msg-theirs');
-  div.innerHTML = `<div class="chat-msg-name">${data.sender_name}</div>
-    <div class="chat-msg-text">${data.message}</div>
-    <div class="chat-msg-time">${data.created_at}</div>`;
-  const msgs = document.getElementById('chat-messages');
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+const currentUserId = {{ session.user_id }};
+const chatMessages = document.getElementById('chat-messages');
+
+socket.on('connect', function() {
+  socket.emit('join_food_room', { food_id: foodId });
 });
-function sendMessage() {
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-  socket.emit('send_message', { food_id: foodId, message: msg });
-  input.value = '';
+
+socket.on('new_chat_message', function(data) {
+  const placeholder = document.getElementById('no-messages-placeholder');
+  if (placeholder) placeholder.remove();
+
+  const isMine = data.sender_id === currentUserId;
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'chat-msg ' + (isMine ? 'chat-msg-mine' : 'chat-msg-theirs');
+  msgDiv.innerHTML =
+    '<div class="chat-msg-name"></div>' +
+    '<div class="chat-msg-text"></div>' +
+    '<div class="chat-msg-time"></div>';
+  msgDiv.querySelector('.chat-msg-name').textContent = data.sender_name;
+  msgDiv.querySelector('.chat-msg-text').textContent = data.message;
+  msgDiv.querySelector('.chat-msg-time').textContent = data.created_at;
+
+  chatMessages.appendChild(msgDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+const chatForm = document.getElementById('chat-form');
+if (chatForm) {
+  chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    if (!message) return;
+    socket.emit('send_chat_message', { food_id: foodId, message: message });
+    input.value = '';
+  });
 }
-document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') sendMessage();
-});
+{% endif %}
 </script>
 {% endblock %}
