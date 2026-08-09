@@ -12,7 +12,7 @@ from flask_socketio import SocketIO, emit, join_room
 import requests as http_requests
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
@@ -96,12 +96,6 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
     c.execute('''ALTER TABLE food ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN DEFAULT FALSE''')
-    c.execute('''CREATE TABLE IF NOT EXISTS food_images (
-        id SERIAL PRIMARY KEY,
-        food_id INTEGER REFERENCES food(id) ON DELETE CASCADE,
-        image_url TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )''')
     c.execute('''CREATE TABLE IF NOT EXISTS requests (
         id SERIAL PRIMARY KEY,
         food_id INTEGER REFERENCES food(id),
@@ -310,38 +304,28 @@ def add_food():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
-        uploaded_urls = []
-        had_file_attempt = False
-        if 'images' in request.files:
-            files = request.files.getlist('images')
-            for file in files[:6]:  # cap at 6 images per listing
-                if file and file.filename:
-                    had_file_attempt = True
-                    if allowed_file(file.filename):
-                        try:
-                            upload_result = cloudinary.uploader.upload(
-                                file, folder='shareplate',
-                                transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
-                            )
-                            uploaded_urls.append(upload_result['secure_url'])
-                        except:
-                            pass
-        if had_file_attempt and not uploaded_urls:
-            flash('Image upload failed, listing without photos.', 'warning')
-        image_url = uploaded_urls[0] if uploaded_urls else None
+        image_url = None
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    upload_result = cloudinary.uploader.upload(
+                        file, folder='shareplate',
+                        transformation=[{'width': 800, 'height': 600, 'crop': 'fill'}]
+                    )
+                    image_url = upload_result['secure_url']
+                except:
+                    flash('Image upload failed, listing without image.', 'warning')
         conn = get_db()
         c = conn.cursor()
         c.execute(
             '''INSERT INTO food (food_name, category, quantity, location, expiry, contact, notes, donor_id, image_url)
-               VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id''',
+               VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
             (request.form['food_name'], request.form['category'],
              request.form['quantity'], request.form['location'],
              request.form['expiry'], request.form['contact'],
              request.form.get('notes', ''), session['user_id'], image_url)
         )
-        new_food_id = c.fetchone()[0]
-        for url in uploaded_urls:
-            c.execute('INSERT INTO food_images (food_id, image_url) VALUES (%s,%s)', (new_food_id, url))
         conn.commit()
         conn.close()
         flash('Food listed successfully! 🎉', 'success')
@@ -423,13 +407,9 @@ def food_detail(food_id):
                FROM messages m JOIN users u ON m.sender_id = u.id
                WHERE m.food_id=%s ORDER BY m.created_at ASC''', (food_id,))
     messages = fetchall(c)
-    c.execute('SELECT image_url FROM food_images WHERE food_id=%s ORDER BY created_at ASC', (food_id,))
-    images = [row[0] for row in c.fetchall()]
-    if not images and food.get('image_url'):
-        images = [food['image_url']]
     conn.close()
     return render_template('food_detail.html', food=food, reviews=reviews,
-                           avg_rating=avg_rating, messages=messages, images=images,
+                           avg_rating=avg_rating, messages=messages,
                            google_maps_key=os.environ.get('GOOGLE_MAPS_API_KEY', ''))
 
 @app.route('/rate/<int:food_id>', methods=['POST'])
@@ -553,6 +533,7 @@ def handle_send_chat_message(data):
         )
 
 
+@app.route('/claim-food/<int:food_id>', methods=['POST'])
 def claim_food(food_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
