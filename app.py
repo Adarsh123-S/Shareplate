@@ -79,7 +79,8 @@ def send_email(to_email, subject, body):
 google_bp = make_google_blueprint(
     client_id=os.environ.get('GOOGLE_CLIENT_ID'),
     client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    scope=['profile', 'email']
+    scope=['profile', 'email'],
+    redirect_url='https://shareplate-0s8z.onrender.com/google/authorized'
 )
 app.register_blueprint(google_bp, url_prefix='/google')
 
