@@ -12,6 +12,9 @@ from flask_dance.consumer import oauth_authorized
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
