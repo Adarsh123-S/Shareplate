@@ -8,36 +8,12 @@ from datetime import datetime
 import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_socketio import SocketIO, emit, join_room
-from flask_babel import Babel
-import requests as http_requests
+from flask_dance.consumer import oauth_authorized
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 app.secret_key = 'shareplate-secret-key-2024'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
-
-app.config['LANGUAGES'] = {
-    'en': 'English',
-    'hi': 'हिंदी',
-    'kn': 'ಕನ್ನಡ',
-    'te': 'తెలుగు',
-    'mr': 'मराठी',
-    'ml': 'മലയാളം',
-    'ta': 'தமிழ்',
-}
-
-def get_locale():
-    return session.get('language', request.accept_languages.best_match(app.config['LANGUAGES'].keys()))
-
-babel = Babel(app, locale_selector=get_locale)
-
-@app.route('/set-language/<lang>')
-def set_language(lang):
-    if lang in app.config['LANGUAGES']:
-        session['language'] = lang
-    return redirect(request.referrer or url_for('index'))
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -50,37 +26,12 @@ cloudinary.config(
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Resend (HTTP-based email API — works on Render free tier, unlike SMTP)
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
-MAIL_FROM = os.environ.get('MAIL_FROM', 'SharePlate <onboarding@resend.dev>')
-
-def send_email(to_email, subject, body):
-    if not to_email or not RESEND_API_KEY:
-        print('Email skipped: missing recipient or RESEND_API_KEY')
-        return
-    try:
-        resp = http_requests.post(
-            'https://api.resend.com/emails',
-            headers={'Authorization': f'Bearer {RESEND_API_KEY}'},
-            json={
-                'from': MAIL_FROM,
-                'to': [to_email],
-                'subject': subject,
-                'text': body
-            },
-            timeout=10
-        )
-        if resp.status_code >= 400:
-            print(f'Email send failed: {resp.status_code} {resp.text}')
-    except Exception as e:
-        print(f'Email send failed: {e}')
-
 # Google OAuth
 google_bp = make_google_blueprint(
     client_id=os.environ.get('GOOGLE_CLIENT_ID'),
     client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
     scope=['profile', 'email'],
-    redirect_url='https://shareplate-0s8z.onrender.com/google/authorized'
+    redirect_url='/google/authorized'
 )
 app.register_blueprint(google_bp, url_prefix='/google')
 
@@ -115,10 +66,8 @@ def init_db():
         status TEXT DEFAULT 'available',
         donor_id INTEGER REFERENCES users(id),
         image_url TEXT,
-        reminder_sent BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )''')
-    c.execute('''ALTER TABLE food ADD COLUMN IF NOT EXISTS reminder_sent BOOLEAN DEFAULT FALSE''')
     c.execute('''CREATE TABLE IF NOT EXISTS requests (
         id SERIAL PRIMARY KEY,
         food_id INTEGER REFERENCES food(id),
@@ -175,6 +124,41 @@ def fetchone(cursor):
     row = cursor.fetchone()
     return dict(zip(cols, row)) if row else None
 
+# Google OAuth handler
+@oauth_authorized.connect_via(google_bp)
+def google_logged_in(blueprint, token):
+    if not token:
+        flash('Failed to log in with Google.', 'danger')
+        return False
+    try:
+        resp = blueprint.session.get('/oauth2/v2/userinfo')
+        if not resp.ok:
+            flash('Failed to get user info from Google.', 'danger')
+            return False
+        info = resp.json()
+        email = info['email']
+        name = info.get('name', email)
+        conn = get_db()
+        c = conn.cursor()
+        c.execute('SELECT * FROM users WHERE email=%s', (email,))
+        user = fetchone(c)
+        if not user:
+            c.execute(
+                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (%s,%s,%s,%s,%s,%s)',
+                (name, email, generate_password_hash('google_oauth'), '', 'both', '')
+            )
+            conn.commit()
+            c.execute('SELECT * FROM users WHERE email=%s', (email,))
+            user = fetchone(c)
+        conn.close()
+        session['user_id'] = user['id']
+        session['user_name'] = user['name']
+        session['user_role'] = user['role']
+        flash(f'Welcome, {user["name"]}! 🎉', 'success')
+    except Exception as e:
+        flash('Google login failed. Please try again.', 'danger')
+        return False
+
 @app.route('/')
 def index():
     conn = get_db()
@@ -184,7 +168,7 @@ def index():
                COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
                LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = 'available' AND f.expiry::timestamp > NOW()
+               WHERE f.status = 'available'
                GROUP BY f.id, u.name
                ORDER BY f.created_at DESC LIMIT 6''')
     foods = fetchall(c)
@@ -241,45 +225,6 @@ def login():
             return redirect(url_for('dashboard'))
         flash('Invalid email or password.', 'danger')
     return render_template('login.html')
-
-@app.route('/google/login')
-def google_login():
-    return redirect(url_for('google.login'))
-
-@app.route('/google/callback')
-def google_callback():
-    if not google.authorized:
-        flash('Google login failed.', 'danger')
-        return redirect(url_for('login'))
-    try:
-        resp = google.get('/oauth2/v2/userinfo')
-        if not resp.ok:
-            flash('Failed to get user info from Google.', 'danger')
-            return redirect(url_for('login'))
-        info = resp.json()
-        email = info['email']
-        name = info.get('name', email)
-        conn = get_db()
-        c = conn.cursor()
-        c.execute('SELECT * FROM users WHERE email=%s', (email,))
-        user = fetchone(c)
-        if not user:
-            c.execute(
-                'INSERT INTO users (name, email, password, location, role, security_answer) VALUES (%s,%s,%s,%s,%s,%s)',
-                (name, email, generate_password_hash('google_oauth_user'), '', 'both', '')
-            )
-            conn.commit()
-            c.execute('SELECT * FROM users WHERE email=%s', (email,))
-            user = fetchone(c)
-        conn.close()
-        session['user_id'] = user['id']
-        session['user_name'] = user['name']
-        session['user_role'] = user['role']
-        flash(f'Welcome, {user["name"]}! 🎉', 'success')
-        return redirect(url_for('dashboard'))
-    except Exception as e:
-        flash('Google login failed. Please try again.', 'danger')
-        return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():
@@ -369,7 +314,7 @@ def available():
                COUNT(r.id) as rating_count
                FROM food f JOIN users u ON f.donor_id = u.id
                LEFT JOIN ratings r ON f.id = r.food_id
-               WHERE f.status = 'available' AND f.expiry::timestamp > NOW() '''
+               WHERE f.status = 'available' '''
     params = []
     if category:
         query += ' AND f.category=%s'
@@ -476,86 +421,12 @@ def send_message(food_id):
             c.execute('INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s)',
                       (food_id, uid, receiver_id, message))
             add_notification(receiver_id, f'New message about "{food["food_name"]}"')
-            c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
-            receiver = fetchone(c)
-            c.execute('SELECT name FROM users WHERE id=%s', (uid,))
-            sender = fetchone(c)
             conn.commit()
-            if receiver:
-                send_email(
-                    receiver['email'],
-                    f'New message about "{food["food_name"]}" on SharePlate',
-                    f'Hi {receiver["name"]},\n\n{sender["name"] if sender else "Someone"} sent you a message '
-                    f'about "{food["food_name"]}":\n\n"{message}"\n\n'
-                    f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
-                    f'— SharePlate'
-                )
             flash('Message sent! 💬', 'success')
     conn.close()
     return redirect(url_for('food_detail', food_id=food_id))
 
-
-# ── Real-time chat via Socket.IO ──
-
-@socketio.on('join_food_room')
-def handle_join_food_room(data):
-    food_id = data.get('food_id')
-    if food_id:
-        join_room(f'food_{food_id}')
-
-@socketio.on('send_chat_message')
-def handle_send_chat_message(data):
-    if 'user_id' not in session:
-        return
-    uid = session['user_id']
-    food_id = data.get('food_id')
-    message = (data.get('message') or '').strip()
-    if not food_id or not message:
-        return
-
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('SELECT * FROM food WHERE id=%s', (food_id,))
-    food = fetchone(c)
-    if not food:
-        conn.close()
-        return
-    receiver_id = food['donor_id'] if uid != food['donor_id'] else None
-    if not receiver_id:
-        conn.close()
-        return
-
-    c.execute(
-        'INSERT INTO messages (food_id, sender_id, receiver_id, message) VALUES (%s,%s,%s,%s) RETURNING id, created_at',
-        (food_id, uid, receiver_id, message)
-    )
-    new_id, created_at = c.fetchone()
-    add_notification(receiver_id, f'New message about "{food["food_name"]}"')
-    c.execute('SELECT email, name FROM users WHERE id=%s', (receiver_id,))
-    receiver = fetchone(c)
-    conn.commit()
-    conn.close()
-
-    payload = {
-        'id': new_id,
-        'sender_id': uid,
-        'sender_name': session.get('user_name', 'User'),
-        'message': message,
-        'created_at': created_at.strftime('%Y-%m-%d %H:%M')
-    }
-    emit('new_chat_message', payload, room=f'food_{food_id}')
-
-    if receiver:
-        send_email(
-            receiver['email'],
-            f'New message about "{food["food_name"]}" on SharePlate',
-            f'Hi {receiver["name"]},\n\n{session.get("user_name", "Someone")} sent you a message '
-            f'about "{food["food_name"]}":\n\n"{message}"\n\n'
-            f'Reply here:\nhttps://shareplate-0s8z.onrender.com/food/{food_id}\n\n'
-            f'— SharePlate'
-        )
-
-
+@app.route('/claim/<int:food_id>', methods=['POST'])
 def claim_food(food_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -580,22 +451,8 @@ def claim_food(food_id):
     c.execute('INSERT INTO requests (food_id, receiver_id) VALUES (%s,%s)', (food_id, uid))
     c.execute("UPDATE food SET status='requested' WHERE id=%s", (food_id,))
     add_notification(food['donor_id'], f'Someone claimed your "{food["food_name"]}" listing!')
-    c.execute('SELECT email, name FROM users WHERE id=%s', (food['donor_id'],))
-    donor = fetchone(c)
-    c.execute('SELECT name FROM users WHERE id=%s', (uid,))
-    claimer = fetchone(c)
     conn.commit()
     conn.close()
-    if donor:
-        send_email(
-            donor['email'],
-            f'Someone claimed your "{food["food_name"]}" listing on SharePlate',
-            f'Hi {donor["name"]},\n\n{claimer["name"] if claimer else "Someone"} has claimed your food listing '
-            f'"{food["food_name"]}" on SharePlate.\n\n'
-            f'Log in to SharePlate to chat with them and arrange pickup:\n'
-            f'https://shareplate-0s8z.onrender.com/dashboard\n\n'
-            f'— SharePlate'
-        )
     flash('Food claimed! Contact the donor to arrange pickup. 🙌', 'success')
     return redirect(url_for('dashboard'))
 
@@ -801,53 +658,6 @@ def forgot_password():
             flash('Something went wrong.', 'danger')
     return render_template('forgot_password.html')
 
-@app.route('/cron/check-expiry')
-def cron_check_expiry():
-    secret = request.args.get('key', '')
-    if secret != os.environ.get('CRON_SECRET', ''):
-        return jsonify({'error': 'unauthorized'}), 401
-
-    conn = get_db()
-    c = conn.cursor()
-
-    # 1. Mark truly expired listings as 'expired' so they stop showing as available
-    c.execute('''UPDATE food SET status='expired'
-                 WHERE status='available' AND expiry::timestamp < NOW()
-                 RETURNING id''')
-    expired_ids = [row[0] for row in c.fetchall()]
-
-    # 2. Find listings expiring within the next 24 hours that haven't been reminded yet
-    c.execute('''SELECT f.*, u.email as donor_email, u.name as donor_name
-                 FROM food f JOIN users u ON f.donor_id = u.id
-                 WHERE f.status='available'
-                 AND f.reminder_sent = FALSE
-                 AND f.expiry::timestamp > NOW()
-                 AND f.expiry::timestamp < NOW() + INTERVAL '24 hours' ''')
-    soon_expiring = fetchall(c)
-
-    reminded_ids = []
-    for food in soon_expiring:
-        send_email(
-            food['donor_email'],
-            f'"{food["food_name"]}" expires soon on SharePlate',
-            f'Hi {food["donor_name"]},\n\n'
-            f'Your listing "{food["food_name"]}" expires within 24 hours.\n\n'
-            f'If it hasn\'t been claimed yet, consider sharing it directly with someone nearby, '
-            f'or check your dashboard:\nhttps://shareplate-0s8z.onrender.com/dashboard\n\n'
-            f'— SharePlate'
-        )
-        reminded_ids.append(food['id'])
-
-    if reminded_ids:
-        c.execute('UPDATE food SET reminder_sent=TRUE WHERE id = ANY(%s)', (reminded_ids,))
-
-    conn.commit()
-    conn.close()
-    return jsonify({
-        'marked_expired': len(expired_ids),
-        'reminders_sent': len(reminded_ids)
-    })
-
 if __name__ == '__main__':
     init_db()
-    socketio.run(app, debug=True)
+    app.run(debug=True)
