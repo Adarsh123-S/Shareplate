@@ -34,7 +34,8 @@ google_bp = make_google_blueprint(
     client_id=os.environ.get('GOOGLE_CLIENT_ID'),
     client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
     scope=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
-    redirect_url='/google/authorized'
+    redirect_url='/google/authorized',
+    reprompt_consent=True
 )
 app.register_blueprint(google_bp, url_prefix='/google')
 
