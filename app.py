@@ -373,6 +373,29 @@ def add_food():
         return redirect(url_for('dashboard'))
     return render_template('add_food.html')
 
+@app.route('/api/search-suggestions')
+def search_suggestions():
+    q = request.args.get('q', '').strip()
+    if len(q) < 2:
+        return jsonify([])
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('''
+        SELECT DISTINCT food_name FROM food
+        WHERE status = 'available' AND food_name ILIKE %s
+        LIMIT 5
+    ''', (f'%{q}%',))
+    name_matches = [row[0] for row in c.fetchall()]
+    c.execute('''
+        SELECT DISTINCT location FROM food
+        WHERE status = 'available' AND location ILIKE %s
+        LIMIT 5
+    ''', (f'%{q}%',))
+    location_matches = [row[0] for row in c.fetchall()]
+    conn.close()
+    suggestions = list(dict.fromkeys(name_matches + location_matches))
+    return jsonify(suggestions[:8])
+
 @app.route('/available')
 def available():
     conn = get_db()
