@@ -1,39 +1,17 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 import os
 import cloudinary
 import cloudinary.uploader
 from datetime import datetime
 import psycopg2
-import psycopg2.extras
-from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer import oauth_authorized
-from flask_babel import Babel, _
+import requests as http_requests
 
 app = Flask(__name__)
-app.secret_key = 'shareplate-secret-key-2024'
-
-LANGUAGES = ['en', 'hi', 'kn', 'ml', 'mr', 'ta', 'te']
-
-def get_locale():
-    if 'lang' in session and session['lang'] in LANGUAGES:
-        return session['lang']
-    lang = request.args.get('lang')
-    if lang and lang in LANGUAGES:
-        return lang
-    return request.accept_languages.best_match(LANGUAGES) or 'en'
-
-babel = Babel(app, locale_selector=get_locale)
-
+app.secret_key = os.environ.get('SECRET_KEY', 'shareplate-super-secret-key-2024-xyz')
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
@@ -46,14 +24,12 @@ cloudinary.config(
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Google OAuth
-google_bp = make_google_blueprint(
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    scope=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
-    redirect_url='/login/google/authorized'
-)
-app.register_blueprint(google_bp, url_prefix='/login')
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
+GOOGLE_REDIRECT_URI = 'https://shareplate-0s8z.onrender.com/google/callback'
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_db():
     conn = psycopg2.connect(DATABASE_URL)
@@ -123,9 +99,6 @@ def init_db():
 
 init_db()
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 def add_notification(user_id, message):
     try:
         conn = get_db()
@@ -144,20 +117,46 @@ def fetchone(cursor):
     row = cursor.fetchone()
     return dict(zip(cols, row)) if row else None
 
-# Google OAuth handler
-@oauth_authorized.connect_via(google_bp)
-def google_logged_in(blueprint, token):
-    if not token:
-        flash('Failed to log in with Google.', 'danger')
-        return False
+# Google OAuth routes
+@app.route('/google/login')
+def google_login():
+    auth_url = (
+        'https://accounts.google.com/o/oauth2/v2/auth?'
+        f'client_id={GOOGLE_CLIENT_ID}&'
+        f'redirect_uri={GOOGLE_REDIRECT_URI}&'
+        'response_type=code&'
+        'scope=openid+email+profile'
+    )
+    return redirect(auth_url)
+
+@app.route('/google/callback')
+def google_callback():
+    code = request.args.get('code')
+    if not code:
+        flash('Google login failed.', 'danger')
+        return redirect(url_for('login'))
     try:
-        resp = blueprint.session.get('/oauth2/v2/userinfo')
-        if not resp.ok:
-            flash('Failed to get user info from Google.', 'danger')
-            return False
-        info = resp.json()
-        email = info['email']
-        name = info.get('name', email)
+        token_resp = http_requests.post('https://oauth2.googleapis.com/token', data={
+            'code': code,
+            'client_id': GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'redirect_uri': GOOGLE_REDIRECT_URI,
+            'grant_type': 'authorization_code'
+        })
+        token_data = token_resp.json()
+        access_token = token_data.get('access_token')
+        if not access_token:
+            flash('Google login failed. Please try again.', 'danger')
+            return redirect(url_for('login'))
+        user_info = http_requests.get(
+            'https://www.googleapis.com/oauth2/v2/userinfo',
+            headers={'Authorization': f'Bearer {access_token}'}
+        ).json()
+        email = user_info.get('email')
+        name = user_info.get('name', email)
+        if not email:
+            flash('Could not get email from Google.', 'danger')
+            return redirect(url_for('login'))
         conn = get_db()
         c = conn.cursor()
         c.execute('SELECT * FROM users WHERE email=%s', (email,))
@@ -175,15 +174,11 @@ def google_logged_in(blueprint, token):
         session['user_name'] = user['name']
         session['user_role'] = user['role']
         flash(f'Welcome, {user["name"]}! 🎉', 'success')
+        return redirect(url_for('dashboard'))
     except Exception as e:
+        print(f"Google login error: {e}")
         flash('Google login failed. Please try again.', 'danger')
-        return False
-
-@app.route('/set-language/<lang>')
-def set_language(lang):
-    if lang in LANGUAGES:
-        session['lang'] = lang
-    return redirect(request.referrer or url_for('index'))
+        return redirect(url_for('login'))
 
 @app.route('/')
 def index():
