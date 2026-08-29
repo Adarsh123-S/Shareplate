@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -9,9 +12,23 @@ import psycopg2
 import psycopg2.extras
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_dance.consumer import oauth_authorized
+from flask_babel import Babel, _
 
 app = Flask(__name__)
 app.secret_key = 'shareplate-secret-key-2024'
+
+LANGUAGES = ['en', 'hi', 'kn', 'ml', 'mr', 'ta', 'te']
+
+def get_locale():
+    if 'lang' in session and session['lang'] in LANGUAGES:
+        return session['lang']
+    lang = request.args.get('lang')
+    if lang and lang in LANGUAGES:
+        return lang
+    return request.accept_languages.best_match(LANGUAGES) or 'en'
+
+babel = Babel(app, locale_selector=get_locale)
+
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -161,6 +178,12 @@ def google_logged_in(blueprint, token):
     except Exception as e:
         flash('Google login failed. Please try again.', 'danger')
         return False
+
+@app.route('/set-language/<lang>')
+def set_language(lang):
+    if lang in LANGUAGES:
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/')
 def index():
