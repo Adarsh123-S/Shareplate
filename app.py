@@ -264,6 +264,17 @@ def register():
         location = request.form['location']
         role = request.form['role']
         security_answer = request.form.get('security_answer', '')
+
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('register.html')
+        if not any(ch.isalpha() for ch in password):
+            flash('Password must contain at least one letter.', 'danger')
+            return render_template('register.html')
+        if not any(ch.isdigit() for ch in password):
+            flash('Password must contain at least one number.', 'danger')
+            return render_template('register.html')
+
         hashed = generate_password_hash(password)
         try:
             conn = get_db()
@@ -766,6 +777,10 @@ def forgot_password():
             if user:
                 stored_answer = (user['security_answer'] or '').strip().lower()
                 if stored_answer == security_answer:
+                    if len(new_password) < 8 or not any(ch.isalpha() for ch in new_password) or not any(ch.isdigit() for ch in new_password):
+                        conn.close()
+                        flash('Password must be at least 8 characters and include a letter and a number.', 'danger')
+                        return render_template('forgot_password.html')
                     hashed = generate_password_hash(new_password)
                     c.execute('UPDATE users SET password=%s WHERE email=%s', (hashed, email))
                     conn.commit()
